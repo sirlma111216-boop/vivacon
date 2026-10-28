@@ -1,0 +1,5 @@
+# Suggested new Pages project name. Match the actual project name when connecting GitHub.
+# This file does not create a Cloudflare project or establish a Git connection.
+name = "nc1395-star-inquiry"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-10-28"

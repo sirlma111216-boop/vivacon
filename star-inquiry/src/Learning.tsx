@@ -1,0 +1,259 @@
+import type { ReactNode } from 'react';
+import { canConvertMagnitude, corrected, distanceFor, magnitudeDelta, validSamples, type Run } from './domain';
+import { DataChart } from './DataChart';
+import { resources, safeExternalUrl } from './Resources';
+import './learning.css';
+
+export type Prediction = {
+  author: string;
+  reason: string;
+  points: { x: number; y: number }[];
+  savedAt: string;
+};
+
+type LearningProps = {
+  lesson: 3 | 5;
+  step: number;
+  notes: Record<string, string>;
+  setNote: (key: string, value: string) => void;
+  prediction: Prediction | null;
+  onPrediction: (prediction: Prediction) => void;
+  run: Run | null;
+  reveal: boolean;
+};
+
+function Header({ eyebrow, title, children }: { eyebrow: string; title: string; children?: ReactNode }) {
+  return <header className="learning-heading"><span className="eyebrow">{eyebrow}</span><h2>{title}</h2>{children && <p>{children}</p>}</header>;
+}
+
+function parseRecord(value?: string): Record<string, string> | null {
+  if (!value) return null;
+  try { const item = JSON.parse(value); return item && typeof item === 'object' && !Array.isArray(item) && Object.values(item).every(v=>typeof v==='string') ? item : null; } catch { return null; }
+}
+
+export function ExperimentIllustration() {
+  return <figure className="experiment-illustration">
+    <div className="concept-image"><img src="/assets/astronomy/experiment-moving-light.png" width="1672" height="941" loading="lazy" alt="왼쪽 고정 센서와 오른쪽 LED 자동차를 보여 주는 실험 개념 삽화" /></div>
+    <figcaption><strong>고정된 센서, 멀어지는 광원</strong><span>장비 배치를 이해하기 위한 개념 삽화입니다.</span><small>실제 이지메이커·마퀸의 정확한 외형이나 배선도가 아닙니다. 그림의 자에서 거리를 읽지 않아요.</small></figcaption>
+    <svg className="equipment-diagram" viewBox="0 0 720 210" role="img" aria-label="센서는 왼쪽에 고정됩니다. LED 자동차는 빛을 왼쪽 센서로 비추면서 오른쪽으로 멀어집니다. 시작 거리와 실제 속력은 줄자와 시계로 측정합니다.">
+      <defs><marker id="move-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="#f8c84d" /></marker><marker id="light-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6" fill="#93c5fd" /></marker></defs>
+      <path d="M55 145 H660" stroke="#64748b" strokeWidth="2" />
+      <rect x="55" y="75" width="90" height="60" rx="12" fill="#1d2c50" stroke="#93c5fd" strokeWidth="2" /><circle cx="128" cy="100" r="9" fill="#93c5fd" />
+      <text x="100" y="54" textAnchor="middle">고정 센서</text><text x="100" y="167" textAnchor="middle" className="diagram-small">움직이지 않아요</text>
+      <rect x="350" y="91" width="110" height="37" rx="10" fill="#334155" stroke="#f8c84d" strokeWidth="2" /><circle cx="373" cy="135" r="10" fill="#94a3b8" /><circle cx="437" cy="135" r="10" fill="#94a3b8" /><rect x="350" y="76" width="21" height="24" rx="3" fill="#f8c84d" />
+      <path d="M341 89 H180" stroke="#93c5fd" strokeWidth="2" strokeDasharray="6 5" markerEnd="url(#light-arrow)" /><text x="257" y="71" textAnchor="middle" className="diagram-small">빛은 센서를 향해</text>
+      <path d="M416 48 H645" stroke="#f8c84d" strokeWidth="3" markerEnd="url(#move-arrow)" /><text x="536" y="30" textAnchor="middle">자동차 이동 방향</text>
+      <path d="M145 180 H350 M145 174 V186 M350 174 V186" stroke="#e2e8f0" strokeWidth="1.5" /><text x="246" y="204" textAnchor="middle" className="diagram-small">시작 거리 r₀ &gt; 0</text><text x="540" y="178" textAnchor="middle" className="diagram-small">실제 속력 = 이동 거리 ÷ 걸린 시간</text>
+    </svg>
+    <p className="muted">같은 높이, 같은 방향을 유지합니다. 센서 USB 연결과 자동차 코딩은 서로 다른 작업입니다.</p>
+  </figure>;
+}
+
+function StellarIntro({ compact = false }: { compact?: boolean }) {
+  return <section className={`stellar-intro ${compact ? 'compact' : ''}`}>
+    <div><span className="eyebrow">LESSON 05 · EXPLAIN</span><h2>별의 밝기를<br />등급으로 읽다</h2><p>측정한 밝기에서 겉보기 등급과 절대 등급까지</p></div>
+    <img src="/assets/astronomy/lesson5-stellar-magnitude.png" width="1672" height="941" loading="lazy" alt="" />
+    <small>분위기를 위한 생성 삽화입니다. 별빛 번짐은 실제 지름·등급·거리를, 그림의 곡선은 10pc 경계를 나타내지 않습니다.</small>
+  </section>;
+}
+
+function PredictionGraph({ points }: { points: { x: number; y: number }[] }) {
+  const pointString = points.map(p => `${65 + (p.x - 1) * 120},${270 - p.y * 2.1}`).join(' ');
+  return <svg className="prediction-graph" viewBox="0 0 610 325" role="img" aria-label={`거리별 예상 밝기: ${points.map(p => `${p.x}배에서 ${p.y}%`).join(', ')}`}>
+    {[0,25,50,75,100].map(v => <g key={v}><line x1="65" y1={270-v*2.1} x2="545" y2={270-v*2.1} stroke="#2c3757" strokeDasharray={v === 0 ? undefined : '3 5'} /><text x="53" y={275-v*2.1} textAnchor="end">{v}</text></g>)}
+    <line x1="65" y1="50" x2="65" y2="270" stroke="#94a3b8" /><line x1="65" y1="270" x2="555" y2="270" stroke="#94a3b8" />
+    <text x="65" y="27">예상 상대 밝기 (%)</text><text x="545" y="317" textAnchor="end">거리 (시작 거리의 배수)</text>
+    {points.map(p => <text key={p.x} x={65+(p.x-1)*120} y="292" textAnchor="middle">{p.x}배</text>)}
+    <polyline points={pointString} fill="none" stroke="#f8c84d" strokeWidth="3" strokeLinejoin="round" />
+    {points.map(p => <circle key={p.x} cx={65+(p.x-1)*120} cy={270-p.y*2.1} r="6" fill="#f8c84d" stroke="#111833" strokeWidth="2" />)}
+  </svg>;
+}
+
+const designFields: [string,string,string][] = [
+  ['question','탐구 질문','거리가 달라지면 같은 LED의 밝기는 어떻게 변할까?'],
+  ['hypothesis','우리 모둠의 가설','내 예상과 그 까닭을 연결해 보세요.'],
+  ['control','같게 유지할 것 (통제 변인)','LED, 밝기 설정, 방향, 센서 높이, 주변 조명 등'],
+  ['ambientPlan','주변광 측정 방법','LED를 끈 상태에서 언제, 몇 번 측정할까요?'],
+  ['speedPlan','실제 속력 확인 방법','알려진 이동 거리와 시간을 어떻게 잴까요?'],
+  ['errors','예상되는 오차와 줄이는 방법','빛의 방향, 반사광, 출발 가속 등을 생각해 보세요.'],
+];
+
+const checks = ['자동차가 센서에서 멀어지도록 배치했다.','이동 중에도 LED는 센서를 향한다.','시작 거리가 0보다 크다.','주변광을 따로 측정할 계획이 있다.','실제 속력과 주행 시작 시점을 확인할 계획이 있다.','같은 조건으로 반복 측정할 계획이 있다.'];
+
+const quiz = [
+  { question:'겉보기 등급이 1인 별과 6인 별 중 더 밝게 보이는 별은?', choices:['1등급인 별','6등급인 별','숫자만으로 비교할 수 없다'], correct:0, feedback:['맞아요. 같은 종류의 등급에서는 숫자가 작을수록 밝아요.','등급은 숫자가 커질수록 어두워져요. 1등급이 6등급보다 밝게 보입니다.','겉보기 등급은 관측되는 밝기를 비교하는 척도예요. 이때 1등급이 더 밝습니다.'] },
+  { question:'5등급 차이는 밝기 몇 배 차이일까요?', choices:['5배','약 12.5배','정확히 100배'], correct:2, feedback:['등급과 밝기는 단순한 비례 관계가 아니에요. 5등급 차이는 100배입니다.','한 등급마다 밝기 비가 거듭 곱해져요. 2.5에 5를 곱하지 않습니다.','맞아요. 한 등급의 비는 약 2.512배, 5등급의 비는 정확히 100배예요.'] },
+  { question:'같은 광원이 10배 멀어지면, 이상적 모형의 밝기와 등급 변화는?', choices:['밝기 1/10, 1등급 어두워짐','밝기 1/100, 5등급 어두워짐','밝기 1/100, 5등급 밝아짐'], correct:1, feedback:['밝기는 거리의 제곱에 반비례해요. 10배 멀어지면 1/100이 됩니다.','맞아요. 빛이 받는 면적에 퍼지므로 밝기는 1/100, 등급은 5만큼 커져요.','밝기가 작아지면 더 어두워지고 등급 숫자는 커져요. +5는 5등급 어두워졌다는 뜻입니다.'] },
+  { question:'별을 모두 10pc에 놓았다고 생각하는 까닭은?', choices:['거리의 영향을 같게 하여 별 자체의 밝기를 비교하려고','모든 별의 실제 거리가 10pc이기 때문에','10pc가 10광년과 같기 때문에'], correct:0, feedback:['맞아요. 절대 등급은 거리를 10pc로 통일해 비교하는 약속이에요.','별의 실제 거리는 서로 달라요. 10pc는 비교를 위해 정한 공통 거리입니다.','pc와 광년은 다른 거리 단위예요. 10pc는 약 32.6광년입니다.'] },
+];
+
+/** Human-readable labels shared with the printable report. */
+export const NOTE_LABELS: Record<string,string> = {
+  connection:'앞선 수업과 연결한 생각', predictionAuthor:'예상 작성자 (초안)', predictionReason:'예상 근거 (초안)',
+  theoryDistance:'빛 퍼짐 모형에서 선택한 거리 배수', theoryObservation:'이론 모형을 탐구한 뒤 달라진 생각',
+  ...Object.fromEntries(designFields.map(([key,label])=>[`design.${key}`,label])),
+  'design.startDistance':'설계한 시작 거리 (cm)', 'design.travelDistance':'설계한 이동 구간 (cm)',
+  'design.interval':'설계한 측정 간격 (초)', 'design.repeats':'계획한 반복 횟수',
+  ...Object.fromEntries(checks.map((label,i)=>[`designCheck${i}`,`설계 점검: ${label}`])),
+  ...Object.fromEntries([1,2,3,4,5].map((d,i)=>[`predictionPoint${i}`,`예상 초안: 거리 ${d}배의 밝기 (%)`])),
+  designReflection:'예상과 다른 실험 결과의 의미', magnitudeIntro:'밝기 차이를 표현하는 약속에 대한 생각',
+  magnitudeGuess:'1등급과 6등급의 밝기 비 예상 (초안)', magnitudeReason:'등급 예상의 근거 (초안)',
+  magnitudePrediction:'보존된 등급–밝기 비 최초 예상', gradeA:'비교 모형: 별 A의 등급', gradeB:'비교 모형: 별 B의 등급',
+  magnitudeObservation:'등급 가상실험 관찰', magnitudeExplanation:'등급 차이와 밝기 비 설명', magnitudeExternalDone:'등급 가상실험 직접 완료 표시',
+  magnitudeReference:'상대 등급 기준점의 기록 ID', magnitudeTarget:'상대 등급 비교점의 기록 ID', modelBrightness:'이상적 모형에서 선택한 밝기 비',
+  relativeMagnitudeExplanation:'기준 대비 상대 등급 변화 설명', absolutePrediction:'보존된 같은 거리 비교 최초 예상',
+  absoluteGuess:'같은 거리 비교 예상과 이유 (초안)', starDistance:'가상 별까지의 거리 (pc)', absoluteGrade:'가상 별의 절대 등급',
+  absoluteObservation:'10pc에서 비교한 관찰', absoluteExplanation:'절대 등급이 필요한 이유', absoluteExternalDone:'겉보기·절대 등급 활동 직접 완료 표시',
+  ...Object.fromEntries(quiz.map((q,i)=>[`quiz${i}`,`형성평가 ${i+1}: ${q.question}`])), quizSubmitted:'형성평가 응답 제출',
+  reflectionAuthor:'최종 설명 작성자 별칭', reflectionBefore:'처음에는 이렇게 생각했다', reflectionObserved:'실험과 가상실험에서 관찰했다',
+  reflectionAfter:'이제는 근거를 들어 이렇게 설명한다',
+  explainAuthor:'관찰 후 설명 작성자 별칭', explanationRecords:'작성자별 보존된 관찰 후 설명',
+};
+
+/** Values stay unchanged in JSON; this only formats the visible/printed report. */
+export function learningNoteValue(key:string,value:string):string {
+  if(key==='explanationRecords') {
+    try {const records=JSON.parse(value);if(Array.isArray(records))return records.filter(r=>r&&typeof r==='object'&&typeof r.author==='string'&&typeof r.evidence==='string').map(r=>`${r.author} · ${r.mode==='practice'?'연습 데이터':'직접 입력·센서 기록'}\n예상과 관찰 비교: ${typeof r.compare==='string'?r.compare:''}\n근거를 든 설명: ${r.evidence}\n오차: ${typeof r.error==='string'?r.error:''}\n개선: ${typeof r.improve==='string'?r.improve:''}\n저장: ${typeof r.savedAt==='string'?new Date(r.savedAt).toLocaleString('ko-KR'):''}`).join('\n\n');}catch{}return value;
+  }
+  if(key==='magnitudePrediction'||key==='absolutePrediction') {
+    const record=parseRecord(value);
+    if(!record)return value;
+    return `${record.guess || ''}${key==='magnitudePrediction'?'배':''}${record.reason?` · 근거: ${record.reason}`:''}${record.savedAt?` · 저장: ${new Date(record.savedAt).toLocaleString('ko-KR')}`:''}`;
+  }
+  const q=/^quiz([0-3])$/.exec(key);
+  if(q) return quiz[Number(q[1])].choices[Number(value)] ?? value;
+  if(/^designCheck\d$/.test(key)||['magnitudeExternalDone','absoluteExternalDone','quizSubmitted'].includes(key))return value==='yes'?'직접 확인함':'아직 확인하지 않음';
+  return value;
+}
+
+export function Learning({ lesson, step, notes, setNote, prediction, onPrediction, run, reveal }: LearningProps) {
+  const text = (key: string, label: string, placeholder = '', rows = 3) => <label className="field"><span>{label}</span><textarea rows={rows} value={notes[key] || ''} onChange={e => setNote(key,e.target.value)} placeholder={placeholder} /></label>;
+  const input = (key: string, label: string, placeholder = '', type = 'text', min?: number) => <label className="field"><span>{label}</span><input type={type} min={min} step={type==='number' ? 'any' : undefined} value={notes[key] || ''} onChange={e => setNote(key,e.target.value)} placeholder={placeholder} /></label>;
+  const check = (key: string, label: string) => <label className="learning-check" key={key}><input type="checkbox" checked={notes[key] === 'yes'} onChange={e => setNote(key,e.target.checked ? 'yes':'')} /><span>{label}</span></label>;
+  const simulationUrl = notes['resource.simulation.url'] ?? resources.find(r=>r.id==='simulation')!.url;
+  const externalActivity = notes['resource.simulation.hidden']==='true' ? <p className="notice">교사가 이 외부 자료를 숨겼습니다. 아래의 자체 모형을 관찰하고, 실험 출처를 구분하여 기록하세요.</p> : <div className="external-activity">{safeExternalUrl(simulationUrl)?<a className="secondary" href={simulationUrl} target="_blank" rel="noopener noreferrer">비바샘 가상실험 열기 ↗</a>:<span className="notice">외부 자료 주소를 교사에게 확인해 주세요.</span>}<p className="muted">원본 사이트가 새 탭에서 열립니다. 이용 후 이 화면으로 돌아와 관찰을 기록하세요. 외부 활동 완료는 자동으로 확인하지 않습니다.</p></div>;
+
+  if (lesson === 3 && step === 0) return <div className="learning-section">
+    <Header eyebrow="CONNECT · 5분" title="밝게 보인다는 건, 무엇일까?">천상열차분야지도의 별 표현과 밝기 등급을 떠올려 봅시다.</Header>
+    <div className="question-callout">별이 밝게 보이는 까닭은<br /><strong>빛을 많이 내기 때문일까, 우리에게 가깝기 때문일까?</strong></div>
+    <div className="grid-2"><article className="concept-tile"><span className="concept-number">01</span><h3>광원 자체가 내는 빛</h3><p>같은 거리에 있어도, 빛을 더 많이 내는 광원이 밝게 보여요.</p></article><article className="concept-tile"><span className="concept-number">02</span><h3>광원까지의 거리</h3><p>같은 광원도 관찰하는 위치가 달라지면 밝기가 달라져요.</p></article></div>
+    {text('connection','두 까닭을 어떻게 구분해서 확인할 수 있을까요?','앞선 수업에서 떠올린 생각을 자유롭게 적으세요.')}
+    <p className="notice">밝게 보인다는 사실 하나만으로 그 별이 가까운지 단정할 수는 없어요.</p>
+  </div>;
+
+  if (lesson === 3 && step === 1) {
+    const points = prediction?.points || [1,2,3,4,5].map((x,i) => ({x,y:Number(notes[`predictionPoint${i}`] ?? [100,80,60,40,20][i])}));
+    const setPreset = (ys:number[]) => ys.forEach((y,i) => setNote(`predictionPoint${i}`,String(y)));
+    return <div className="learning-section"><Header eyebrow="PREDICT · 8분" title="나의 예상 그래프">같은 LED가 일정한 속력으로 멀어지면 센서가 측정하는 밝기는 어떻게 달라질까요?</Header>
+      <div className="grid-2 prediction-layout"><div className="plot-panel"><div className="plot-heading"><strong>거리–밝기 예상</strong><span className="badge">{prediction ? '✓ 최초 예상 보존됨':'내 생각을 표현해요'}</span></div><PredictionGraph points={points} /><p className="muted">처음 밝기를 100으로 놓았을 때의 예상이에요. 아직 관찰한 결과는 아닙니다.</p></div>
+      <div>{prediction ? <div className="saved-prediction"><h3>처음 생각은 그대로 남겨요</h3><p><strong>{prediction.author}</strong></p><blockquote>{prediction.reason}</blockquote><small>{new Date(prediction.savedAt).toLocaleString('ko-KR')}</small><p>관찰 후의 생각은 4차시 설명에 따로 기록합니다.</p></div> : <>
+        <p>모양을 고른 뒤 점의 높이를 직접 바꿔 보세요. 어느 모양도 정답 표시가 아닙니다.</p><div className="preset-buttons"><button onClick={() => setPreset([100,80,60,40,20])}>고르게 감소</button><button onClick={() => setPreset([100,25,11,6,4])}>처음에 크게 감소</button><button onClick={() => setPreset([100,100,100,100,100])}>변화 없음</button></div>
+        <div className="point-controls">{points.map((p,i) => <label key={p.x}><span>{p.x}배 거리</span><input type="range" min="0" max="100" step="1" aria-label={`${p.x}배 거리의 예상 밝기`} value={p.y} onChange={e=>setNote(`predictionPoint${i}`,e.target.value)} /><output>{p.y}</output></label>)}</div>
+        {input('predictionAuthor','기록한 사람 또는 모둠 별칭','예: 분석 담당 / 은하 모둠')}{text('predictionReason','이렇게 예상한 까닭 (필수)','빛이 퍼지는 모습이나 경험을 근거로 설명해 보세요.')}
+        <button className="primary" disabled={!notes.predictionReason?.trim() || !notes.predictionAuthor?.trim()} onClick={() => onPrediction({author:notes.predictionAuthor.trim(),reason:notes.predictionReason.trim(),points,savedAt:new Date().toISOString()})}>최초 예상 확정하기</button><p className="muted">저장하면 최초 예상은 수정되지 않습니다.</p>
+      </>}</div></div></div>;
+  }
+
+  if (lesson === 3 && step === 2) {
+    if (!prediction) return <div className="learning-section"><Header eyebrow="OBSERVE · 8분" title="내 예상부터 남겨 주세요">앞 단계에서 예상 그래프와 까닭을 저장하면 빛이 퍼지는 모형을 탐구할 수 있어요.</Header><p className="notice">아래의 ‘이전’ 버튼이나 위의 ‘나의 예상’ 단계로 돌아가세요.</p></div>;
+    const distance = Math.max(1, Math.min(10,Number(notes.theoryDistance || 2)));
+    const area = distance*distance;
+    return <div className="learning-section"><Header eyebrow="OBSERVE · 8분" title="멀어질수록, 더 넓게 퍼지는 빛">광원이 내는 빛의 양과 방향이 같은 이상적인 모형입니다.</Header>
+      <div className="grid-2"><div className="light-model"><svg viewBox="0 0 540 290" role="img" aria-label={`거리 ${distance}배에서 빛을 받는 면적은 ${area}배, 단위 면적당 밝기는 ${area}분의 1입니다.`}><circle cx="50" cy="145" r="15" fill="#f8c84d" /><path d={`M65 145 L${160+distance*29} ${145-distance*11} L${160+distance*29} ${145+distance*11} Z`} fill="#f8c84d" fillOpacity=".10" stroke="#f8c84d" /><rect x={150+distance*29} y={145-distance*11} width="16" height={distance*22} fill="#f8c84d" fillOpacity=".4" /><line x1="65" y1="260" x2={160+distance*29} y2="260" stroke="#93c5fd" /><text x="50" y="185" textAnchor="middle">같은 광원</text><text x="280" y="283" textAnchor="middle">거리 {distance}배</text></svg></div>
+      <div><label className="field"><span>거리를 바꿔 보세요 <strong>{distance}배</strong></span><input type="range" min="1" max="10" step="1" value={distance} onChange={e=>setNote('theoryDistance',e.target.value)} /></label><div className="metric-pair"><div><small>빛이 퍼지는 면적</small><strong>{area}<span>배</span></strong></div><div><small>단위 면적의 상대 밝기</small><strong>1/{area}</strong></div></div><div className="light-grid" style={{gridTemplateColumns:`repeat(${distance},16px)`,gridAutoRows:'16px',width:'max-content',height:'auto'}} aria-label={`${area}개의 같은 면적에 나누어진 빛`}>{Array.from({length:area},(_,i)=><span key={i} style={{opacity:Math.max(.18,1/area)}} />)}</div><p className="muted">같은 양의 빛을 더 넓은 면적이 나누어 받아요. 칸은 같은 크기의 면적을 뜻하며 색의 진하기는 이해를 돕는 표현입니다.</p></div></div>
+      <div className="ratio-strip">{[1,2,3,10].map(d=><button key={d} className={distance===d?'selected':''} onClick={()=>setNote('theoryDistance',String(d))}><span>거리 {d}배</span><strong>{d===1?'밝기 1':`밝기 1/${d*d}`}</strong></button>)}</div>
+      <p className="notice">교실의 작은 LED는 방향성이 있고 주변광·반사광·센서의 한계도 있어요. 실험 결과가 이 모형과 완전히 같지 않을 수 있습니다.</p>{text('theoryObservation','처음 예상과 비교해 새로 알게 된 점','최초 예상은 그대로 보존됩니다. 달라진 생각을 여기에 적어 보세요.')}
+    </div>;
+  }
+
+  if (lesson === 3 && step === 3) return <div className="learning-section"><Header eyebrow="DESIGN · 15분" title="우리 모둠의 실험을 설계해요">바꿀 것은 거리, 같게 할 것은 광원과 주변 조건입니다.</Header><ExperimentIllustration />
+    <div className="variables-line"><span><b>독립 변인</b> 광원과 센서 사이 거리</span><span><b>종속 변인</b> 센서가 측정한 값</span></div>
+    <div className="grid-2">{designFields.map(([key,label,placeholder])=><div key={key}>{text(`design.${key}`,label,placeholder)}</div>)}</div>
+    <div className="grid-4">{input('design.startDistance','시작 거리 (cm)','20','number',0.1)}{input('design.travelDistance','이동 구간 (cm)','180','number',0.1)}{input('design.interval','측정 간격 (초)','0.2','number',0.01)}{input('design.repeats','반복 횟수','3','number',1)}</div>
+    {notes['design.startDistance'] && Number(notes['design.startDistance'])<=0 && <p className="notice" role="alert">시작 거리는 0보다 커야 합니다. 거리 0에서는 역제곱을 계산할 수 없어요.</p>}
+    <p className="notice"><strong>모터 설정값 255 ≠ 실제 속력 255cm/s</strong><br />모터 설정값은 구동 세기입니다. 실제 이동 거리와 걸린 시간을 측정해야 시간 그래프를 거리 그래프로 바꿀 수 있어요.</p>
+  </div>;
+
+  if (lesson === 3 && step === 4) return <div className="learning-section"><Header eyebrow="CHECK · 9분" title="측정할 준비가 되었나요?">모둠원이 서로의 설계를 읽고, 준비한 항목을 확인해 주세요.</Header>
+    <div className="grid-2"><div className="checklist-box">{checks.map((label,i)=>check(`designCheck${i}`,label))}</div><article className="design-summary"><h3>우리 설계 한눈에 보기</h3><dl><dt>탐구 질문</dt><dd>{notes['design.question'] || '아직 작성하지 않았어요.'}</dd><dt>가설</dt><dd>{notes['design.hypothesis'] || '아직 작성하지 않았어요.'}</dd><dt>시작 거리 / 이동 구간</dt><dd>{notes['design.startDistance'] || '—'}cm / {notes['design.travelDistance'] || '—'}cm</dd><dt>측정 간격 / 반복</dt><dd>{notes['design.interval'] || '—'}초 / {notes['design.repeats'] || '—'}회</dd><dt>같게 유지할 것</dt><dd>{notes['design.control'] || '아직 작성하지 않았어요.'}</dd></dl></article></div>
+    {text('designReflection','예상과 달라도 의미 있는 실험이 될 수 있을까요?','무엇을 확인하고, 어떤 증거를 남겨야 할지 적어 보세요.')}
+    <div className="next-lesson"><span className="badge">NEXT · 4차시</span><h3>이제, 움직이는 빛을 측정할 시간</h3><p>설계를 바탕으로 장비를 준비하거나 연습 데이터로 측정과 분석을 체험합니다.</p></div>
+  </div>;
+
+  if (lesson === 5 && step === 0) return <div className="learning-section"><StellarIntro /><Header eyebrow="RECONNECT · 5분" title="우리 실험에서 무엇을 발견했나요?">같은 광원도 멀어지면 어두워집니다. 그 밝기 차이를 어떻게 표현할까요?</Header>
+    <div className="grid-2"><article className="concept-tile"><h3>4차시 실험 기록</h3><p>{run ? `${run.name} · ${run.samples.length}개 기록` : '4차시에서 실험 데이터를 먼저 남겨 주세요.'}</p>{run?.mode==='practice' && <span className="badge">연습 데이터</span>}<p className="muted">원본 데이터와 분석 제외 사유는 4차시 ‘예상과 비교’에서 다시 볼 수 있어요.</p></article><article className="concept-tile"><h3>관찰 뒤의 설명</h3><blockquote>{notes.explainEvidence || notes.explainCompare || '4차시에서 적은 설명을 떠올리고 아래에 정리해 보세요.'}</blockquote></article></div>
+    {run&&<DataChart run={run} prediction={prediction} analysis={validSamples(run).some(s=>distanceFor(s,run)!>0)} referenceId={notes[`reference-${run.id}`]} />}
+    {text('magnitudeIntro','밝기 차이를 숫자로 나타내려면 어떤 약속이 필요할까요?','등급 숫자가 커질 때 밝기는 어떻게 달라졌나요?')}
+  </div>;
+
+  if (lesson === 5 && step === 1) {
+    const sealed = parseRecord(notes.magnitudePrediction);
+    const gradeA = Number(notes.gradeA || 1), gradeB = Number(notes.gradeB || 6), gap = Math.abs(gradeA-gradeB), ratio = Math.pow(100,gap/5);
+    return <div className="learning-section"><Header eyebrow="PREDICT → OBSERVE → EXPLAIN · 12분" title="한 등급 차이는 얼마나 다를까?">먼저 예상하고, 비바샘 가상실험과 아래 모형으로 확인해 보세요.</Header>
+      {!sealed ? <div className="prediction-box">{input('magnitudeGuess','1등급 별은 6등급 별보다 몇 배 밝을까요?','나의 예상','number',0)}{text('magnitudeReason','그렇게 예상한 까닭','등급 숫자와 밝기 차이를 연결해 생각해 보세요.')}<button className="primary" disabled={!Number.isFinite(Number(notes.magnitudeGuess)) || !(Number(notes.magnitudeGuess)>0) || !notes.magnitudeReason?.trim()} onClick={()=>setNote('magnitudePrediction',JSON.stringify({guess:notes.magnitudeGuess,reason:notes.magnitudeReason,savedAt:new Date().toISOString()}))}>등급 예상 확정하기</button></div> : <>
+      <div className="notice"><strong>✓ 처음 예상: {sealed.guess}배</strong><p>{sealed.reason}</p></div>{externalActivity}
+      <ol className="activity-list"><li>가상실험의 ‘별의 밝기 비교’에서 1등급과 6등급 별을 배치해요.</li><li>‘전구 개수로 밝기 비교’를 실행하고 결과를 관찰해요.</li><li>다른 등급 조합도 비교한 뒤 관찰과 설명을 기록해요.</li></ol>
+      <section className="bulb-model"><div className="grid-2"><label className="field"><span>별 A의 등급</span><select value={gradeA} onChange={e=>setNote('gradeA',e.target.value)}>{[1,2,3,4,5,6].map(v=><option key={v} value={v}>{v}등급</option>)}</select></label><label className="field"><span>별 B의 등급</span><select value={gradeB} onChange={e=>setNote('gradeB',e.target.value)}>{[1,2,3,4,5,6].map(v=><option key={v} value={v}>{v}등급</option>)}</select></label></div>
+        <p className="bulb-result"><strong>{gap}등급 차이</strong><span>{gap===0?'밝기가 같아요':`${gradeA < gradeB ? 'A':'B'}가 ${gap===5?'정확히 100':`약 ${ratio.toFixed(3)}`}배 밝아요`}</span></p>
+        <div className="bulb-comparison"><div><h4>어두운 별의 밝기를 전구 1개로</h4><span className="single-bulb" aria-label="전구 1개">●</span></div><div><h4>밝은 별의 밝기: 전구 {ratio.toFixed(gap===5||gap===0?0:3)}개 분량</h4><div className="bulb-grid" role="img" aria-label={`전구 약 ${ratio.toFixed(3)}개 분량의 밝기. 점 하나는 밝기의 비교 단위이며 실제 별이 아닙니다.`}>{Array.from({length:100},(_,i)=><span key={i} className={i<ratio?'lit':''} style={i<ratio&&i+1>ratio?{opacity:ratio-i}:undefined}>●</span>)}</div></div></div>
+        <p className="muted">전구는 밝기 비를 표현한 모형입니다. 부분 점은 전구 한 개 미만의 밝기를 뜻해요. 별의 물리적인 크기는 비교하지 않습니다.</p>
+      </section><p className="notice">1등급 차이는 약 <strong>2.512배</strong> (중학교에서는 약 2.5배), 5등급 차이는 <strong>정확히 100배</strong>입니다. 2.5⁵이 정확히 100인 것은 아니에요.</p>
+      {text('magnitudeObservation','가상실험에서 관찰한 내용','실제로 확인한 등급 조합과 전구 개수를 적어 보세요.')}{text('magnitudeExplanation','처음 예상과 비교해서 설명해요','등급 차이와 밝기 비는 어떤 관계인가요?')}{check('magnitudeExternalDone','원본 가상실험을 관찰하고 돌아와 기록했어요.')}
+      </>}
+    </div>;
+  }
+
+  if (lesson === 5 && step === 2) {
+    const eligible = run ? validSamples(run) : [];
+    const knownUnit = !!run && canConvertMagnitude(run);
+    const enabled = knownUnit && eligible.length>0;
+    const reference = eligible.find(s=>s.id===(notes.magnitudeReference || notes[`reference-${run?.id}`])) || eligible[0];
+    const target = eligible.find(s=>s.id===notes.magnitudeTarget) || eligible[eligible.length-1];
+    const measuredRatio = enabled && run && reference && target ? corrected(target,run)!/corrected(reference,run)! : null;
+    const measuredDelta = enabled && run && reference && target ? magnitudeDelta(corrected(target,run)!,corrected(reference,run)!) : null;
+    const modelRatio = Number(notes.modelBrightness || .01), modelDelta = -2.5*Math.log10(modelRatio);
+    const resultLabel = (delta:number)=>Math.abs(delta)<1e-9?'기준과 같은 밝기':`${Math.abs(delta).toFixed(3).replace(/0+$/,'').replace(/\.$/,'')}등급 ${delta>0?'어두워짐':'밝아짐'}`;
+    return <div className="learning-section"><Header eyebrow="EXPLAIN · 8분" title="기준 대비 상대 등급 변화">우리 실험의 밝기 차이를 새로운 숫자로 읽어 봅시다.</Header>
+      <p className="notice">이 값은 실험 광원의 <strong>기준 대비 상대 등급 변화</strong>예요. 실제 별의 겉보기 등급이나 절대 등급을 측정한 것은 아닙니다.</p>
+      <div className="grid-2"><section className="concept-tile"><h3>우리 실험값으로 계산</h3>{run?.mode==='practice'&&<span className="badge">연습 데이터</span>}{!enabled&&<p className="notice">{!run?'먼저 4차시 실험을 선택해 주세요.':!run.linear||!knownUnit?'센서 단위와 빛의 세기에 대한 선형성이 확인되지 않아 등급 환산을 잠갔어요. 교사가 검증된 보정 근거를 설정한 뒤 사용할 수 있습니다.':'0 이하 보정 값, 누락, 포화, 제외 값만 있어 계산할 수 없습니다.'}</p>}
+      <label className="field"><span>기준 밝기</span><select disabled={!enabled} value={reference?.id || ''} onChange={e=>setNote('magnitudeReference',e.target.value)}>{eligible.map((s,i)=><option key={s.id} value={s.id}>{i+1}번 · 보정 밝기 {((s.raw || 0)-(run?.ambient || 0)).toFixed(2)}</option>)}</select></label><label className="field"><span>비교할 밝기</span><select disabled={!enabled} value={target?.id || ''} onChange={e=>setNote('magnitudeTarget',e.target.value)}>{eligible.map((s,i)=><option key={s.id} value={s.id}>{i+1}번 · 보정 밝기 {((s.raw || 0)-(run?.ambient || 0)).toFixed(2)}</option>)}</select></label>
+      {measuredDelta!==null&&<div className="calculation-result"><small>기준에 대한 밝기 비 {measuredRatio!.toPrecision(4)}</small><strong>{resultLabel(measuredDelta)}</strong><span>상대 등급 변화 {measuredDelta>=0?'+':''}{measuredDelta.toFixed(3)}</span></div>}
+      <p className="muted">0 이하 보정 값, 누락, 포화 값과 분석 제외 값은 선택지에서 제외합니다. 원본 기록은 그대로 남습니다.</p></section>
+      <section className="concept-tile"><h3>이상적 모형으로 이해하기</h3><span className="badge">계산 모형 · 실측 아님</span><label className="field"><span>기준에 대한 밝기 비</span><select value={modelRatio} onChange={e=>setNote('modelBrightness',e.target.value)}><option value="0.01">1/100</option><option value={Math.pow(10,-.4)}>약 1/2.512</option><option value="1">같은 밝기 (1배)</option><option value="100">100배</option></select></label><div className="calculation-result"><small>이상적 모형의 상대 등급 변화</small><strong>{resultLabel(modelDelta)}</strong><span>{modelDelta>=0?'+':''}{modelDelta.toFixed(1)}</span></div><p>같은 광원이 10배 멀어지면, 이상적으로 밝기는 1/100이 되어 5등급 어두워져요.</p></section></div>
+      <details className="teacher-formula"><summary>교사용 계산 원리 펼치기</summary><p>Δm = −2.5 log₁₀(B / B기준). B는 주변광을 뺀 양수 값이며, 단위와 빛의 세기에 대한 선형성이 확인되어야 합니다. 양의 변화는 더 어두워짐, 음의 변화는 더 밝아짐을 뜻합니다.</p></details>{text('relativeMagnitudeExplanation','밝기 비와 상대 등급 변화를 말로 설명해요','기준보다 밝기가 1/100이 되면…')}
+    </div>;
+  }
+
+  if (lesson === 5 && step === 3) {
+    const sealed = parseRecord(notes.absolutePrediction);
+    const distance = Math.max(1,Math.min(100,Number(notes.starDistance || 10))), absolute = Number(notes.absoluteGrade || 2), apparent = absolute+5*Math.log10(distance/10);
+    return <div className="learning-section"><Header eyebrow="PREDICT → OBSERVE → EXPLAIN · 12분" title="모든 별을 같은 거리에 놓는다면?">태양이 가장 밝게 보이므로 실제로도 가장 많은 빛을 내는 별일까요?</Header>
+      {!sealed ? <div className="prediction-box">{text('absoluteGuess','같은 거리에서 보면 태양과 다른 별의 비교가 달라질까요?','나의 예상과 이유를 적어 주세요.')}<button className="primary" disabled={!notes.absoluteGuess?.trim()} onClick={()=>setNote('absolutePrediction',JSON.stringify({guess:notes.absoluteGuess,savedAt:new Date().toISOString()}))}>같은 거리 비교 예상 확정하기</button></div> : <>
+      <div className="notice"><strong>✓ 보존된 최초 예상</strong><p>{sealed.guess}</p></div>{externalActivity}<p>가상실험의 ‘겉보기 등급과 절대 등급’에서 태양과 다른 별을 관찰한 뒤, 모두 같은 10pc에 놓은 모습과 비교해 보세요.</p>
+      <div className="grid-2"><article className="concept-tile"><span className="badge">지구에서 보이는 밝기</span><h3>겉보기 등급 m</h3><p>별의 고유한 밝기와 지구에서의 거리가 함께 영향을 줍니다.</p></article><article className="concept-tile"><span className="badge">10pc로 거리를 통일</span><h3>절대 등급 M</h3><p>별을 10pc에 놓았다고 할 때의 등급입니다. 거리 조건을 같게 하여 비교해요.</p></article></div>
+      <section className="distance-model"><div className="grid-2"><label className="field"><span>가상 별까지의 거리: {distance}pc</span><input type="range" min="1" max="100" value={distance} onChange={e=>setNote('starDistance',e.target.value)} /></label><label className="field"><span>이 별의 절대 등급 M</span><select value={absolute} onChange={e=>setNote('absoluteGrade',e.target.value)}>{[-3,0,2,5,8].map(n=><option key={n} value={n}>{n}등급</option>)}</select></label></div>
+      <svg viewBox="0 0 700 180" role="img" aria-label={`소광을 무시한 가상 별. 거리 ${distance}pc, 겉보기 등급 ${apparent.toFixed(2)}, 절대 등급 ${absolute}. 10pc 기준선을 정확한 거리 축으로 표시합니다.`}><line x1="60" y1="95" x2="640" y2="95" stroke="#64748b" strokeWidth="2" />{[0,10,25,50,75,100].map(d=><g key={d}><line x1={60+d*5.8} x2={60+d*5.8} y1="88" y2="102" stroke="#94a3b8" /><text x={60+d*5.8} y="126" textAnchor="middle">{d}pc</text></g>)}<circle cx="60" cy="95" r="10" fill="#93c5fd" /><text x="60" y="155" textAnchor="middle">지구</text><line x1="118" y1="25" x2="118" y2="110" stroke="#f8c84d" strokeDasharray="4 4" /><text x="118" y="18" textAnchor="middle">10pc 기준</text><circle cx={60+distance*5.8} cy="95" r="8" fill="#f8c84d" /><text x={Math.min(620,Math.max(75,60+distance*5.8))} y="65" textAnchor="middle">가상 별</text></svg>
+      <div className="metric-pair"><div><small>겉보기 등급 m</small><strong>{apparent.toFixed(2)}</strong></div><div><small>절대 등급 M</small><strong>{absolute.toFixed(2)}</strong></div></div><div className="ratio-strip">{[5,10,50].map(d=><button key={d} className={distance===d?'selected':''} onClick={()=>setNote('starDistance',String(d))}>{d}pc에서 비교</button>)}</div>
+      <p className="notice">{distance===10?'m = M → 10pc에 있어요.':distance<10?'m < M → 10pc보다 가까워요.':'m > M → 10pc보다 멀어요.'} 이 관계는 소광을 무시한 모형입니다. <strong>10pc는 10광년이 아니며 약 32.6광년입니다.</strong></p><p className="muted">점은 별의 위치 표시입니다. 점의 크기는 실제 별의 지름이나 밝기를 뜻하지 않습니다.</p></section>
+      {text('absoluteObservation','10pc에서 비교해 실제로 관찰한 점','태양과 다른 별의 비교가 어떻게 달라졌나요?')}{text('absoluteExplanation','절대 등급이 필요한 이유','처음 예상과 관찰의 차이도 설명해 보세요.')}{check('absoluteExternalDone','원본 가상실험을 확인하고 관찰을 기록했어요.')}
+      </>}
+    </div>;
+  }
+
+  if (lesson === 5 && step === 4) {
+    const submitted = notes.quizSubmitted === 'yes';
+    const complete = quiz.every((_,i)=>notes[`quiz${i}`]!==undefined&&notes[`quiz${i}`]!=='');
+    const exportReflection = () => {
+      const label=run?.mode==='practice'?'연습 데이터':'학습 기록';
+      const output=[`별빛의 거리를 재다 · ${label}`,`설명 작성자: ${notes.reflectionAuthor || prediction?.author || '미기록'}`,`최초 예상 (${prediction?.author || '미기록'}): ${prediction?.reason || '미기록'}`,`처음에는 ${notes.reflectionBefore || ''}`,`실험과 가상실험에서 ${notes.reflectionObserved || ''}`,`이제는 ${notes.reflectionAfter || ''}`, '이 자료는 자동 게시되지 않습니다. 원할 때 교사가 정한 샘보드에 직접 공유하세요.'].join('\n\n');
+      const url=URL.createObjectURL(new Blob([output],{type:'text/plain;charset=utf-8'})); const link=document.createElement('a'); link.href=url; link.download=`별빛탐구-${label}-샘보드.txt`; link.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+    };
+    return <div className="learning-section"><Header eyebrow="REFLECT · 8분" title="내 생각은 어떻게 달라졌을까?">네 가지 질문으로 확인하고, 증거를 담아 내 설명을 완성해 보세요.</Header>
+      <div className="quiz-list">{quiz.map((q,i)=><fieldset className="quiz-question" key={q.question}><legend><span>{String(i+1).padStart(2,'0')}</span> {q.question}</legend>{q.choices.map((choice,j)=><label key={choice}><input type="radio" name={`quiz-${i}`} value={j} checked={notes[`quiz${i}`]===String(j)} onChange={()=>{setNote(`quiz${i}`,String(j));setNote('quizSubmitted','');}} />{choice}</label>)}{submitted&&reveal&&notes[`quiz${i}`]!==undefined&&<p className={`quiz-feedback ${Number(notes[`quiz${i}`])===q.correct?'correct':'reconsider'}`}><strong>{Number(notes[`quiz${i}`])===q.correct?'✓ 확인했어요':'↻ 다시 생각해요'}</strong> {q.feedback[Number(notes[`quiz${i}`])]}</p>}</fieldset>)}</div>
+      <button className="primary" disabled={!complete} onClick={()=>setNote('quizSubmitted','yes')}>내 답 확인하기</button>{submitted&&!reveal&&<p className="notice">응답을 저장했습니다. 교사가 해설을 공개하면 피드백을 볼 수 있어요.</p>}
+      <div className="reflection-fields">{input('reflectionAuthor','설명을 기록하는 사람 또는 모둠 별칭',prediction?.author || '예: 분석 담당 / 은하 모둠')}{text('reflectionBefore','처음에는 ___라고 생각했다.','최초 예상의 생각을 돌아보세요.')}{text('reflectionObserved','실험과 가상실험에서 ___를 관찰했다.','수치나 비교 결과를 근거로 적으세요.')}{text('reflectionAfter','이제는 ___라는 근거로 ___라고 설명한다.','거리, 밝기, 등급을 연결하여 설명해 보세요.')}</div>
+      <div className="share-actions"><button className="secondary" onClick={exportReflection}>샘보드 공유용 글 저장 ↓</button><p className="muted">파일을 저장한 후 교사가 지정한 보드에 직접 올립니다. 자동 게시하지 않습니다.</p></div><StellarIntro compact />
+    </div>;
+  }
+  return null;
+}

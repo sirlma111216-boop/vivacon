@@ -1,0 +1,23 @@
+import {useEffect,useRef} from 'react';
+import * as echarts from 'echarts/core';
+import {LineChart} from 'echarts/charts';
+import {GridComponent,TooltipComponent,LegendComponent,DataZoomComponent,ToolboxComponent,TitleComponent} from 'echarts/components';
+import {CanvasRenderer} from 'echarts/renderers';
+import type {SeriesOption} from 'echarts';
+import {corrected,distanceFor,normalize,invalidReason,type Run} from './domain';
+import type {Prediction} from './Learning';
+echarts.use([LineChart,GridComponent,TooltipComponent,LegendComponent,DataZoomComponent,ToolboxComponent,TitleComponent,CanvasRenderer]);
+export function DataChart({run,others=[],prediction=null,analysis=false,referenceId,axis='time'}:{run:Run;others?:Run[];prediction?:Prediction|null;analysis?:boolean;referenceId?:string;axis?:'time'|'distance'|'inverse'}){
+ const el=useRef<HTMLDivElement>(null);
+ useEffect(()=>{if(!el.current)return;const c=echarts.init(el.current,undefined,{renderer:'canvas'});const normalized=normalize(run,referenceId||run.samples.find(s=>!s.excluded&&!s.saturated&&(corrected(s,run)??0)>0&&(distanceFor(s,run)??0)>0)?.id||'');
+ const isDistance=analysis||axis!=='time'; const x=(s:Run['samples'][number],r:Run)=>axis==='inverse'?((distanceFor(s,r)??0)>0?1/distanceFor(s,r)!**2:null):isDistance?distanceFor(s,r):s.t;
+ const series:SeriesOption[]=analysis?[
+ {name:run.mode==='practice'?'연습 데이터 · 상대 밝기':'측정 · 상대 밝기',type:'line',symbolSize:7,connectNulls:false,data:normalized.map(p=>[p.distance,p.relative]),itemStyle:{color:'#79d8d0'}},
+ {name:'이상적 역제곱 모형',type:'line',showSymbol:false,lineStyle:{type:'dashed',width:2},data:normalized.map(p=>[p.distance,p.theory]),itemStyle:{color:'#f8c84d'}}
+ ]:[{name:'원본 값',type:'line',connectNulls:false,data:run.samples.map(s=>[x(s,run),s.raw]),itemStyle:{color:'#7e91c9'},showSymbol:false},{name:'주변광 보정 값',type:'line',connectNulls:false,data:run.samples.map(s=>[x(s,run),invalidReason(s,run)?null:corrected(s,run)]),itemStyle:{color:'#79d8d0'},showSymbol:run.samples.length<40},...others.filter(r=>r.id!==run.id).map((r,i)=>({name:`${r.mode==='practice'?'연습 · ':''}${r.name}`,type:'line' as const,connectNulls:false,data:r.samples.map(s=>[x(s,r),invalidReason(s,r)?null:corrected(s,r)]),showSymbol:false,lineStyle:{type:'dotted' as const},itemStyle:{color:['#bb9ee7','#e69c7e','#90a9ff'][i%3]}}))];
+ if(analysis&&prediction&&normalized.length&&prediction.points[0]?.y>0){const start=run.startDistance;const baseDistance=normalized.find(p=>p.id===referenceId)?.distance??normalized[0].distance;const baseX=baseDistance/start;const ordered=[...prediction.points].sort((a,b)=>a.x-b.x);const left=ordered.filter(p=>p.x<=baseX).at(-1);const right=ordered.find(p=>p.x>=baseX);const baseY=left&&right?(left.x===right.x?left.y:left.y+(right.y-left.y)*(baseX-left.x)/(right.x-left.x)):null;if(baseY!==null&&baseY>0)series.push({name:'최초 예상 · 기준점 보간',type:'line',symbol:'diamond',lineStyle:{type:'dotted'},data:ordered.map(p=>[start*p.x,p.y/baseY]),itemStyle:{color:'#c5a5f5'}});}
+ c.setOption({backgroundColor:'#111833',animation:false,title:{text:run.mode==='practice'?'연습 데이터':'',left:'center',top:0,textStyle:{color:'#f8c84d',fontSize:12}},textStyle:{fontFamily:'Arial, sans-serif',color:'#c7d1ea'},tooltip:{trigger:'axis'},legend:{bottom:0,textStyle:{color:'#c7d1ea'},type:'scroll'},toolbox:{right:8,feature:{saveAsImage:{title:'그래프 이미지 저장',name:`${run.mode==='practice'?'연습데이터-':''}${run.name}`,pixelRatio:2,backgroundColor:'#111833'},dataZoom:{title:{zoom:'영역 확대',back:'확대 되돌리기'}},restore:{title:'원래 크기'}},iconStyle:{borderColor:'#c7d1ea'}},grid:{left:70,right:28,top:48,bottom:100},xAxis:{type:'value',name:axis==='inverse'?'1 / 거리² (cm⁻²)':isDistance?'거리 (cm)':'경과 시간 (s)',nameLocation:'middle',nameGap:28,axisLabel:{color:'#c7d1ea'},splitLine:{lineStyle:{color:'#26304d'}}},yAxis:{type:'value',name:analysis?'기준 대비 상대 밝기':run.unit||'센서 원시값',splitLine:{lineStyle:{color:'#26304d'}},axisLabel:{color:'#c7d1ea'}},dataZoom:[{type:'inside',filterMode:'none'},{type:'slider',bottom:42,height:16,borderColor:'#35415e',textStyle:{color:'#c7d1ea'}}],series});
+ const observer=new ResizeObserver(()=>c.resize());observer.observe(el.current);return()=>{observer.disconnect();c.dispose()};
+ },[run,others,prediction,analysis,referenceId,axis]);
+ return <div><div ref={el} className="data-chart" role="img" aria-label={`${run.mode==='practice'?'연습 데이터 ':''}${analysis?'예상·측정·이론 비교':'측정값'} 그래프. 아래 데이터 표에서 수치를 확인할 수 있습니다.`}/><p className="chart-hint">범례로 항목 켜기·끄기 · 아래 막대로 확대 · 점 위에서 값 확인 · 우측 저장 아이콘으로 PNG 저장</p>{analysis&&prediction&&<p className="muted">예상 거리는 시작 거리의 배수입니다. 선택한 기준 거리의 예상 밝기를 점 사이에서 보간해 같은 기준으로 비교합니다. 기준이 예상 범위 밖이거나 밝기가 0이면 예상 곡선은 표시하지 않습니다.</p>}</div>
+}

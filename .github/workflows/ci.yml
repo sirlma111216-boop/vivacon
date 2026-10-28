@@ -1,0 +1,47 @@
+name: Validate star inquiry
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'star-inquiry/**'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'star-inquiry/**'
+      - '.github/workflows/ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: star-inquiry-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: star-inquiry
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Use Node.js 24
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: star-inquiry/.node-version
+          cache: npm
+          cache-dependency-path: star-inquiry/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Check scientific data and storage rules
+        run: npm test
+      - name: Type-check and build
+        run: npm run build
+
