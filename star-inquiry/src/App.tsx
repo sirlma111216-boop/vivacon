@@ -17,6 +17,7 @@ import {
   Star,
   Upload,
   Usb,
+  Wrench,
   X,
 } from "lucide-react";
 import {
@@ -27,6 +28,7 @@ import {
 } from "./Learning";
 import { Measurement } from "./Measurement";
 import { EzOnEntry, EzOnGuide } from "./EzOnGuide";
+import { HardwareEntry, HardwareManual } from "./HardwareManual";
 import { Resources, resources } from "./Resources";
 import { DataChart } from "./DataChart";
 import {
@@ -99,8 +101,9 @@ function readState(): AppState {
 export default function App() {
   const [state, setState] = useState<AppState>(readState),
     [panel, setPanel] = useState<
-      "help" | "teacher" | "resources" | "records" | "ezon" | null
+      "help" | "teacher" | "resources" | "records" | "ezon" | "hardware" | null
     >(null),
+    [hardwareStep, setHardwareStep] = useState(1),
     [saveStatus, setSaveStatus] = useState("이 기기에 저장됨"),
     [toast, setToast] = useState(""),
     [report, setReport] = useState(false);
@@ -119,7 +122,8 @@ export default function App() {
   useEffect(() => {
     if (panel) {
       dialog.current?.showModal();
-      if (panel === "ezon") dialog.current?.scrollTo({ top: 0 });
+      if (panel === "ezon" || panel === "hardware")
+        dialog.current?.scrollTo({ top: 0 });
     } else dialog.current?.close();
   }, [panel]);
   useEffect(() => {
@@ -128,6 +132,10 @@ export default function App() {
     return () => clearTimeout(id);
   }, [toast]);
   const patch = (v: Partial<AppState>) => setState((s) => ({ ...s, ...v }));
+  const openHardware = (step = 1) => {
+    setHardwareStep(step);
+    setPanel("hardware");
+  };
   const setNote = (k: string, v: string) =>
     setState((s) => ({ ...s, notes: { ...s.notes, [k]: v } }));
   const go = (l: 3 | 4 | 5, step = 0) => {
@@ -297,6 +305,10 @@ export default function App() {
           ))}
         </div>
         <div className="quick-links">
+          <button onClick={() => openHardware()}>
+            <Wrench size={16} />
+            장비 사용 설명서
+          </button>
           <button onClick={() => setPanel("ezon")}>
             <Usb size={16} />
             이지온 수집 안내
@@ -409,6 +421,7 @@ export default function App() {
               })}
             </div>
           </section>
+          <HardwareEntry onOpen={() => openHardware()} />
           <EzOnEntry onOpen={() => setPanel("ezon")} />
           <section className="home-note">
             <div>
@@ -468,6 +481,7 @@ export default function App() {
             </div>
             {state.lesson === 4 ? (
               <Measurement
+                onOpenHardware={openHardware}
                 onOpenEzOn={() => setPanel("ezon")}
                 step={state.step}
                 state={state}
@@ -484,6 +498,7 @@ export default function App() {
               />
             ) : (
               <Learning
+                onOpenHardware={openHardware}
                 lesson={state.lesson}
                 step={state.step}
                 notes={state.notes}
@@ -537,15 +552,17 @@ export default function App() {
       >
         <div className="panel-header">
           <h2 id="panel-title">
-            {panel === "ezon"
-              ? "이지온으로 직접 수집하기"
-              : panel === "teacher"
-                ? "교사용 안내"
-                : panel === "resources"
-                  ? "학습 자료 모음"
-                  : panel === "records"
-                    ? "우리의 탐구 기록"
-                    : "탐구 도움말"}
+            {panel === "hardware"
+              ? "실험 장비 사용 설명서"
+              : panel === "ezon"
+                ? "이지온으로 직접 수집하기"
+                : panel === "teacher"
+                  ? "교사용 안내"
+                  : panel === "resources"
+                    ? "학습 자료 모음"
+                    : panel === "records"
+                      ? "우리의 탐구 기록"
+                      : "탐구 도움말"}
           </h2>
           <button
             className="icon-button"
@@ -556,6 +573,17 @@ export default function App() {
           </button>
         </div>
         <div className="panel-body">
+          {panel === "hardware" && (
+            <HardwareManual
+              notes={state.notes}
+              setNote={setNote}
+              initialStep={hardwareStep}
+              onOpenCarCode={() => {
+                setPanel(null);
+                go(4, 1);
+              }}
+            />
+          )}
           {panel === "ezon" && <EzOnGuide />}
           {panel === "help" && (
             <>

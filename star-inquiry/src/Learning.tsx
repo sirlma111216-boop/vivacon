@@ -19,6 +19,7 @@ export type Prediction = {
 };
 
 type LearningProps = {
+  onOpenHardware: (step?: number) => void;
   lesson: 3 | 5;
   step: number;
   notes: Record<string, string>;
@@ -62,26 +63,37 @@ function parseRecord(value?: string): Record<string, string> | null {
   }
 }
 
-export function ExperimentIllustration() {
+export function ExperimentIllustration({
+  onOpenHardware,
+}: {
+  onOpenHardware?: (step?: number) => void;
+}) {
   return (
     <figure className="experiment-illustration">
       <div className="concept-image">
         <img
-          src="/assets/astronomy/experiment-moving-light.png"
-          width="1672"
-          height="941"
+          src="/assets/hardware/illustrations/12-measurement-layout.png"
+          width="1167"
+          height="860"
           loading="lazy"
-          alt="왼쪽 고정 센서와 오른쪽 LED 자동차를 보여 주는 실험 개념 삽화"
+          alt="뒤쪽 LED를 밝기 센서 수광부로 비추는 장비 배치의 사진 기반 삽화"
         />
       </div>
       <figcaption>
         <strong>고정된 센서, 멀어지는 광원</strong>
-        <span>장비 배치를 이해하기 위한 개념 삽화입니다.</span>
+        <span>제공된 실물 사진을 바탕으로 만든 설명용 삽화입니다.</span>
         <small>
-          실제 이지메이커·마퀸의 정확한 외형이나 배선도가 아닙니다. 그림의
-          자에서 거리를 읽지 않아요.
+          작은 부품·단자·글씨는 원본 사진으로 확인해요. 그림은 축척이 아니며
+          거리나 밝기를 그림에서 읽지 않습니다.
         </small>
       </figcaption>
+      {onOpenHardware && (
+        <div className="button-row">
+          <button onClick={() => onOpenHardware(1)}>준비물 사진</button>
+          <button onClick={() => onOpenHardware(2)}>장비 앞뒤 확인</button>
+          <button onClick={() => onOpenHardware(11)}>실물 배치와 정렬</button>
+        </div>
+      )}
       <svg
         className="equipment-diagram"
         viewBox="0 0 720 210"
@@ -141,6 +153,11 @@ export function ExperimentIllustration() {
         <circle cx="373" cy="135" r="10" fill="#94a3b8" />
         <circle cx="437" cy="135" r="10" fill="#94a3b8" />
         <rect x="350" y="76" width="21" height="24" rx="3" fill="#f8c84d" />
+        <circle cx="461" cy="101" r="5" fill="#dce6f4" />
+        <circle cx="461" cy="118" r="5" fill="#dce6f4" />
+        <text x="405" y="83" textAnchor="middle" className="diagram-small">
+          뒤 LED / 앞 초음파
+        </text>
         <path
           d="M341 89 H180"
           stroke="#93c5fd"
@@ -173,9 +190,15 @@ export function ExperimentIllustration() {
         </text>
       </svg>
       <p className="muted">
-        같은 높이, 같은 방향을 유지합니다. 센서 USB 연결과 자동차 코딩은 서로
-        다른 작업입니다.
+        밝기 측정 거리는 센서 수광부–뒤쪽 LED 발광면 사이입니다. 초음파
+        센서–앞쪽 장애물의 정지 조건(코드 예시: 5cm 미만)과 다릅니다. 같은
+        높이와 방향을 유지하고 센서를 고정하세요.
       </p>
+      <div className="notice">
+        사진에서 확인한 연결: 밝기 센서 → 전용 다선 연결선 → 보드 A0 → USB
+        (허브는 선택) → 노트북. 센서 케이블은 자동차에 연결하지 않습니다. 물리
+        포트 확인과 통신 채널·단위·선형성 검증은 별개입니다.
+      </div>
     </figure>
   );
 }
@@ -449,6 +472,7 @@ export function learningNoteValue(key: string, value: string): string {
 }
 
 export function Learning({
+  onOpenHardware,
   lesson,
   step,
   notes,
@@ -816,7 +840,7 @@ export function Learning({
         <Header eyebrow="DESIGN · 15분" title="우리 모둠의 실험을 설계해요">
           바꿀 것은 거리, 같게 할 것은 광원과 주변 조건입니다.
         </Header>
-        <ExperimentIllustration />
+        <ExperimentIllustration onOpenHardware={onOpenHardware} />
         <div className="variables-line">
           <span>
             <b>독립 변인</b> 광원과 센서 사이 거리

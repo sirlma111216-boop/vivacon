@@ -288,6 +288,7 @@ pre code {
 }
 .quick-links {
   gap: 12px;
+  flex-wrap: wrap;
 }
 .quick-links button {
   white-space: nowrap;
@@ -1064,6 +1065,20 @@ details[open] > summary {
   .step-footer {
     margin-left: 25px;
     margin-right: 25px;
+  }
+}
+@media (max-width: 1200px) {
+  .lesson-nav {
+    flex-direction: column;
+  }
+  .lesson-links {
+    justify-content: space-between;
+    min-height: 54px;
+  }
+  .quick-links {
+    justify-content: flex-end;
+    min-height: 44px;
+    border-top: 1px solid #25314b;
   }
 }
 @media (max-width: 1000px) {

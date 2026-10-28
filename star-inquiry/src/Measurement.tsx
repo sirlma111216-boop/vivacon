@@ -26,8 +26,10 @@ import { DataChart } from "./DataChart";
 import { ExperimentIllustration, type Prediction } from "./Learning";
 import { Maqueen } from "./Maqueen";
 import { EzOnEntry } from "./EzOnGuide";
+import { HardwareEntry } from "./HardwareManual";
 import { download, type AppState } from "./state";
 type Props = {
+  onOpenHardware: (step?: number) => void;
   onOpenEzOn: () => void;
   step: number;
   state: AppState;
@@ -76,6 +78,7 @@ function explanationRecords(value: string): ExplanationRecord[] {
   }
 }
 export function Measurement({
+  onOpenHardware,
   onOpenEzOn,
   step,
   state,
@@ -459,7 +462,8 @@ export function Measurement({
   if (step === 0)
     return (
       <>
-        <ExperimentIllustration />
+        <ExperimentIllustration onOpenHardware={onOpenHardware} />
+        <HardwareEntry onOpen={() => onOpenHardware(1)} />
         <EzOnEntry onOpen={onOpenEzOn} />
         <div className="card">
           <h3>실험 전, 함께 확인해요</h3>
@@ -511,6 +515,9 @@ export function Measurement({
           {live !== null && `· 센서 최근 수신 ${live.toFixed(2)}`}
         </span>
       </div>
+      {(step === 2 || step === 3) && (
+        <HardwareEntry onOpen={() => onOpenHardware(step === 2 ? 8 : 11)} />
+      )}
       {step === 2 && <EzOnEntry onOpen={onOpenEzOn} />}
       {step === 2 && (
         <div className="card">
@@ -543,6 +550,11 @@ export function Measurement({
                 정확한 펌웨어·채널·단위를 교사가 확인해야 합니다.
               </p>
               <p>{support.message}</p>
+              <p>
+                제공된 장비 사진에서는 Light V2.0 센서가 보드 A0에 연결되어
+                있습니다. 나의 장비와 대조한 뒤 물리 포트를 기록하세요. A0
+                확인만으로 통신 채널·단위·선형성이 확인되는 것은 아닙니다.
+              </p>
               <details>
                 <summary>교사용 연결 세부 설정</summary>
                 <p>
