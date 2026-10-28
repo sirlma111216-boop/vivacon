@@ -240,8 +240,8 @@ export default function App() {
             <Sparkles size={22} />
           </span>
           <span>
-            NIGHT CODE <b>1395</b>
-            <small>별빛 탐구실</small>
+            <b>별빛 탐구실</b>
+            <small>예상 · 관찰 · 설명</small>
           </span>
         </button>
         <div className="top-actions">
@@ -322,7 +322,7 @@ export default function App() {
             <div className="hero-overlay" />
             <div className="hero-content">
               <div className="eyebrow">
-                <span className="mini-star">✦</span> NC1395 · 별과 우주 탐구
+                <span className="mini-star">✦</span> 별빛 탐구실 · 별과 우주 탐구
               </div>
               <h1>
                 별빛의 거리를
@@ -511,7 +511,7 @@ export default function App() {
       )}
       <footer className="site-footer">
         <span>
-          NC1395 <span className="footer-dot">✦</span> 별빛 탐구실
+          별빛 탐구실 <span className="footer-dot">✦</span> 별빛의 거리를 재다
         </span>
         <span>
           기록은 이 브라우저에 저장됩니다. 다른 기기에는 JSON 파일로 옮겨
