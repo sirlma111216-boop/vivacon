@@ -2,7 +2,18 @@
 
 이 앱은 React·TypeScript·Vite로 만든 정적 웹앱이다. GitHub 저장소를 Cloudflare Pages의 기본 Git 통합에 연결하면 커밋을 푸시할 때 자동 빌드·배포할 수 있다. [Cloudflare Git 통합 문서](https://developers.cloudflare.com/pages/configuration/git-integration/)
 
-대상 저장소: [sirlma111216-boop/vivacon](https://github.com/sirlma111216-boop/vivacon). 2026-10-28 확인 당시 공개 저장소였고 기본 브랜치는 `main`, 커밋과 브랜치가 없는 빈 저장소였다. **이 파일만으로 Cloudflare 연결·배포가 완료되었다는 뜻은 아니다.** 실제 프로젝트와 배포 URL은 계정 연결 후 확인한다.
+대상 저장소: [sirlma111216-boop/vivacon](https://github.com/sirlma111216-boop/vivacon). Cloudflare Pages 프로젝트 `vivacon`에 GitHub 저장소를 연결했으며, 운영 브랜치는 `main`이다. 대시보드에서 **Automatic deployments enabled**를 확인했다.
+
+실행 주소: **[https://vivacon.pages.dev/](https://vivacon.pages.dev/)**
+
+## 배포 확인 기록
+
+- 2026-10-28 23:57 KST: 첫 운영 배포 `cd9c929b-4694-4879-b190-33f9b7c792de` 성공. 커밋은 `c19d8b10db7b150a4d38dd9b39ad1e06fa4c269e`이다.
+- Cloudflare 빌드 로그에서 Node.js 24.22.1, 테스트와 TypeScript·Vite 빌드 성공을 확인했다. 같은 커밋의 [GitHub Actions 검증](https://github.com/sirlma111216-boop/vivacon/actions/runs/40710421164)도 성공했다.
+- 운영 HTTPS 주소에서 실제 앱이 열리고 제목이 ‘별빛 탐구실 · 별빛의 거리를 재다’로 표시됨을 확인했다.
+- Git 저장소 연결, 운영 브랜치 `main`, 자동 배포 활성화, 전체 경로 감시(`*`), 아래 빌드 설정을 대시보드에서 확인했다.
+
+자동 배포 확인은 문서 변경을 `main`에 푸시한 뒤 새 커밋의 배포가 자동 생성되고 성공하는지 대시보드에서 확인한다. 배포 버튼을 수동으로 누르거나 GitHub Actions 성공만 보는 것으로 대신하지 않는다.
 
 ## 저장소 구성
 
@@ -29,7 +40,7 @@ Cloudflare 대시보드의 **Workers & Pages → Create application → Pages �
 
 | 설정 | 이 저장소에 넣을 값 |
 | --- | --- |
-| 프로젝트 이름 | `nc1395-star-inquiry`는 제안값. 실제 선택한 이름을 `wrangler.toml`의 `name`과 맞춘다. |
+| 프로젝트 이름 | `vivacon` (`wrangler.toml`과 일치) |
 | Production branch | `main` |
 | Framework preset | React (Vite) |
 | Root directory | `star-inquiry` |

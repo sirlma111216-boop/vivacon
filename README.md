@@ -2,6 +2,8 @@
 
 별빛 탐구실은 중학교 과학 3~5차시 POE 웹앱입니다. 앞선 NC1395의 1~2차시 탐구와 디자인을 참고했으며, 독립된 이름으로 구성했습니다. React·TypeScript·Vite·Apache ECharts로 만들었으며 별도 서버 없이 브라우저에 학습 기록을 저장합니다.
 
+**실행 사이트: [별빛 탐구실](https://vivacon.pages.dev/)**
+
 ## 실행
 
 Node.js 24에서:
@@ -43,7 +45,7 @@ npm run dev
 
 대상 저장소: `https://github.com/sirlma111216-boop/vivacon`
 
-Cloudflare Pages에서 이 저장소를 Git으로 연결하고 다음 설정을 적용합니다.
+Cloudflare Pages 프로젝트 `vivacon`에 Git으로 연결되어 있으며 다음 설정을 적용했습니다.
 
 | 설정 | 값 |
 |---|---|
@@ -53,7 +55,7 @@ Cloudflare Pages에서 이 저장소를 Git으로 연결하고 다음 설정을 
 | 출력 디렉터리 | `dist` |
 | Node 버전 | `24` |
 
-연결 후 `main`에 push하면 Cloudflare가 자동 빌드·배포합니다. GitHub Actions도 같은 테스트와 빌드를 수행합니다. 계정 연결과 첫 배포 성공 여부는 배포 문서의 확인 상태를 참고하세요. API 토큰이나 학생 데이터를 저장소에 넣지 마세요.
+`main`에 push하면 Cloudflare가 자동 빌드·배포합니다. GitHub Actions도 같은 테스트와 빌드를 수행합니다. 2026-10-28 첫 배포 성공과 HTTPS 사이트 실행을 확인했습니다. 자세한 설정과 확인 기록은 배포 문서에 있습니다. API 토큰이나 학생 데이터를 저장소에 넣지 마세요.
 
 ## 이미지
 
