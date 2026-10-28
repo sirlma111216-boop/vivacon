@@ -5,8 +5,8 @@
   color: #e9edf8;
   background: #080d24;
   font-synthesis: none;
-  font-size: 16px;
-  line-height: 1.65;
+  font-size: 112.5%;
+  line-height: 1.75;
   --bg: #080d24;
   --card: #111833;
   --border: #2b3554;
@@ -19,6 +19,8 @@
 }
 body {
   margin: 0;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 button,
 input,
@@ -88,6 +90,10 @@ summary:focus-visible {
   outline: 3px solid #8fdeda;
   outline-offset: 3px;
 }
+.table-scroll:focus-visible {
+  outline: 3px solid #8fdeda;
+  outline-offset: 3px;
+}
 h1,
 h2,
 h3,
@@ -120,11 +126,14 @@ small,
 .muted {
   color: var(--muted);
 }
+small {
+  font-size: 0.9rem;
+}
 svg {
   flex-shrink: 0;
 }
 code {
-  font-size: 0.9em;
+  font-size: 1rem;
   color: #b2ddd8;
   background: #080e24;
   padding: 2px 5px;
@@ -143,18 +152,12 @@ pre code {
 .app {
   min-height: 100vh;
 }
-.font-small {
-  font-size: 14px;
-}
-.font-normal {
-  font-size: 16px;
-}
-.font-large {
-  font-size: 18px;
+.app {
+  font-size: 1rem;
 }
 .topbar {
-  height: 86px;
-  padding: 0 max(28px, calc((100vw - 1280px) / 2));
+  min-height: 88px;
+  padding: 16px max(28px, calc((100vw - 1360px) / 2));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -169,7 +172,7 @@ pre code {
   gap: 13px;
   line-height: 1.15;
   letter-spacing: 0.04em;
-  font-size: 17px;
+  font-size: 1.1rem;
   color: #f3f4fc;
 }
 .brand b {
@@ -177,7 +180,7 @@ pre code {
 }
 .brand small {
   display: block;
-  font-size: 10px;
+  font-size: 0.85rem;
   letter-spacing: 0.13em;
   color: #9aaac6;
   margin-top: 7px;
@@ -197,7 +200,7 @@ pre code {
   gap: 18px;
 }
 .save-status {
-  font-size: 11px;
+  font-size: 0.85rem;
   color: #a5b4ce;
   display: flex;
   align-items: center;
@@ -219,16 +222,16 @@ pre code {
   border: 0;
   border-right: 1px solid #303a58;
   border-radius: 0;
-  min-height: 34px;
-  min-width: 33px;
+  min-height: 44px;
+  min-width: 40px;
   padding: 2px 8px;
   background: transparent;
 }
 .font-switch button:nth-child(1) {
-  font-size: 12px;
+  font-size: 0.9rem;
 }
 .font-switch button:nth-child(3) {
-  font-size: 19px;
+  font-size: 1.15rem;
 }
 .font-switch button[aria-pressed="true"] {
   background: #263357;
@@ -242,7 +245,7 @@ pre code {
   min-width: 40px;
 }
 .teacher-button {
-  font-size: 12px;
+  font-size: 0.9rem;
   background: #141d38;
   min-height: 36px;
   padding: 6px 12px;
@@ -250,7 +253,7 @@ pre code {
 .lesson-nav {
   display: flex;
   justify-content: space-between;
-  padding: 0 max(28px, calc((100vw - 1280px) / 2));
+  padding: 0 max(28px, calc((100vw - 1360px) / 2));
   border-bottom: 1px solid #29314c;
   min-height: 64px;
   background: #0b1129;
@@ -266,14 +269,14 @@ pre code {
   border-bottom: 2px solid transparent;
   border-radius: 0;
   background: transparent;
-  padding: 0 3px;
+  padding: 12px 3px;
   gap: 10px;
   color: #aebbd6;
-  font-size: 13px;
+  font-size: 0.95rem;
 }
 .lesson-links button > span:first-child {
   white-space: nowrap;
-  font-size: 11px;
+  font-size: 0.85rem;
   background: #202a46;
   padding: 2px 7px;
   border-radius: 4px;
@@ -292,20 +295,21 @@ pre code {
 }
 .quick-links button {
   white-space: nowrap;
-  padding: 0 4px;
+  padding: 10px 4px;
   background: transparent;
   border: 0;
-  font-size: 12px;
+  font-size: 0.9rem;
   color: #b2bed7;
 }
 .home-main {
-  max-width: 1280px;
+  max-width: 1360px;
+  width: calc(100% - 56px);
   margin: auto;
   padding: 30px 0 0;
 }
 .hero {
   position: relative;
-  min-height: 530px;
+  min-height: 560px;
   border: 1px solid #29314b;
   border-radius: 16px;
   overflow: hidden;
@@ -334,11 +338,12 @@ pre code {
   z-index: -1;
 }
 .hero-content {
-  padding: 55px 56px;
-  max-width: 650px;
+  padding: 48px 48px 80px;
+  width: 66%;
+  max-width: 840px;
 }
 .eyebrow {
-  font-size: 10px;
+  font-size: 0.85rem;
   letter-spacing: 0.14em;
   font-weight: 700;
   color: #a9b8d4;
@@ -346,20 +351,20 @@ pre code {
 }
 .hero .eyebrow {
   color: #f8c84d;
-  font-size: 12px;
+  font-size: 0.9rem;
   letter-spacing: 0.09em;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 .mini-star {
-  font-size: 17px;
+  font-size: 1.1rem;
 }
 .hero h1 {
-  font-size: clamp(42px, 4.5vw, 62px);
+  font-size: clamp(2rem, 3.7vw, 3.2rem);
   font-weight: 800;
   line-height: 1.23;
-  letter-spacing: -0.065em;
+  letter-spacing: -0.04em;
   margin: 24px 0 20px;
   color: #f6f7fe;
 }
@@ -367,14 +372,14 @@ pre code {
   color: #f8c84d;
 }
 .hero-description {
-  font-size: 17px;
+  font-size: 1.2rem;
   line-height: 1.8;
   color: #d5def1;
   margin-bottom: 14px;
 }
 .hero-question {
-  font-size: 12px;
-  color: #9eadc9;
+  font-size: 1rem;
+  color: #bfcbe2;
   margin-bottom: 27px;
 }
 .button-row {
@@ -386,25 +391,26 @@ pre code {
 }
 .hero-cta {
   padding: 13px 21px;
-  font-size: 13px;
+  font-size: 0.95rem;
   min-width: 164px;
 }
 .hero-demo {
   background: rgba(17, 24, 51, 0.6);
   border-color: #46516b;
-  font-size: 12px;
+  font-size: 0.9rem;
   padding: 13px 16px;
 }
 .play-outline {
-  font-size: 19px;
+  font-size: 1.15rem;
   line-height: 1;
 }
 .hero-meta {
-  font-size: 10px;
+  font-size: 0.85rem;
   color: #9aaac4;
   display: flex;
   gap: 16px;
   align-items: center;
+  flex-wrap: wrap;
   margin-top: 21px;
 }
 .hero-meta span {
@@ -416,8 +422,9 @@ pre code {
   position: absolute;
   right: 19px;
   bottom: 12px;
-  color: #a5b1c8;
-  font-size: 9px;
+  max-width: calc(100% - 38px);
+  color: #c1cbe1;
+  font-size: 0.85rem;
   background: rgba(8, 13, 36, 0.75);
   padding: 4px 8px;
   border-radius: 4px;
@@ -433,14 +440,14 @@ pre code {
 }
 .section-heading .eyebrow {
   margin: 0 0 7px;
-  font-size: 9px;
+  font-size: 0.85rem;
 }
 .section-heading h2 {
-  font-size: 23px;
+  font-size: 1.4rem;
   margin: 0 0 22px;
 }
 .section-heading > .muted {
-  font-size: 11px;
+  font-size: 0.85rem;
 }
 .journey-grid {
   display: grid;
@@ -488,23 +495,23 @@ pre code {
 }
 .lesson-number {
   color: #303d5b;
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: 400;
   line-height: 1;
 }
 .journey-card > .eyebrow {
-  font-size: 9px;
+  font-size: 0.85rem;
   margin-bottom: 10px;
   display: block;
   color: #b6c2d9;
 }
 .journey-card h3 {
-  font-size: 19px;
+  font-size: 1.15rem;
   margin-bottom: 7px;
   color: #f2f4fb;
 }
 .journey-card p {
-  font-size: 12px;
+  font-size: 0.9rem;
   color: #a7b4ce;
   margin-bottom: 20px;
 }
@@ -514,7 +521,7 @@ pre code {
   justify-content: space-between;
   align-items: center;
   padding: 14px 0;
-  font-size: 10px;
+  font-size: 0.85rem;
   color: #a3b2cd;
 }
 .journey-bottom svg {
@@ -539,28 +546,28 @@ pre code {
   color: #f8c84d;
 }
 .home-note p {
-  font-size: 11px;
+  font-size: 0.85rem;
   line-height: 1.8;
   margin: 0;
 }
 .home-note strong {
-  font-size: 12px;
+  font-size: 0.9rem;
 }
 .home-note a {
-  font-size: 11px;
+  font-size: 0.85rem;
   color: #c2cce1;
   text-decoration: none;
 }
 .site-footer {
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 32px auto 0;
   display: flex;
   justify-content: space-between;
   gap: 20px;
   padding: 22px 0;
   border-top: 1px solid #25304a;
-  font-size: 10px;
-  color: #8999b6;
+  font-size: 0.85rem;
+  color: #b5c2da;
 }
 .footer-dot {
   color: #f8c84d;
@@ -569,13 +576,13 @@ pre code {
 .practice-banner {
   padding: 8px 24px;
   text-align: center;
-  font-size: 12px;
+  font-size: 0.9rem;
   background: #29253b;
   color: #f8d87b;
   border-bottom: 1px solid #685f3e;
 }
 .step-nav {
-  max-width: 1160px;
+  max-width: 1240px;
   margin: 24px auto;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -583,9 +590,10 @@ pre code {
   padding: 0 16px;
 }
 .step-nav button {
-  font-size: 13px;
+  font-size: 0.95rem;
   background: #111833;
-  min-height: 59px;
+  min-height: 68px;
+  line-height: 1.5;
   border-color: #34415f;
 }
 .step-nav .current {
@@ -601,14 +609,15 @@ pre code {
   border: 1px solid #4c5d80;
   display: grid;
   place-items: center;
-  font-size: 12px;
+  font-size: 0.9rem;
+  flex-shrink: 0;
 }
 .current .step-circle {
   border-color: #977724;
   background: #e9b83d;
 }
 .activity-main {
-  max-width: 1080px;
+  max-width: 1200px;
   margin: 34px auto 60px;
   padding: 0 20px;
 }
@@ -617,50 +626,96 @@ pre code {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 27px;
+  gap: 24px;
 }
 .activity-heading .eyebrow {
   color: #b6c5e1;
   margin-bottom: 7px;
 }
 .activity-heading h1 {
-  font-size: 30px;
+  font-size: 1.85rem;
   margin: 0;
 }
 .activity-heading h1:focus {
   outline: none;
 }
 .time-chip {
-  font-size: 12px;
+  font-size: 0.9rem;
   border: 1px solid #35415c;
   border-radius: 24px;
   padding: 6px 15px;
   color: #b9c6df;
+  flex-shrink: 0;
 }
 .card {
   background: #111833;
   border: 1px solid #2b3554;
   border-radius: 13px;
-  padding: 30px;
+  padding: 32px;
   margin-bottom: 22px;
 }
 .card:last-child {
   margin-bottom: 0;
 }
 .card h2 {
-  font-size: 23px;
+  font-size: 1.4rem;
 }
 .card h3 {
   margin: 15px 0;
 }
 .card p,
 .card li {
-  font-size: 0.94em;
+  font-size: 1rem;
 }
 .grid-2,
 .grid-3 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 24px;
+}
+.grid-2 > *,
+.grid-3 > * {
+  min-width: 0;
+}
+.resource-grid {
+  display: grid;
+  gap: 24px;
+}
+.resource-grid .card {
+  margin: 0;
+}
+.experiment-prep {
+  display: grid;
+  gap: 24px;
+}
+.experiment-prep .card {
+  margin: 0;
+}
+.prep-plan dl {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 0;
+}
+.prep-plan dt {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.prep-plan dd {
+  margin: 6px 0 0;
+  font-size: 1.2rem;
+  color: var(--yellow);
+}
+.prep-equipment h3 {
+  margin-top: 14px;
+}
+.prep-equipment button {
+  margin: 8px 8px 0 0;
+}
+.help-steps li,
+.instructions li,
+.panel-body li {
+  margin-bottom: 0.65em;
 }
 .grid-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -671,7 +726,7 @@ pre code {
   gap: 8px;
   margin: 15px 0;
   color: #d1dcef;
-  font-size: 0.9em;
+  font-size: 1rem;
 }
 .field input,
 .field select,
@@ -716,7 +771,7 @@ input[type="range"] {
   align-items: flex-start;
   gap: 10px;
   margin: 14px 0;
-  font-size: 0.9em;
+  font-size: 1rem;
 }
 .notice {
   padding: 16px 18px;
@@ -725,7 +780,7 @@ input[type="range"] {
   border-left: 3px solid #f8c84d;
   background: #1b2139;
   color: #d4dced;
-  font-size: 0.88em;
+  font-size: 1rem;
   margin: 18px 0;
   line-height: 1.8;
 }
@@ -734,7 +789,7 @@ input[type="range"] {
 }
 .badge {
   display: inline-block;
-  font-size: 11px;
+  font-size: 0.85rem;
   color: #f8d87b;
   border: 1px solid #685b37;
   background: #2e2a36;
@@ -746,22 +801,22 @@ input[type="range"] {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1040px;
+  max-width: 1160px;
   margin: 0 auto 28px;
   padding: 18px 0;
   border-top: 1px solid #2e3854;
   gap: 20px;
 }
 .step-footer > span {
-  font-size: 12px;
+  font-size: 0.9rem;
   color: #9daecb;
 }
 .step-footer > span strong {
   color: #f8c84d;
-  font-size: 16px;
+  font-size: 1rem;
 }
 .step-footer button {
-  font-size: 13px;
+  font-size: 0.95rem;
 }
 .measurement-status {
   position: sticky;
@@ -776,7 +831,7 @@ input[type="range"] {
   justify-content: space-between;
   gap: 15px;
   margin-bottom: 22px;
-  font-size: 12px;
+  font-size: 0.9rem;
 }
 .measurement-status span {
   display: flex;
@@ -807,28 +862,28 @@ input[type="range"] {
 }
 .stat-grid small {
   display: block;
-  font-size: 11px;
+  font-size: 0.85rem;
 }
 .stat-grid strong {
   display: block;
   margin-top: 5px;
-  font-size: 23px;
+  font-size: 1.4rem;
   font-variant-numeric: tabular-nums;
 }
 .stat-grid em {
   font-style: normal;
-  font-size: 11px;
+  font-size: 0.85rem;
   color: #a5b6ce;
   margin-left: 5px;
 }
 .data-chart {
   width: 100%;
-  height: 390px;
+  height: 470px;
   min-width: 0;
   margin: 20px 0 5px;
 }
 .chart-hint {
-  font-size: 11px !important;
+  font-size: 0.95rem !important;
   color: #aebbd6;
   margin-bottom: 10px;
 }
@@ -841,7 +896,7 @@ input[type="range"] {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 0.95rem;
 }
 th,
 td {
@@ -861,6 +916,16 @@ td {
 }
 td input {
   min-width: 140px;
+}
+.measurement-table {
+  min-width: 940px;
+}
+.measurement-table th,
+.measurement-table td:not(:last-child) {
+  white-space: nowrap;
+}
+.measurement-table td:last-child {
+  min-width: 240px;
 }
 details {
   border: 1px solid #35415e;
@@ -917,7 +982,7 @@ details[open] > summary {
 .panel {
   position: fixed;
   margin: auto;
-  max-width: 1000px;
+  max-width: 1120px;
   width: calc(100% - 40px);
   max-height: 90dvh;
   padding: 0;
@@ -944,7 +1009,7 @@ details[open] > summary {
 }
 .panel-header h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: 1.3rem;
 }
 .panel-body {
   padding: 25px 28px 36px;
@@ -975,7 +1040,7 @@ details[open] > summary {
   box-shadow: 0 5px 30px #0007;
   font-weight: 600;
   z-index: 30;
-  font-size: 14px;
+  font-size: 1rem;
 }
 .skip-link {
   position: fixed;
@@ -1025,7 +1090,7 @@ details[open] > summary {
   overflow-wrap: anywhere;
 }
 .print-report table {
-  font-size: 11px;
+  font-size: 0.95rem;
 }
 .print-report td,
 .print-report th {
@@ -1047,7 +1112,7 @@ details[open] > summary {
 }
 @media (max-width: 1330px) {
   .home-main {
-    margin: 0 28px;
+    margin: 0 auto;
   }
   .site-footer {
     margin-left: 28px;
@@ -1057,7 +1122,7 @@ details[open] > summary {
     min-height: 510px;
   }
   .hero-content {
-    padding: 42px;
+    padding: 42px 38px 80px;
   }
   .lesson-links {
     gap: 18px;
@@ -1067,7 +1132,7 @@ details[open] > summary {
     margin-right: 25px;
   }
 }
-@media (max-width: 1200px) {
+@media (max-width: 1450px) {
   .lesson-nav {
     flex-direction: column;
   }
@@ -1086,7 +1151,7 @@ details[open] > summary {
     display: none;
   }
   .topbar {
-    height: 76px;
+    min-height: 88px;
   }
   .top-actions {
     gap: 9px;
@@ -1106,23 +1171,24 @@ details[open] > summary {
     border-top: 1px solid #25314b;
   }
   .lesson-links button {
-    font-size: 12px;
+    font-size: 0.9rem;
   }
   .lesson-links button > span:nth-child(2) {
     max-width: none;
   }
   .quick-links button {
-    font-size: 11px;
+    font-size: 0.85rem;
   }
   .hero {
     min-height: 480px;
   }
   .hero-content {
-    padding: 38px;
-    max-width: 540px;
+    padding: 36px 32px 90px;
+    width: 75%;
+    max-width: 680px;
   }
   .hero h1 {
-    font-size: 48px;
+    font-size: 2.5rem;
   }
   .hero-art {
     object-fit: contain;
@@ -1137,21 +1203,21 @@ details[open] > summary {
     );
   }
   .hero-description {
-    font-size: 16px;
+    font-size: 1.15rem;
   }
   .journey-card {
     padding: 20px 18px 0;
   }
   .journey-card h3 {
-    font-size: 17px;
+    font-size: 1.1rem;
   }
   .hero-caption {
-    font-size: 8px;
+    font-size: 0.85rem;
   }
   .step-nav button {
     flex-direction: column;
     gap: 5px;
-    font-size: 11px;
+    font-size: 0.85rem;
     padding: 9px 4px;
   }
   .card {
@@ -1161,19 +1227,41 @@ details[open] > summary {
     grid-template-columns: repeat(2, 1fr);
   }
   .data-chart {
-    height: 360px;
+    height: 450px;
   }
   .site-footer {
-    font-size: 9px;
+    font-size: 0.85rem;
+  }
+}
+@media (max-width: 900px) {
+  .grid-2,
+  .grid-3,
+  .speed-grid {
+    grid-template-columns: 1fr;
+  }
+  .journey-grid {
+    grid-template-columns: 1fr;
+  }
+  .journey-card {
+    padding: 24px 28px 0;
+  }
+  .hero-art {
+    opacity: 0.7;
   }
 }
 @media (max-width: 700px) {
+  .prep-plan dl {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
   .topbar {
-    padding: 0 18px;
-    height: 70px;
+    padding: 14px 18px;
+    min-height: 88px;
+    flex-wrap: wrap;
+    gap: 12px;
   }
   .brand {
-    font-size: 13px;
+    font-size: 0.95rem;
     gap: 8px;
   }
   .brand-mark {
@@ -1181,7 +1269,7 @@ details[open] > summary {
     height: 32px;
   }
   .brand small {
-    font-size: 8px;
+    font-size: 0.85rem;
   }
   .teacher-button {
     font-size: 0;
@@ -1194,7 +1282,7 @@ details[open] > summary {
     gap: 3px;
   }
   .font-switch button {
-    min-width: 28px;
+    min-width: 36px;
   }
   .lesson-nav {
     padding: 0 16px;
@@ -1207,13 +1295,15 @@ details[open] > summary {
   .lesson-links button {
     min-height: 54px;
     gap: 6px;
+    flex: 1;
+    flex-direction: column;
   }
   .lesson-links button > span:nth-child(2) {
-    font-size: 10px;
-    max-width: 75px;
+    font-size: 0.9rem;
+    max-width: none;
   }
   .quick-links {
-    justify-content: flex-end;
+    justify-content: flex-start;
     border-top: 1px solid #25314b;
     min-height: 38px;
   }
@@ -1221,7 +1311,8 @@ details[open] > summary {
     min-height: 36px;
   }
   .home-main {
-    margin: 0 16px;
+    margin: 0 auto;
+    width: calc(100% - 32px);
     padding-top: 18px;
   }
   .hero {
@@ -1237,39 +1328,41 @@ details[open] > summary {
     height: auto;
     object-fit: contain;
     z-index: 0;
+    opacity: 1;
   }
   .hero-overlay {
     display: none;
   }
   .hero-content {
     padding: 30px 25px 12px;
+    width: 100%;
     max-width: none;
     order: 1;
     background: linear-gradient(#0d152e, #0a1024);
   }
   .hero h1 {
-    font-size: 45px;
+    font-size: 2rem;
     margin: 18px 0;
   }
   .hero-description {
-    font-size: 14px;
+    font-size: 1rem;
   }
   .hero-question {
-    font-size: 12px;
+    font-size: 1rem;
   }
   .hero .eyebrow {
-    font-size: 10px;
+    font-size: 0.85rem;
   }
   .hero-meta {
     flex-wrap: wrap;
-    font-size: 9px;
+    font-size: 0.85rem;
   }
   .hero-caption {
     position: relative;
     order: 3;
     right: auto;
     bottom: auto;
-    font-size: 8px;
+    font-size: 0.85rem;
     text-align: center;
     padding: 9px 10px;
   }
@@ -1278,7 +1371,7 @@ details[open] > summary {
   }
   .hero-cta,
   .hero-demo {
-    font-size: 11px;
+    font-size: 0.85rem;
     padding: 11px;
     min-width: 0;
   }
@@ -1289,7 +1382,7 @@ details[open] > summary {
     align-items: flex-start;
   }
   .section-heading h2 {
-    font-size: 20px;
+    font-size: 1.2rem;
   }
   .section-heading > .muted {
     display: none;
@@ -1303,9 +1396,7 @@ details[open] > summary {
     position: relative;
   }
   .journey-top {
-    float: left;
-    margin-right: 18px;
-    margin-bottom: 0;
+    margin-bottom: 20px;
   }
   .lesson-number {
     position: absolute;
@@ -1313,13 +1404,13 @@ details[open] > summary {
     top: 20px;
   }
   .journey-card h3 {
-    font-size: 20px;
+    font-size: 1.2rem;
   }
   .journey-card > .eyebrow {
     padding-right: 50px;
   }
   .journey-card p {
-    margin-left: 62px;
+    margin-left: 0;
   }
   .journey-bottom {
     clear: both;
@@ -1344,33 +1435,43 @@ details[open] > summary {
     margin: 18px 0;
     padding: 0 12px;
     gap: 5px;
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-snap-type: x proximity;
   }
   .step-nav button {
-    font-size: 10px;
+    font-size: 0.95rem;
     line-height: 1.5;
     min-height: 70px;
+    flex: 0 0 150px;
+    scroll-snap-align: center;
   }
   .step-circle {
     width: 21px;
     height: 21px;
-    font-size: 10px;
+    font-size: 0.85rem;
   }
   .activity-main {
     padding: 0 14px;
     margin: 25px auto 35px;
   }
   .activity-heading h1 {
-    font-size: 24px;
+    font-size: 1.5rem;
+  }
+  .activity-heading {
+    flex-wrap: wrap;
+    gap: 12px;
   }
   .time-chip {
-    font-size: 10px;
+    font-size: 0.85rem;
     padding: 5px 9px;
   }
   .card {
     padding: 20px 16px;
   }
   .card h2 {
-    font-size: 20px;
+    font-size: 1.2rem;
   }
   .grid-2,
   .grid-3 {
@@ -1397,14 +1498,14 @@ details[open] > summary {
     gap: 8px;
   }
   .step-footer button {
-    font-size: 11px;
+    font-size: 0.85rem;
     padding: 9px;
   }
   .footer-stage {
     display: none;
   }
   .measurement-status {
-    font-size: 10px;
+    font-size: 0.85rem;
     padding: 10px;
     flex-wrap: wrap;
   }
@@ -1412,17 +1513,17 @@ details[open] > summary {
     gap: 5px;
   }
   .mode-options button {
-    font-size: 11px;
+    font-size: 0.85rem;
     padding: 10px 5px;
   }
   .stat-grid strong {
-    font-size: 20px;
+    font-size: 1.2rem;
   }
   .stat-grid > div {
     padding: 12px;
   }
   .data-chart {
-    height: 340px;
+    height: 450px;
   }
   .table-scroll {
     max-width: 100%;
@@ -1438,19 +1539,20 @@ details[open] > summary {
     padding: 18px;
   }
   .panel-header h2 {
-    font-size: 20px;
+    font-size: 1.2rem;
   }
   .print-report {
     margin: 10px;
     padding: 20px;
+    overflow-x: auto;
   }
   .practice-banner {
-    font-size: 10px;
+    font-size: 0.85rem;
     padding: 7px 10px;
   }
   .notice {
     padding: 12px;
-    font-size: 0.85em;
+    font-size: 1rem;
   }
   .notice button {
     margin: 10px 0 0;

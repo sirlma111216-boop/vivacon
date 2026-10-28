@@ -2,16 +2,25 @@
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
+  line-height: 1.75;
+}
+.learning-section p {
+  font-size: 1.05rem;
+}
+.learning-section > *,
+.learning-section .grid-2 > * {
+  min-width: 0;
 }
 .learning-section h2 {
   font-size: clamp(1.6rem, 2.7vw, 2.3rem);
   line-height: 1.35;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.025em;
   margin: 0.65rem 0;
 }
 .learning-section h3 {
   margin: 0.3rem 0 0.8rem;
-  font-size: 1.15rem;
+  font-size: 1.25rem;
+  line-height: 1.5;
 }
 .learning-heading p {
   margin: 0.6rem 0 0;
@@ -19,9 +28,9 @@
   line-height: 1.8;
 }
 .eyebrow {
-  font-size: 0.76rem;
+  font-size: 0.95rem;
   font-weight: 750;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.06em;
   color: #f8c84d;
 }
 .question-callout {
@@ -84,8 +93,24 @@
 .distance-model svg text,
 .equipment-diagram text {
   fill: #cbd5e1;
-  font-size: 13px;
+  font-size: 21px;
   font-family: inherit;
+}
+.diagram-frame {
+  width: 100%;
+  min-width: 0;
+}
+.diagram-scroll {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  border-radius: 10px;
+}
+.diagram-scroll:focus-visible {
+  outline: 3px solid #8fdeda;
+  outline-offset: 3px;
+}
+.diagram-scroll-hint {
+  display: none;
 }
 .preset-buttons {
   display: flex;
@@ -94,7 +119,7 @@
   margin: 1rem 0;
 }
 .preset-buttons button {
-  font-size: 0.8rem;
+  font-size: 1rem;
 }
 .point-controls {
   display: grid;
@@ -103,10 +128,10 @@
 }
 .point-controls label {
   display: grid;
-  grid-template-columns: 5.5rem minmax(80px, 1fr) 2.3rem;
+  grid-template-columns: 5.5rem minmax(80px, 1fr) 3rem;
   gap: 0.7rem;
   align-items: center;
-  font-size: 0.85rem;
+  font-size: 1rem;
 }
 .point-controls output {
   text-align: right;
@@ -121,6 +146,7 @@
 }
 .saved-prediction small {
   color: #a5b4cc;
+  font-size: 0.95rem;
 }
 .saved-prediction p {
   color: #c3cce0;
@@ -153,6 +179,7 @@
   display: block;
   color: #aebcd6;
   line-height: 1.6;
+  font-size: 0.95rem;
 }
 .metric-pair strong {
   font-size: 2rem;
@@ -185,7 +212,7 @@
 }
 .ratio-strip button {
   flex: 1;
-  min-width: 130px;
+  min-width: 180px;
   display: flex;
   gap: 0.7rem;
   align-items: center;
@@ -202,10 +229,10 @@
   color: #f8c84d;
 }
 .ratio-strip span {
-  font-size: 0.8rem;
+  font-size: 1rem;
 }
 .ratio-strip strong {
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 .experiment-illustration {
   margin: 0;
@@ -233,27 +260,30 @@
   padding: 1.1rem 1.4rem;
 }
 .experiment-illustration figcaption strong {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
 }
 .experiment-illustration figcaption span {
   color: #d6ddec;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 .experiment-illustration figcaption small {
   color: #aebcd6;
   line-height: 1.6;
+  font-size: 0.95rem;
 }
 .equipment-diagram {
   display: block;
   width: 100%;
   height: auto;
   background: #10182f;
+  max-width: 960px;
+  margin-inline: auto;
 }
 .equipment-diagram text {
-  font-size: 15px;
+  font-size: 21px;
 }
 .equipment-diagram text.diagram-small {
-  font-size: 12px;
+  font-size: 18px;
 }
 .experiment-illustration > p {
   padding: 0 1.4rem 1rem;
@@ -267,11 +297,38 @@
   border-radius: 8px;
 }
 .variables-line span {
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 .variables-line b {
   color: #f8c84d;
   margin-right: 0.8rem;
+}
+.experiment-plan-diagram {
+  overflow: hidden;
+  border: 1px solid #2d3755;
+  border-radius: 14px;
+  background: #10182f;
+}
+.plan-conditions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.plan-conditions > div {
+  padding: 1.2rem;
+  border-left: 3px solid #f8c84d;
+  background: #141e38;
+  border-radius: 8px;
+}
+.plan-conditions h3 {
+  color: #f8c84d;
+}
+.plan-conditions p {
+  margin-bottom: 0;
+}
+.plan-next-step {
+  display: flex;
+  justify-content: flex-end;
 }
 .learning-check {
   display: flex;
@@ -295,14 +352,14 @@
 }
 .design-summary dt {
   color: #97aac9;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
   margin-top: 0.6rem;
 }
 .design-summary dd {
   margin: 0;
   line-height: 1.6;
   white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .next-lesson {
   border-top: 1px solid #2e3957;
@@ -316,7 +373,7 @@
 }
 .stellar-intro {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.15fr 1fr;
   align-items: center;
   position: relative;
   overflow: hidden;
@@ -340,7 +397,7 @@
 }
 .stellar-intro p {
   color: #d4dced;
-  font-size: 0.94rem;
+  font-size: 1.05rem;
   line-height: 1.7;
 }
 .stellar-intro img {
@@ -353,7 +410,7 @@
   grid-column: 1/-1;
   padding: 0.8rem 1.4rem;
   color: #9eacc6;
-  font-size: 0.72rem;
+  font-size: 0.95rem;
   border-top: 1px solid #1e2945;
   line-height: 1.6;
 }
@@ -411,7 +468,7 @@
   gap: 1.5rem;
 }
 .bulb-comparison h4 {
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: #cbd5e1;
   font-weight: 500;
 }
@@ -449,13 +506,14 @@
 }
 .calculation-result small {
   color: #bac8de;
+  font-size: 0.95rem;
 }
 .calculation-result strong {
   font-size: 1.6rem;
   color: #f8c84d;
 }
 .calculation-result span {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #d6dfed;
 }
 .teacher-formula {
@@ -466,7 +524,7 @@
 .teacher-formula summary {
   cursor: pointer;
   min-height: 24px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #bdcae0;
 }
 .teacher-formula p {
@@ -490,12 +548,12 @@
   min-width: 0;
 }
 .quiz-question legend {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 650;
   line-height: 1.7;
   padding: 0 0.5rem;
   max-width: 100%;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .quiz-question legend span {
   color: #f8c84d;
@@ -508,6 +566,7 @@
   line-height: 1.6;
   padding: 0.7rem 0;
   cursor: pointer;
+  font-size: 1.05rem;
 }
 .quiz-question input {
   width: 19px;
@@ -554,6 +613,7 @@
 }
 .learning-section .field {
   margin-bottom: 0.7rem;
+  font-size: 1rem;
 }
 .learning-section .field > span {
   display: block;
@@ -561,10 +621,10 @@
 }
 .learning-section textarea {
   resize: vertical;
-  min-height: 90px;
+  min-height: 130px;
 }
 .learning-section .muted {
-  font-size: 0.83rem;
+  font-size: 0.95rem;
   color: #acbad2;
   line-height: 1.7;
 }
@@ -575,11 +635,20 @@
   max-width: 100%;
 }
 @media (max-width: 900px) {
+  .plan-conditions {
+    grid-template-columns: 1fr;
+  }
   .learning-section .grid-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .stellar-intro > div {
     padding: 1.5rem;
+  }
+  .stellar-intro {
+    grid-template-columns: 1fr;
+  }
+  .stellar-intro img {
+    max-height: 340px;
   }
   .prediction-layout {
     grid-template-columns: 1fr !important;
@@ -594,7 +663,7 @@
     gap: 0.6rem;
   }
   .ratio-strip button {
-    min-width: 115px;
+    min-width: 180px;
   }
 }
 @media (max-width: 600px) {
@@ -611,9 +680,6 @@
   .stellar-intro img {
     max-height: 300px;
     object-fit: contain;
-  }
-  .stellar-intro > small {
-    font-size: 0.7rem;
   }
   .stellar-intro.compact img {
     max-height: 210px;
@@ -654,9 +720,6 @@
   .equipment-diagram {
     min-height: 130px;
   }
-  .equipment-diagram text {
-    font-size: 15px;
-  }
   .learning-section .grid-4 {
     grid-template-columns: 1fr 1fr;
   }
@@ -664,10 +727,33 @@
     gap: 0.8rem;
   }
   .point-controls label {
-    grid-template-columns: 5rem minmax(50px, 1fr) 2rem;
+    grid-template-columns: 5rem minmax(50px, 1fr) 2.5rem;
   }
-  .prediction-graph text {
-    font-size: 14px;
+  .prediction-frame svg {
+    min-width: 560px;
+  }
+  .equipment-frame svg {
+    min-width: 640px;
+  }
+  .distance-frame svg {
+    min-width: 620px;
+  }
+  .light-frame svg {
+    min-width: 440px;
+  }
+  .learning-section .diagram-scroll-hint,
+  .experiment-illustration .diagram-scroll-hint {
+    display: block;
+    margin: 0;
+    padding: 0.65rem 1rem;
+    font-size: 0.95rem;
+    color: #bdc8df;
+  }
+}
+@media (max-width: 480px) {
+  .learning-section .grid-4,
+  .metric-pair {
+    grid-template-columns: 1fr;
   }
 }
 @media print {
@@ -694,6 +780,15 @@
   }
   .learning-section svg text {
     fill: #111827;
+  }
+  .diagram-scroll {
+    overflow: visible;
+  }
+  .diagram-frame svg {
+    min-width: 0;
+  }
+  .diagram-scroll-hint {
+    display: none !important;
   }
   .learning-section * {
     color: #111827 !important;

@@ -1,14 +1,12 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { ArrowRight, BookOpen, Code2, Expand, X } from "lucide-react";
 import {
-  ArrowLeft,
-  ArrowRight,
-  BookOpen,
-  Check,
-  Code2,
-  Expand,
-  X,
-} from "lucide-react";
-import { hardwareSteps } from "./hardwareManualData";
+  hardwareSections,
+  hardwareSteps,
+  sectionForHardwareStep,
+  type HardwareSectionKey,
+} from "./hardwareManualData";
+import { SmartImage } from "./SmartImage";
 import "./hardware-manual.css";
 
 type HardwareImage = {
@@ -19,30 +17,30 @@ type HardwareImage = {
   label: string;
 };
 const photoDescriptions = [
-  "마퀸 전면과 마이크로비트 장착 방향",
-  "마퀸 뒤쪽 건전지 홀더 아래 전원 스위치를 가리킨 원본 사진",
-  "전원을 켠 마퀸 전면",
-  "전원을 켠 마퀸 전면의 다른 각도",
+  "마퀸 앞쪽과 마이크로비트를 꽂은 방향",
+  "자동차 뒤쪽 건전지 홀더 아래 전원 스위치",
+  "전원을 켠 마퀸 앞쪽",
+  "전원을 켠 마퀸 앞쪽의 다른 모습",
   "마이크로비트 앞면 왼쪽 A 버튼을 누르는 모습",
-  "마퀸 앞쪽 초음파 센서와 장애물 배치",
-  "뒤쪽 원형 LED와 앞쪽 장애물을 함께 보여 주는 배치",
+  "자동차 앞쪽 초음파 센서와 장애물",
+  "뒤쪽 원형 LED와 앞쪽 장애물을 함께 놓은 모습",
   "주변 조명을 줄인 상태의 뒤쪽 LED",
-  "주변 조명을 줄인 상태에서 위쪽으로 본 자동차",
-  "뒤쪽 독립 LED와 세 개의 건전지",
-  "어두운 환경의 자동차 전면 지시등과 뒤쪽 LED",
-  "어두운 환경의 자동차 전면을 다른 각도에서 본 모습",
-  "밝기 센서와 이지메이커 보드, USB 케이블, 센서 연결선",
-  "이지메이커 보드 A0 물리 포트의 연결 확대",
-  "이지메이커 보드 A0 물리 포트의 연결 확대, 사진 38과 중복",
-  "멀리 있는 자동차 뒤쪽 LED와 밝기 센서의 정렬",
-  "Light V2.0 중앙 평면 수광부와 흰색 전용 커넥터",
-  "가까이 있는 자동차 뒤쪽 LED와 밝기 센서의 정렬",
-  "멀리 있는 LED와 센서의 정렬을 다른 각도에서 본 모습",
-  "밝기 센서에서 A0 보드, USB 허브를 거쳐 노트북으로 이어지는 연결",
-  "마이크로비트 앞면의 LED 배열, A/B 버튼과 금색 접점",
-  "마이크로비트 뒷면의 USB, 리셋 버튼, 배터리 단자",
-  "자동차에 부착하기 전 켜진 독립 원형 LED",
-  "마이크로비트 장착을 마친 마퀸 전면",
+  "주변 조명을 줄인 상태에서 위에서 본 자동차",
+  "뒤쪽 원형 LED와 세 개의 건전지",
+  "어두운 곳에서 켠 자동차 지시등과 뒤쪽 LED",
+  "어두운 곳에서 다른 방향으로 본 자동차 앞쪽",
+  "밝기 센서, 이지메이커 보드, USB 케이블과 연결선",
+  "이지메이커 보드의 A0 연결 자리를 가까이 본 모습",
+  "이지메이커 보드의 A0에 연결선을 꽂은 모습",
+  "멀리 있는 LED와 밝기 센서의 높이·방향을 맞춘 모습",
+  "밝기 센서 가운데 빛을 받는 곳과 흰색 연결 자리",
+  "가까이 있는 LED와 밝기 센서의 높이·방향을 맞춘 모습",
+  "LED와 센서가 마주 보는 모습을 다른 방향에서 본 사진",
+  "밝기 센서에서 A0 보드, USB 허브를 거쳐 노트북으로 연결한 모습",
+  "마이크로비트 앞면의 LED, A·B 버튼과 금색 부분",
+  "마이크로비트 뒷면의 USB, 리셋 버튼과 배터리 연결 자리",
+  "자동차에 달기 전 켜진 원형 LED",
+  "마이크로비트를 꽂은 자동차 앞쪽",
 ];
 const landscapePhotos = new Set([33, 34, 37, 38, 39, 41, 44, 45, 46, 47, 48]);
 
@@ -53,26 +51,19 @@ function photo(number: number): HardwareImage {
     width: landscape ? 1663 : 1247,
     height: landscape ? 1247 : 1663,
     alt: photoDescriptions[number - 25],
-    label: `원본 사진 ${number}`,
+    label: `실물 사진 ${number}`,
   };
 }
 function illustration(order: number): HardwareImage {
-  const step = hardwareSteps[order - 1];
+  const step = hardwareSteps.find((item) => item.order === order)!;
   return {
     src: `/assets/hardware/${step.image}`,
     width: order === 7 ? 1173 : order === 11 ? 1167 : 1448,
     height: order === 7 ? 888 : order === 11 ? 860 : 1086,
     alt: step.alt,
-    label: "사진 기반 생성 삽화 · 설명용",
+    label: "설명용 생성 그림",
   };
 }
-function referencePhotos(order: number) {
-  return hardwareSteps[order - 1].references.map((path) =>
-    photo(Number(path.match(/\((\d+)\)/)?.[1])),
-  );
-}
-const clampStep = (value: number) =>
-  Math.max(1, Math.min(12, Math.trunc(value) || 1));
 
 export function HardwareEntry({
   onOpen,
@@ -86,66 +77,53 @@ export function HardwareEntry({
       <BookOpen size={26} aria-hidden="true" />
       <div>
         <h2>{title}</h2>
-        <p>
-          실물 사진과 그림으로 장착 방향, 뒤쪽 LED, 센서 A0 연결과 실험 배치를
-          확인해요.
-        </p>
+        <p>자동차 준비부터 센서 연결, 측정 자리까지 실물 사진으로 살펴봐요.</p>
       </div>
       <button className="primary" onClick={onOpen}>
-        12단계 안내 열기 <ArrowRight size={17} aria-hidden="true" />
+        장비 안내 열기 <ArrowRight size={17} aria-hidden="true" />
       </button>
     </section>
   );
 }
 
-export function HardwareManual({
-  notes,
-  setNote,
-  initialStep = 1,
+export function HardwareSectionContent({
+  section: sectionKey,
+  orders,
+  title,
+  hideTitle = false,
   onOpenCarCode,
+  includeAllPhotos = false,
 }: {
-  notes: Record<string, string>;
-  setNote: (key: string, value: string) => void;
-  initialStep?: number;
+  section: HardwareSectionKey;
+  orders?: number[];
+  title?: string;
+  hideTitle?: boolean;
   onOpenCarCode?: () => void;
+  includeAllPhotos?: boolean;
 }) {
-  const [active, setActive] = useState(() => clampStep(initialStep));
   const [expanded, setExpanded] = useState<HardwareImage | null>(null);
-  const detailHeading = useRef<HTMLHeadingElement>(null);
   const photoDialog = useRef<HTMLDialogElement>(null);
   const viewerTitle = useId();
-  const step = hardwareSteps[active - 1];
-  const done = hardwareSteps.filter(
-    (item) => notes[`hardware.check.${item.order}`] === "true",
-  ).length;
-  const primaryImage =
-    active === 5 ? photo(26) : active === 10 ? photo(44) : illustration(active);
-  const originals = referencePhotos(active);
-  const confirmed = notes[`hardware.check.${active}`] === "true";
+  const sectionTitle = useId();
+  const section =
+    hardwareSections.find((item) => item.id === sectionKey) ??
+    hardwareSections[0];
+  const items = section.orders
+    .filter((order) => !orders || orders.includes(order))
+    .map((order) => hardwareSteps.find((item) => item.order === order)!);
+  const mainPhotos = new Set(
+    items.flatMap((item) => (item.primaryPhoto ? [item.primaryPhoto] : [])),
+  );
+  const additionalPhotos = [
+    ...new Set(items.flatMap((item) => item.references)),
+  ].filter((number) => !mainPhotos.has(number));
 
   useEffect(() => {
-    setActive(clampStep(initialStep));
-    if (initialStep > 1)
-      requestAnimationFrame(() => {
-        detailHeading.current?.focus({ preventScroll: true });
-        detailHeading.current?.scrollIntoView({ block: "start" });
-      });
-  }, [initialStep]);
-  useEffect(() => {
-    if (expanded) photoDialog.current?.showModal();
-    else photoDialog.current?.close();
+    if (expanded && !photoDialog.current?.open)
+      photoDialog.current?.showModal();
+    else if (!expanded) photoDialog.current?.close();
   }, [expanded]);
 
-  const go = (order: number) => {
-    setActive(clampStep(order));
-    requestAnimationFrame(() => {
-      detailHeading.current?.focus({ preventScroll: true });
-      detailHeading.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    });
-  };
   const imageButton = (item: HardwareImage, compact = false) => (
     <figure
       className={compact ? "hardware-photo-card" : "hardware-main-image"}
@@ -156,7 +134,8 @@ export function HardwareManual({
         onClick={() => setExpanded(item)}
         aria-label={`${item.alt} 확대 보기`}
       >
-        <img
+        <SmartImage
+          key={item.src}
           src={item.src}
           width={item.width}
           height={item.height}
@@ -170,227 +149,88 @@ export function HardwareManual({
       </button>
       <figcaption>
         {item.label}
-        {compact && (
-          <>
-            <br />
-            {item.alt}
-          </>
-        )}
+        {compact && ` · ${item.alt}`}
       </figcaption>
     </figure>
   );
 
   return (
-    <section className="hardware-manual" aria-label="실험 장비 사용 설명서">
-      <div className="hardware-intro">
-        <span className="badge">실물 사진 24장 · 설명용 삽화 12장</span>
-        <h3>실제 장비를 보며, 하나씩 확인해요.</h3>
-        <p>
-          그림은 구조를 이해하는 데 쓰고, 단자·버튼·방향은 원본 사진과 실제
-          장비를 기준으로 확인합니다. 생성 삽화의 작은 글씨와 부품 모양을
-          회로도나 핀 배선 근거로 쓰지 않아요.
-        </p>
-        <p className="hardware-route">
-          <strong>진행 순서</strong> 준비·장착·LED → 코드 업로드 → 전원 →
-          센서·USB → 정렬 → 주행 사전 시험 → 주변광 → 측정
-        </p>
-      </div>
-
-      <div className="hardware-code-check">
-        <div>
-          <Code2 size={21} aria-hidden="true" />
-          <h3>자동차 전원을 켜기 전에, 코드부터 확인해요.</h3>
-        </div>
-        <p>
-          A 버튼 시작·B 버튼 정지·초음파 정지는 해당 프로그램을 올려야
-          동작합니다. 첨부된 블록 코드는 초음파 값이 <strong>5cm 미만</strong>
-          이면 멈추도록 되어 있어요. 다른 코드를 썼다면 그 코드의 실제 동작을
-          확인하세요.
-        </p>
-        {onOpenCarCode && (
-          <button onClick={onOpenCarCode}>
-            마퀸 코드 장면별 안내 <ArrowRight size={16} aria-hidden="true" />
-          </button>
-        )}
-        <label className="check-row">
-          <input
-            type="checkbox"
-            checked={notes["hardware.codeLoaded"] === "true"}
-            onChange={(event) =>
-              setNote("hardware.codeLoaded", String(event.target.checked))
-            }
-          />{" "}
-          내가 사용할 프로그램을 micro:bit에 올리고 동작을 직접 확인했다.
-        </label>
-        <small>
-          체크는 나의 확인 기록입니다. 앱이 코드 업로드나 기기 연결을 자동
-          검사한 결과가 아닙니다.
-        </small>
-      </div>
-
-      <div className="hardware-overview-heading">
-        <h3>12단계 찾아보기</h3>
-        <span>{done} / 12 직접 확인</span>
-      </div>
-      <nav className="hardware-overview" aria-label="장비 사용 설명서 단계">
-        {hardwareSteps.map((item) => (
-          <button
-            key={item.order}
-            className={active === item.order ? "current" : ""}
-            aria-current={active === item.order ? "step" : undefined}
-            onClick={() => go(item.order)}
-          >
-            <span className="hardware-step-icon">
-              {notes[`hardware.check.${item.order}`] === "true" ? (
-                <Check size={17} aria-label="확인 완료" />
-              ) : (
-                String(item.order).padStart(2, "0")
-              )}
-            </span>
-            <span>{item.title}</span>
-          </button>
-        ))}
-      </nav>
-
-      <article
-        className="hardware-detail"
-        aria-labelledby="hardware-detail-title"
+    <section className="hardware-manual hardware-section-content">
+      <section
+        className="hardware-section"
+        aria-labelledby={hideTitle ? undefined : sectionTitle}
+        key={section.id}
       >
-        <div className="hardware-detail-header">
-          <span className="eyebrow">
-            STEP {String(active).padStart(2, "0")} / 12
-          </span>
-          <span className={confirmed ? "hardware-confirmed" : "muted"}>
-            {confirmed ? "✓ 직접 확인함" : "확인 전"}
-          </span>
-        </div>
-        <h3 id="hardware-detail-title" ref={detailHeading} tabIndex={-1}>
-          {step.title}
-        </h3>
-        <p className="hardware-instruction">{step.instruction}</p>
-        {(active === 5 || active === 6 || active === 7) &&
-          notes["hardware.codeLoaded"] !== "true" && (
-            <p className="notice">
-              전원·주행 시험에 앞서 프로그램 업로드와 정지 동작을 확인하세요.
-              위의 코드 확인 항목에 기록할 수 있어요.
-            </p>
-          )}
-        {imageButton(primaryImage)}
-        {(active === 5 || active === 10) && (
-          <p className="hardware-image-note">
-            이 단계는 작은 스위치·연결을 확인할 수 있도록 원본 사진을 먼저 보여
-            줍니다. 사진을 눌러 확대해 보세요.
-          </p>
+        {!hideTitle && (
+          <header className="hardware-section-heading">
+            <h3 id={sectionTitle}>{title ?? section.title}</h3>
+            {!title && <p>{section.summary}</p>}
+          </header>
         )}
-        <div className="hardware-check-note">
-          <strong>이 부분을 확인해요</strong>
-          <p>{step.check}</p>
-          {active === 6 && (
-            <p>
-              앞쪽 초음파 센서는 고정된 밝기 센서에서 멀어지는 방향, 뒤쪽 독립
-              LED는 밝기 센서를 향하게 합니다. A를 누른 시각은 측정 기록에서
-              따로 표시하며 자동차와 센서는 자동 동기화되지 않습니다.
-            </p>
-          )}
-          {active === 7 && (
-            <p>
-              초음파가 읽는 <strong>자동차 앞쪽–장애물 거리</strong>와 빛 실험의{" "}
-              <strong>LED 발광면–센서 수광부 거리</strong>는 서로 달라요.
-              장애물로 멈춘 이후의 데이터는 주행 구간과 구분합니다.
-            </p>
-          )}
-          {active === 8 && (
-            <p>
-              <strong>Light V2.0 중앙의 평면 수광부</strong>가 LED를 바라봐야
-              합니다. EZMaker 로고가 있는 뒷면으로 빛을 받지 않도록 앞뒤를
-              확인하세요.
-            </p>
-          )}
-          {active === 9 && (
-            <p>
-              A0는 제공 사진으로 확인한 물리 연결입니다. 통신 프레임의 채널
-              번호를 0이라고 자동 가정하거나 원시값에 lux를 붙이지 않습니다.
-            </p>
-          )}
-          {active === 11 && (
-            <p>
-              센서 케이블은 이지메이커 보드에 연결하고 센서를 고정합니다.
-              자동차에 끌려가게 연결하지 않아요. 시작 거리는 0보다 크게 정하고
-              실제 줄자로 발광면과 수광부 사이를 잽니다.
-            </p>
-          )}
-          {active === 12 && (
-            <p>
-              LED를 가리거나 비춰 값이 반응하는지 확인하고, 최댓값에 붙는 포화
-              상태를 점검합니다. 모터 설정 255를 속력으로 쓰지 않고 같은 시간
-              동안 이동한 거리를 반복해서 재어 등속 구간을 정하세요.
-            </p>
-          )}
-        </div>
-        <label className="hardware-completion">
-          <input
-            type="checkbox"
-            checked={confirmed}
-            onChange={(event) =>
-              setNote(`hardware.check.${active}`, String(event.target.checked))
-            }
-          />
-          <span>
-            실제 장비에서 이 단계의 설명과 확인 사항을 직접 점검했어요.
-          </span>
-        </label>
-        <small className="hardware-check-caption">
-          완료 표시는 이 브라우저의 학습 기록에 저장됩니다.
-        </small>
 
-        <details
-          className="hardware-references"
-          key={active}
-          open={active === 9}
-        >
-          <summary>원본 사진 함께 보기 · {originals.length}장</summary>
+        {section.id === "car" && onOpenCarCode && (
+          <div className="hardware-code-link">
+            <Code2 size={22} aria-hidden="true" />
+            <p>
+              A 버튼 출발·B 버튼 정지를 사용하려면 해당 프로그램을 먼저 넣어야
+              해요.
+            </p>
+            <button onClick={onOpenCarCode}>
+              마퀸 코딩 방법 <ArrowRight size={16} aria-hidden="true" />
+            </button>
+          </div>
+        )}
+
+        <div className="hardware-topics">
+          {items.map((item) => (
+            <article className="hardware-topic" key={item.order}>
+              <h4>{item.title}</h4>
+              <p>{item.instruction}</p>
+              {item.equipment && (
+                <ul className="hardware-kit-list">
+                  {item.equipment.map((name) => (
+                    <li key={name}>{name}</li>
+                  ))}
+                </ul>
+              )}
+              {imageButton(
+                item.primaryPhoto
+                  ? photo(item.primaryPhoto)
+                  : illustration(item.order),
+              )}
+            </article>
+          ))}
+        </div>
+
+        <details className="hardware-extra">
+          <summary>보충 사진과 설명용 그림</summary>
           <div className="hardware-photo-grid">
-            {originals.map((item) => imageButton(item, true))}
+            {additionalPhotos.map((number) => imageButton(photo(number), true))}
+            {items
+              .filter((item) => item.primaryPhoto)
+              .map((item) => imageButton(illustration(item.order), true))}
           </div>
         </details>
-        {(active === 5 || active === 10) && (
-          <details className="hardware-references">
-            <summary>설명용 생성 삽화 보기</summary>
-            {imageButton(illustration(active))}
-            <p className="muted">
-              그림과 실제 사진의 작은 부품·표기가 다르면 사진과 장비를 기준으로
-              확인하세요.
-            </p>
-          </details>
-        )}
+        <details className="hardware-extra">
+          <summary>교사용 참고</summary>
+          <ul>
+            {section.teacherNotes.map((note) => (
+              <li key={note}>{note}</li>
+            ))}
+          </ul>
+        </details>
+      </section>
 
-        <div className="hardware-pagination">
-          <button disabled={active === 1} onClick={() => go(active - 1)}>
-            <ArrowLeft size={16} aria-hidden="true" /> 이전
-          </button>
-          <span>{active} / 12</span>
-          <button
-            className="primary"
-            disabled={active === 12}
-            onClick={() => go(active + 1)}
-          >
-            다음 <ArrowRight size={16} aria-hidden="true" />
-          </button>
-        </div>
-      </article>
-
-      <details className="hardware-all-photos">
-        <summary>원본 사진 전체 보기 · 24장</summary>
-        <p className="muted">
-          여러 각도·소등 사진과 중복 사진 38·39를 함께 보관했습니다. 사진 밝기나
-          화면 속 크기로 조도·거리를 계산하지 않습니다.
-        </p>
-        <div className="hardware-photo-grid">
-          {photoDescriptions.map((_, index) =>
-            imageButton(photo(index + 25), true),
-          )}
-        </div>
-      </details>
+      {includeAllPhotos && (
+        <details className="hardware-extra hardware-all-photos">
+          <summary>실물 사진 전체 보기 · 24장</summary>
+          <div className="hardware-photo-grid">
+            {photoDescriptions.map((_, index) =>
+              imageButton(photo(index + 25), true),
+            )}
+          </div>
+        </details>
+      )}
 
       <dialog
         ref={photoDialog}
@@ -414,12 +254,13 @@ export function HardwareManual({
               </button>
             </div>
             <div className="hardware-viewer-body">
-              <img
+              <SmartImage
+                key={expanded.src}
                 src={expanded.src}
                 width={expanded.width}
                 height={expanded.height}
                 alt={expanded.alt}
-                loading="lazy"
+                loading="eager"
               />
               <p>{expanded.alt}</p>
               <a href={expanded.src} target="_blank" rel="noopener noreferrer">
@@ -429,6 +270,67 @@ export function HardwareManual({
           </>
         )}
       </dialog>
+    </section>
+  );
+}
+
+export function HardwareManual({
+  initialStep = 1,
+  onOpenCarCode,
+}: {
+  notes?: Record<string, string>;
+  setNote?: (key: string, value: string) => void;
+  initialStep?: number;
+  onOpenCarCode?: () => void;
+}) {
+  const [active, setActive] = useState<HardwareSectionKey>(
+    () => sectionForHardwareStep(initialStep).id,
+  );
+  const content = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    setActive(sectionForHardwareStep(initialStep).id);
+    if (initialStep > 1)
+      requestAnimationFrame(() => {
+        content.current?.focus({ preventScroll: true });
+        content.current?.scrollIntoView({ block: "start" });
+      });
+  }, [initialStep]);
+  function go(id: HardwareSectionKey) {
+    setActive(id);
+    requestAnimationFrame(() => {
+      content.current?.focus({ preventScroll: true });
+      content.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+  }
+  return (
+    <section className="hardware-manual" aria-label="실험 장비 사용 설명서">
+      <div className="hardware-intro">
+        <h3>사진으로 보는 실험 준비</h3>
+        <p>
+          그림은 설명용입니다. 부품 모양과 연결 자리는 실물 사진을 기준으로 봐
+          주세요.
+        </p>
+      </div>
+      <nav className="hardware-sections" aria-label="장비 안내 목차">
+        {hardwareSections.map((item) => (
+          <button
+            key={item.id}
+            className={active === item.id ? "current" : ""}
+            aria-current={active === item.id ? "true" : undefined}
+            onClick={() => go(item.id)}
+          >
+            {item.title}
+          </button>
+        ))}
+      </nav>
+      <div className="hardware-selected-section" ref={content} tabIndex={-1}>
+        <HardwareSectionContent
+          key={active}
+          section={active}
+          onOpenCarCode={onOpenCarCode}
+          includeAllPhotos
+        />
+      </div>
     </section>
   );
 }

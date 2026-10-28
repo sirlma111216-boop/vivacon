@@ -1,5 +1,6 @@
 .ezon-entry {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 22px;
   margin: 24px 0;
@@ -20,7 +21,7 @@
   background: #25233a;
 }
 .ezon-entry > div {
-  flex: 1;
+  flex: 1 1 26em;
   min-width: 0;
 }
 .ezon-entry h2 {
@@ -29,13 +30,17 @@
 }
 .ezon-entry p {
   margin-bottom: 0;
-  font-size: 0.9em;
+  font-size: 1em;
+  line-height: 1.75;
 }
 .ezon-entry > button {
   flex-shrink: 0;
 }
 .ezon-guide {
   min-width: 0;
+  line-height: 1.75;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 .ezon-intro {
   padding: 26px;
@@ -48,7 +53,7 @@
   margin: 16px 0 12px;
 }
 .ezon-intro p {
-  max-width: 70ch;
+  max-width: none;
 }
 .ezon-link-button {
   display: inline-flex;
@@ -59,7 +64,7 @@
   padding: 10px 16px;
   border: 1px solid #45506b;
   border-radius: 8px;
-  font-size: 0.9em;
+  font-size: 1em;
   text-decoration: none;
 }
 .ezon-link-button.primary:hover {
@@ -67,7 +72,7 @@
   color: #14182a;
 }
 .ezon-source {
-  font-size: 0.8em;
+  font-size: 0.9em;
   color: #aebbd6;
   margin: 20px 0 28px;
 }
@@ -80,10 +85,10 @@
 }
 .ezon-step {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
-  gap: 24px;
-  padding: 24px;
+  gap: 28px;
+  padding: 28px;
   border: 1px solid #2b3554;
   border-radius: 12px;
   background: #111833;
@@ -92,20 +97,21 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   margin-bottom: 14px;
   border-radius: 50%;
   background: #f8c84d;
   color: #14182a;
-  font-size: 0.85em;
+  font-size: 0.95em;
   font-weight: 800;
 }
 .ezon-step h3 {
   margin-bottom: 14px;
 }
 .ezon-step p {
-  font-size: 0.9em;
+  font-size: 1em;
+  line-height: 1.75;
 }
 .ezon-step p:last-child {
   margin-bottom: 0;
@@ -140,14 +146,15 @@
   flex-wrap: wrap;
   gap: 6px 14px;
   margin-top: 10px;
-  font-size: 0.75em;
+  font-size: 0.9em;
+  line-height: 1.65;
   color: #aebbd6;
 }
 .ezon-screenshot figcaption a {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  min-height: 30px;
+  min-height: 44px;
 }
 .ezon-more {
   border-top: 1px solid #34405c;
@@ -156,11 +163,22 @@
 .ezon-more summary {
   cursor: pointer;
   padding: 12px 0;
-  font-size: 0.85em;
+  font-size: 1em;
   color: #d1dcef;
 }
 .ezon-more .ezon-screenshot + .ezon-screenshot {
   margin-top: 18px;
+}
+.ezon-more ul {
+  padding-left: 24px;
+}
+.ezon-more li {
+  font-size: 1em;
+  line-height: 1.75;
+  color: #bfcbe2;
+}
+.ezon-more li + li {
+  margin-top: 14px;
 }
 .ezon-return {
   padding: 24px;
@@ -172,7 +190,8 @@
   color: #b4e5df;
 }
 .ezon-return p {
-  font-size: 0.9em;
+  font-size: 1em;
+  line-height: 1.75;
 }
 .ezon-return p:last-child {
   margin-bottom: 0;
@@ -187,14 +206,6 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-}
-@media (max-width: 1000px) {
-  .ezon-entry {
-    flex-wrap: wrap;
-  }
-  .ezon-entry > button {
-    margin-left: 74px;
-  }
 }
 @media (max-width: 800px) {
   .ezon-step {

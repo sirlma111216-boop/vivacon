@@ -23,10 +23,11 @@ import {
 } from "./domain";
 import { SerialConnection, supportStatus } from "./serial";
 import { DataChart } from "./DataChart";
-import { ExperimentIllustration, type Prediction } from "./Learning";
+import type { Prediction } from "./Learning";
+import { ExperimentPrep } from "./ExperimentPrep";
+import { HardwareSectionContent } from "./HardwareManual";
+import { measurementSetup } from "./measurementSetup";
 import { Maqueen } from "./Maqueen";
-import { EzOnEntry } from "./EzOnGuide";
-import { HardwareEntry } from "./HardwareManual";
 import { download, type AppState } from "./state";
 type Props = {
   onOpenHardware: (step?: number) => void;
@@ -88,6 +89,7 @@ export function Measurement({
   prediction,
 }: Props) {
   const run = state.runs.find((r) => r.id === state.activeRunId) || null;
+  const unitLabel = run?.unit === "센서 원시값" ? "센서가 읽은 값" : run?.unit;
   const stateRef = useRef(state);
   stateRef.current = state;
   const [recording, setRecording] = useState(false),
@@ -101,6 +103,7 @@ export function Measurement({
     lastReceived = useRef(0);
   const support = supportStatus();
   const note = (k: string, v = "") => state.notes[k] ?? v;
+  const setup = measurementSetup(state.notes, state.mode);
   const patch = (changes: Partial<Run>) => {
     if (!run) return;
     const updated = { ...run, ...changes };
@@ -112,7 +115,7 @@ export function Measurement({
       (updated.saturation !== undefined && updated.saturation <= 0)
     ) {
       setMessage(
-        "설정을 저장하지 않았습니다. 시작 거리·속력·포화 상한은 0보다 크게, 주행 시점은 0 이상으로 입력하세요.",
+        "시작 거리·속력·센서 최댓값은 0보다 크게, 출발 시각은 0 이상으로 입력하세요.",
       );
       return;
     }
@@ -125,15 +128,12 @@ export function Measurement({
   ) => {
     if (value.trim() === "") {
       if (optional) patch({ [key]: undefined });
-      else
-        setMessage(
-          "숫자를 비워 둘 수 없습니다. 이전의 유효한 설정을 유지합니다.",
-        );
+      else setMessage("숫자를 입력하세요. 비워 두면 이전 값을 사용합니다.");
       return;
     }
     const numeric = Number(value);
     if (!Number.isFinite(numeric)) {
-      setMessage("유효한 숫자를 입력하세요. 이전 설정을 유지합니다.");
+      setMessage("숫자로 입력하세요. 이전 값을 유지합니다.");
       return;
     }
     patch({ [key]: numeric });
@@ -144,8 +144,8 @@ export function Measurement({
       patch({ speed: undefined });
       setMessage(
         run.mode === "practice"
-          ? "현재 연습 실험의 모형 속력 적용을 해제했습니다. 거리 변환이 중지됩니다."
-          : "현재 실험의 속력 적용을 해제했습니다. 시간 기록은 보존하고 거리 변환을 중지합니다.",
+          ? "연습 속력 사용을 해제했습니다. 거리를 계산하려면 속력을 다시 적용하세요."
+          : "속력 사용을 해제했습니다. 시간 기록은 남고, 거리 계산은 멈춥니다.",
       );
     }
   };
@@ -164,33 +164,42 @@ export function Measurement({
       />
     </label>
   );
-  const buildRun = (mode = state.mode): Run => ({
-    id: uid(),
-    name: `${mode === "practice" ? "연습 " : ""}실험 ${state.runs.length + 1}`,
-    repeat: state.runs.length + 1,
-    mode,
-    samples: [],
-    ambient: Number(note("ambient", "0")),
-    startDistance: Number(
-      note("startDistance", note("design.startDistance", "20")),
-    ),
-    linear: mode === "practice",
-    unit: mode === "practice" ? "상대 밝기" : "센서 원시값",
-    ...(mode === "practice" ? { speed: 12 } : {}),
-  });
+  const buildRun = (mode = state.mode): Run => {
+    const settings = measurementSetup(state.notes, mode);
+    return {
+      id: uid(),
+      name: `${mode === "practice" ? "연습 " : ""}실험 ${state.runs.length + 1}`,
+      repeat: state.runs.length + 1,
+      mode,
+      samples: [],
+      ambient: settings.ambient,
+      startDistance: settings.startDistance,
+      linear: mode === "practice",
+      unit: mode === "practice" ? "상대 밝기" : "센서 원시값",
+      ...(settings.speed !== undefined ? { speed: settings.speed } : {}),
+    };
+  };
   const newRun = (mode = state.mode) => {
     const r = buildRun(mode);
     if (
       !Number.isFinite(r.ambient) ||
       !Number.isFinite(r.startDistance) ||
-      r.startDistance <= 0
+      r.startDistance <= 0 ||
+      !Number.isFinite(setup.interval) ||
+      setup.interval <= 0
     ) {
       setMessage(
-        "주변광은 유효한 숫자, 시작 거리는 0보다 큰 숫자로 입력하세요.",
+        "주변빛은 숫자로, 시작 거리와 기록 간격은 0보다 크게 입력하세요.",
       );
       return null;
     }
     setRuns([...state.runs, r], r.id);
+    setNote(`recordInterval-${r.id}`, String(setup.interval));
+    setMessage(
+      step === 2
+        ? "새 실험을 만들었습니다. 아래 ‘다음’을 눌러 측정을 이어 가세요."
+        : "새 실험을 만들었습니다. 이 화면에서 측정하거나 값을 입력하세요.",
+    );
     return r;
   };
   const addFrame = (raw: number | null, source: "serial" | "practice") => {
@@ -301,9 +310,7 @@ export function Measurement({
       run.startDistance <= 0 ||
       !Number.isFinite(run.ambient)
     ) {
-      setMessage(
-        "시작 거리는 0보다 큰 값이어야 하며 주변광은 유효한 숫자여야 합니다.",
-      );
+      setMessage("시작 거리는 0보다 크게, 주변빛은 숫자로 입력하세요.");
       return;
     }
     if (run.mode === "serial" && status !== "connected") {
@@ -315,7 +322,7 @@ export function Measurement({
       return;
     }
     if (run.samples.length) {
-      setMessage("원본 기록을 보존합니다. 새 실험을 만든 뒤 기록하세요.");
+      setMessage("이미 기록이 있습니다. 새 실험을 만들어 측정하세요.");
       return;
     }
     started.current = performance.now();
@@ -342,7 +349,7 @@ export function Measurement({
       const parsed = parseCsv(originalCsv);
       if (!parsed.samples.length)
         throw new Error(
-          parsed.errors.join("\n") || "유효한 데이터가 없습니다.",
+          parsed.errors.join("\n") || "읽을 수 있는 측정값이 없습니다.",
         );
       if (parsed.samples.length > MAX_SAMPLES)
         throw new Error(
@@ -359,12 +366,12 @@ export function Measurement({
       };
       if (!validateRun(r))
         throw new Error(
-          "CSV의 실험 메타데이터가 올바르지 않습니다. 반복 횟수·주변광·거리 설정을 확인하세요.",
+          "CSV에 저장된 실험 정보가 올바르지 않습니다. 반복 횟수·주변빛·거리 값을 확인하세요.",
         );
       setRuns([...stateRef.current.runs, r], r.id);
       setMode(mode);
       setMessage(
-        `CSV ${parsed.samples.length}행 불러옴${mode === "practice" ? " · 연습 데이터 출처 보존" : ""}. ${parsed.errors.join(" · ")} 원문도 함께 보존했습니다.`,
+        `CSV ${parsed.samples.length}행을 불러왔습니다${mode === "practice" ? " · 연습 데이터" : ""}. ${parsed.errors.join(" · ")}`,
       );
     } catch (e) {
       setMessage(String(e));
@@ -391,12 +398,14 @@ export function Measurement({
       Number(t) < 0 ||
       (d && (!Number.isFinite(Number(d)) || Number(d) <= 0))
     ) {
-      setMessage("유효한 측정값·시간을 입력하세요. 거리는 0보다 커야 합니다.");
+      setMessage(
+        "측정값과 시간을 숫자로 입력하세요. 거리는 0보다 커야 합니다.",
+      );
       return;
     }
     const r = run ?? buildRun("manual");
     if (!validateRun(r) || r.startDistance <= 0) {
-      setMessage("새 실험의 시작 거리와 주변광 설정을 확인하세요.");
+      setMessage("새 실험의 시작 거리와 주변빛 값을 확인하세요.");
       return;
     }
     if (r.samples.length >= MAX_SAMPLES) {
@@ -417,7 +426,18 @@ export function Measurement({
         : [...state.runs, updated],
       r.id,
     );
-    setNote("manualTime", String(Number(t) + 1));
+    const interval = Number(note(`recordInterval-${r.id}`, "1"));
+    setNote(
+      "manualTime",
+      String(
+        Number(
+          (
+            Number(t) +
+            (interval > 0 && Number.isFinite(interval) ? interval : 1)
+          ).toFixed(6),
+        ),
+      ),
+    );
     setMessage("측정값을 추가했습니다.");
   };
   const practice = () => {
@@ -456,47 +476,130 @@ export function Measurement({
     };
     setNote("explanationRecords", JSON.stringify([...records, entry]));
     setMessage(
-      "작성자별 설명을 별도 기록으로 보존했습니다. 아래 초안을 수정해도 저장된 설명은 바뀌지 않습니다.",
+      "설명을 저장했습니다. 다른 사람의 설명도 따로 저장할 수 있어요.",
     );
   };
+  const sensorConnection = (
+    <>
+      <p>
+        보드를 USB로 연결하세요. 선생님과 아래 연결 설정을 입력한 뒤 ‘센서
+        연결’을 누릅니다.
+      </p>
+      {(!support.supported || !support.secure) && (
+        <p className="notice">{support.message}</p>
+      )}
+      <details>
+        <summary>교사용 센서 연결 설정</summary>
+        <p>
+          실제 기기 연동은 검증 전입니다. 보드의 펌웨어·전송 형식·단위를 확인해
+          입력하세요. 사진의 A0는 물리 포트이며 통신 채널과는 다릅니다.
+        </p>
+        <p>
+          공개 클라이언트의 115200은 참고값입니다. 내 보드의 설정을 확인한 뒤
+          입력하세요. 채널 번호는 수신 프레임의 0부터 시작하는 열 번호이며 물리
+          포트 번호가 아닙니다.
+        </p>
+        <div className="grid-2">
+          {field("baud", "확인한 통신 속도 (baud)", "", "number")}
+          {field("channel", "확인한 밝기 채널 열 번호", "", "number")}
+          {field("board", "보드 / 펌웨어 버전")}
+          {field("physicalPort", "직접 확인한 물리 포트")}
+        </div>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={note("protocolConfirmed") === "true"}
+            onChange={(e) =>
+              setNote("protocolConfirmed", String(e.target.checked))
+            }
+          />
+          숫자 CSV·줄바꿈 전송 형식과 통신 속도·채널 확인 완료
+        </label>
+        {note("physicalPort") && (
+          <p className="notice">
+            교사 확인 기록: 밝기 센서 → {note("physicalPort")} →{" "}
+            {note("board") || "기록한 유선보드"} → USB → 컴퓨터. 핀별 배선은
+            공식 보드 설명서를 확인하세요.
+          </p>
+        )}
+      </details>
+      <div className="button-row">
+        <button
+          className="primary"
+          disabled={
+            !support.supported ||
+            !support.secure ||
+            status === "connected" ||
+            note("protocolConfirmed") !== "true" ||
+            !note("baud") ||
+            !note("channel")
+          }
+          onClick={connect}
+        >
+          <Radio size={16} />
+          센서 연결
+        </button>
+        <button
+          onClick={() => serial.current?.disconnect()}
+          disabled={status !== "connected"}
+        >
+          <Unplug size={16} />
+          연결 해제
+        </button>
+      </div>
+      {status === "connected" && (
+        <div className="notice">
+          <p>
+            센서가 지금 읽은 값:{" "}
+            <strong>{live?.toFixed(2) ?? "아직 값이 오지 않았어요"}</strong>
+          </p>
+          <button
+            disabled={live === null || recording}
+            onClick={() => live !== null && setNote("ambient", String(live))}
+          >
+            LED를 끈 뒤, 이 값을 주변빛으로 사용
+          </button>
+        </div>
+      )}
+    </>
+  );
+  const runSetupFields = (
+    <>
+      <div className="grid-3">
+        {field("ambient", "LED를 껐을 때의 값", "0", "number")}
+        {field(
+          "startDistance",
+          "LED와 센서 사이 시작 거리 (cm)",
+          note("design.startDistance", "20"),
+          "number",
+        )}
+        {field(
+          "measureInterval",
+          "계획한 기록 간격 (초)",
+          note("design.interval", "0.2"),
+          "number",
+        )}
+      </div>
+      <p className="muted">
+        3차시에서 정한 거리와 간격을 가져왔어요. 간격은 직접 입력할 때 다음
+        시각에 더해집니다. 센서의 전송 간격은 보드 코드에서 정하며, 실제 측정
+        시각을 그대로 기록합니다.
+      </p>
+    </>
+  );
   if (step === 0)
     return (
-      <>
-        <ExperimentIllustration onOpenHardware={onOpenHardware} />
-        <HardwareEntry onOpen={() => onOpenHardware(1)} />
-        <EzOnEntry onOpen={onOpenEzOn} />
-        <div className="card">
-          <h3>실험 전, 함께 확인해요</h3>
-          <p>
-            센서 연결은 컴퓨터에서, 자동차 조작은 micro:bit에서 합니다. 두
-            장치는 자동으로 동기화되지 않습니다.
-          </p>
-          <div className="check-list">
-            {[
-              "센서를 고정하고 LED를 자동차에 단단히 붙였다",
-              "광원과 센서의 높이를 맞췄다",
-              "센서를 향한 LED가 오른쪽으로 멀어지게 놓았다",
-              "바닥에 거리를 표시하고 떨어질 위험을 없앴다",
-              "USB 케이블이 주행을 방해하지 않는다",
-            ].map((v, i) => (
-              <label key={v}>
-                <input
-                  type="checkbox"
-                  checked={note(`safety${i}`) === "true"}
-                  onChange={(e) =>
-                    setNote(`safety${i}`, String(e.target.checked))
-                  }
-                />
-                {v}
-              </label>
-            ))}
-          </div>
-        </div>
-      </>
+      <ExperimentPrep
+        notes={state.notes}
+        onOpenHardware={onOpenHardware}
+        onOpenEzOn={onOpenEzOn}
+      />
     );
   if (step === 1) return <Maqueen notes={state.notes} setNote={setNote} />;
   return (
     <>
+      {step === 2 && <HardwareSectionContent section="connection" />}
+      {step === 3 && <HardwareSectionContent section="measurement" />}
       <div className="measurement-status" role="status">
         <span>
           <Radio size={16} />
@@ -512,22 +615,18 @@ export function Measurement({
         </span>
         <span className={recording ? "recording" : ""}>
           {recording ? "● 측정 기록 중" : "○ 기록 대기"}{" "}
-          {live !== null && `· 센서 최근 수신 ${live.toFixed(2)}`}
+          {live !== null && `· 지금 읽은 값 ${live.toFixed(2)}`}
         </span>
       </div>
-      {(step === 2 || step === 3) && (
-        <HardwareEntry onOpen={() => onOpenHardware(step === 2 ? 8 : 11)} />
-      )}
-      {step === 2 && <EzOnEntry onOpen={onOpenEzOn} />}
       {step === 2 && (
         <div className="card">
-          <div className="eyebrow">CONNECT & CALIBRATE</div>
-          <h2>센서를 연결하고, 주변광을 확인해요</h2>
+          <div className="eyebrow">측정 준비</div>
+          <h2>밝기를 어떻게 기록할까요?</h2>
           <div className="mode-options">
             {(
               [
                 ["serial", "실물 센서"],
-                ["manual", "CSV · 수동 입력"],
+                ["manual", "파일 · 직접 입력"],
                 ["practice", "연습 데이터"],
               ] as const
             ).map(([v, label]) => (
@@ -544,78 +643,7 @@ export function Measurement({
             ))}
           </div>
           {state.mode === "serial" ? (
-            <>
-              <p className="notice">
-                연동 구조 구현 완료 / 실제 기기 검증 전. 이지메이커 보드의
-                정확한 펌웨어·채널·단위를 교사가 확인해야 합니다.
-              </p>
-              <p>{support.message}</p>
-              <p>
-                제공된 장비 사진에서는 Light V2.0 센서가 보드 A0에 연결되어
-                있습니다. 나의 장비와 대조한 뒤 물리 포트를 기록하세요. A0
-                확인만으로 통신 채널·단위·선형성이 확인되는 것은 아닙니다.
-              </p>
-              <details>
-                <summary>교사용 연결 세부 설정</summary>
-                <p>
-                  공개 클라이언트의 115200은 참고값입니다. 내 보드의 설정을
-                  확인한 뒤 입력하세요. 채널 번호는 수신 프레임의 0부터 시작하는
-                  열 번호이며 물리 포트 번호가 아닙니다.
-                </p>
-                <div className="grid-2">
-                  {field("baud", "확인한 통신 속도 (baud)", "", "number")}
-                  {field("channel", "확인한 밝기 채널 열 번호", "", "number")}
-                  {field("board", "보드 / 펌웨어 버전")}
-                  {field("physicalPort", "직접 확인한 물리 포트")}
-                </div>
-                <label className="check">
-                  <input
-                    type="checkbox"
-                    checked={note("protocolConfirmed") === "true"}
-                    onChange={(e) =>
-                      setNote("protocolConfirmed", String(e.target.checked))
-                    }
-                  />
-                  내 보드가 숫자 CSV 줄바꿈 프레임을 전송하며 속도와 채널을
-                  확인했다
-                </label>
-                <p>
-                  초기화·요청 명령은 확인되지 않아 보내지 않습니다. 실제 포트를
-                  확인하기 전 배선도는 제공하지 않습니다.
-                </p>
-                {note("physicalPort") && (
-                  <p className="notice">
-                    교사 확인 기록: 밝기 센서 → {note("physicalPort")} →{" "}
-                    {note("board") || "기록한 유선보드"} → USB → 컴퓨터. 핀별
-                    배선은 공식 보드 설명서를 확인하세요.
-                  </p>
-                )}
-              </details>
-              <div className="button-row">
-                <button
-                  className="primary"
-                  disabled={
-                    !support.supported ||
-                    !support.secure ||
-                    status === "connected" ||
-                    note("protocolConfirmed") !== "true" ||
-                    !note("baud") ||
-                    !note("channel")
-                  }
-                  onClick={connect}
-                >
-                  <Radio size={16} />
-                  센서 연결
-                </button>
-                <button
-                  onClick={() => serial.current?.disconnect()}
-                  disabled={status !== "connected"}
-                >
-                  <Unplug size={16} />
-                  연결 해제
-                </button>
-              </div>
-            </>
+            sensorConnection
           ) : state.mode === "practice" ? (
             <>
               <p>
@@ -629,9 +657,15 @@ export function Measurement({
           ) : (
             <>
               <p>
-                CSV 열 이름: <code>time,raw,distance</code> (시간 s, 측정값,
-                거리 cm). 거리는 생략할 수 있습니다.
+                저장한 CSV 파일을 불러오거나 측정한 값을 직접 입력할 수 있어요.
               </p>
+              <details>
+                <summary>불러올 파일의 형식</summary>
+                <p>
+                  CSV 열 이름은 <code>time,raw,distance</code>입니다. 순서대로
+                  시간(s), 센서가 읽은 값, 거리(cm)이며 거리는 생략할 수 있어요.
+                </p>
+              </details>
               <label className="file-button">
                 <Upload size={16} />
                 CSV 불러오기
@@ -657,24 +691,32 @@ export function Measurement({
               </button>
             </>
           )}
-          <h3>보정 순서</h3>
+          <h3>LED를 끈 값부터 기록해요</h3>
           <ol>
-            <li>수신값이 실제로 변하는지 확인합니다.</li>
-            <li>LED를 끄고 주변광을 기록합니다.</li>
-            <li>LED를 켜고 시작 거리에서 값과 포화 여부를 확인합니다.</li>
+            <li>센서에 비추는 빛을 바꿔 값이 달라지는지 봅니다.</li>
+            <li>LED를 끄고 주변빛만 있을 때의 값을 입력합니다.</li>
+            <li>
+              LED를 켰을 때 값이 최댓값에 계속 붙어 있으면 거리를 늘립니다.
+            </li>
           </ol>
-          <div className="grid-2">
-            {field("ambient", "LED를 끈 주변광 값", "0", "number")}
-            {field(
-              "startDistance",
-              "시작 거리 (cm, 0보다 크게)",
-              note("design.startDistance", "20"),
-              "number",
-            )}
-          </div>
+          {runSetupFields}
           <button disabled={recording} onClick={() => newRun()}>
             이 설정으로 새 실험 만들기
           </button>
+          {run && run.mode === state.mode && (
+            <p className="notice">
+              ‘{run.name}’을 준비했어요. 시작 거리 {run.startDistance}cm, LED를
+              끈 값 {run.ambient}입니다. 아래 ‘다음’을 눌러 측정으로 갑니다.
+            </p>
+          )}
+          <details>
+            <summary>이지온으로 수집하려면</summary>
+            <div className="button-row">
+              <button onClick={onOpenEzOn}>
+                이지온에서 직접 수집하는 방법
+              </button>
+            </div>
+          </details>
           {run && run.mode !== state.mode && (
             <p className="notice">
               입력 방식 선택은 새 실험에 적용됩니다. 현재 선택된 기록의 출처는{" "}
@@ -690,7 +732,77 @@ export function Measurement({
       )}
       {step === 3 && (
         <div className="card">
-          <h3>자동차의 실제 속력 확인</h3>
+          <h3>측정과 기록 순서</h3>
+          {run?.mode === "manual" || (!run && state.mode === "manual") ? (
+            <ol className="instructions">
+              <li>LED를 끈 값과 시작 거리를 입력하고 새 실험을 만듭니다.</li>
+              <li>
+                거리별로 잰 값과 시각을 아래 입력칸에 적고 ‘측정값 추가’를
+                누릅니다.
+              </li>
+              <li>기록을 다 넣으면 아래 ‘다음’을 눌러 예상과 비교합니다.</li>
+            </ol>
+          ) : (
+            <ol className="instructions">
+              <li>
+                아래에서 자동차의 실제 속력을 구한 뒤 ‘측정 시작’을 누릅니다.
+              </li>
+              <li>
+                자동차 A 버튼을 누르고, 움직이기 시작할 때 ‘자동차 출발 표시’를
+                누릅니다.
+              </li>
+              <li>
+                정한 거리까지 가면 자동차 B 버튼과 앱의 ‘중지’를 누릅니다.
+              </li>
+              <li>
+                기록이 남았는지 보고 아래 ‘다음’을 눌러 예상과 비교합니다.
+              </li>
+            </ol>
+          )}
+          {(run?.mode ?? state.mode) === "practice" && (
+            <p className="muted">
+              연습 모드에서는 실제 자동차 대신 ‘자동차 출발 표시’를 눌러요.
+            </p>
+          )}
+        </div>
+      )}
+      {step === 3 && !run && (
+        <div className="card">
+          <h3>먼저, 이번 실험의 기록을 만들어요</h3>
+          <label className="field">
+            기록 방법
+            <select
+              value={state.mode}
+              onChange={(event) =>
+                setMode(event.target.value as AppState["mode"])
+              }
+            >
+              <option value="manual">직접 잰 값 입력</option>
+              <option value="serial">실물 센서로 기록</option>
+              <option value="practice">장비 없이 연습</option>
+            </select>
+          </label>
+          {state.mode === "serial" && sensorConnection}
+          {runSetupFields}
+          <div className="button-row">
+            <button className="primary" onClick={() => newRun()}>
+              이 설정으로 새 실험 만들기
+            </button>
+            {state.mode === "practice" && (
+              <button onClick={practice}>완성된 연습 데이터 사용</button>
+            )}
+          </div>
+        </div>
+      )}
+      {step === 3 && run?.mode === "serial" && status !== "connected" && (
+        <div className="card">
+          <h3>센서를 연결하면 측정을 시작할 수 있어요</h3>
+          {sensorConnection}
+        </div>
+      )}
+      {step === 3 && (
+        <div className="card">
+          <h3>자동차가 얼마나 빠르게 움직이나요?</h3>
           <p>
             모터 설정값 255는 cm/s가 아닙니다. 알려진 거리와 걸린 시간을 3회
             측정하세요.
@@ -706,6 +818,7 @@ export function Measurement({
           </div>
           <SpeedResult
             notes={state.notes}
+            hasRun={Boolean(run)}
             onApply={(v) => patch({ speed: v })}
           />
           <label className="check">
@@ -714,10 +827,10 @@ export function Measurement({
               checked={note("uniform") === "true"}
               onChange={(e) => setUniform(e.target.checked)}
             />
-            직선으로 멀어지며 분석 구간에서 속력이 대체로 일정함을 확인했다
+            속력이 일정한 구간의 기록 사용
           </label>
           <label className="field">
-            거리 표식 통과 시각 / 가속·정지 구간 기록
+            거리 표식을 지난 시각, 빨라지거나 멈춘 구간
             <textarea
               value={note("motionEvidence")}
               onChange={(e) => setNote("motionEvidence", e.target.value)}
@@ -726,14 +839,12 @@ export function Measurement({
           </label>
         </div>
       )}
-      {run && (
+      {run && step >= 3 && (
         <div className="card experiment-card">
           <div className="section-heading">
             <div>
               <div className="eyebrow">
-                {step === 4
-                  ? "EXPLAIN · 근거로 설명하기"
-                  : "OBSERVE · 측정 기록"}
+                {step === 4 ? "측정한 값으로 설명하기" : "밝기 측정"}
               </div>
               <h2>
                 {step === 4
@@ -792,14 +903,14 @@ export function Measurement({
               </strong>
             </div>
             <div>
-              <small>주변광</small>
+              <small>주변빛만 있을 때</small>
               <strong>
                 {run.ambient}
-                <em>{run.unit}</em>
+                <em>{unitLabel}</em>
               </strong>
             </div>
             <div>
-              <small>주행 기준 시점</small>
+              <small>자동차 출발 시각</small>
               <strong>
                 {run.startTime?.toFixed(2) ?? "미지정"}
                 <em>{run.startTime !== undefined ? "s" : ""}</em>
@@ -834,15 +945,15 @@ export function Measurement({
                   }
                 >
                   <Flag size={16} />
-                  주행 시작 표시
+                  자동차 출발 표시
                 </button>
-                <button disabled={recording} onClick={() => newRun()}>
+                <button disabled={recording} onClick={() => newRun(run.mode)}>
                   <Plus size={16} />새 반복 실험
                 </button>
               </div>
               <div className="grid-2">
                 <label className="field">
-                  주행 기준 시점 직접 지정 (s)
+                  자동차가 출발한 시각 (s)
                   <input
                     type="number"
                     min="0"
@@ -871,7 +982,7 @@ export function Measurement({
           {step === 4 ? (
             <>
               <label className="field">
-                정규화 기준점
+                기준으로 삼을 밝기
                 <select
                   value={reference}
                   onChange={(e) =>
@@ -895,8 +1006,9 @@ export function Measurement({
                 />
               ) : (
                 <p className="notice">
-                  양수인 보정 밝기와 확인된 거리가 있는 점이 필요합니다. 거리를
-                  직접 입력하거나 실제 속력·주행 기준 시점을 확인하세요.
+                  주변빛을 뺀 값이 0보다 크고, 거리를 알 수 있는 기록이
+                  필요해요. 거리를 직접 입력하거나 속력과 자동차 출발 시각을
+                  입력하세요.
                 </p>
               )}
             </>
@@ -928,10 +1040,10 @@ export function Measurement({
             </>
           )}
           <details>
-            <summary>보정·선형성·분석 설정</summary>
+            <summary>주변빛 값과 센서 설정</summary>
             <div className="grid-2">
               <label className="field">
-                주변광
+                LED를 껐을 때의 값
                 <input
                   type="number"
                   disabled={recording}
@@ -940,7 +1052,7 @@ export function Measurement({
                 />
               </label>
               <label className="field">
-                확인한 포화 상한값 (미확인 시 비워둠)
+                센서가 읽을 수 있는 최댓값 (모르면 비워 둠)
                 <input
                   type="number"
                   value={run.saturation ?? ""}
@@ -950,14 +1062,14 @@ export function Measurement({
                 />
               </label>
               <label className="field">
-                검증된 단위 또는 값 종류
+                선생님이 확인한 값의 종류
                 <select
                   value={run.unit}
                   onChange={(e) => patch({ unit: e.target.value })}
                 >
-                  <option>센서 원시값</option>
+                  <option value="센서 원시값">센서가 읽은 값</option>
                   <option>상대 밝기</option>
-                  <option>lx</option>
+                  <option value="lx">조도 (lx, 검증한 경우만)</option>
                 </select>
               </label>
               <label className="check">
@@ -966,11 +1078,11 @@ export function Measurement({
                   checked={run.linear}
                   onChange={(e) => patch({ linear: e.target.checked })}
                 />
-                단위와 빛의 세기에 대한 선형성을 검증했다
+                밝기와 비례하고 단위를 확인한 센서값 (교사용)
               </label>
             </div>
             <label className="field">
-              단위·선형성 확인 근거
+              검사 방법과 결과 (교사용)
               <textarea
                 value={note(`linearEvidence-${run.id}`)}
                 onChange={(e) =>
@@ -979,8 +1091,8 @@ export function Measurement({
               />
             </label>
             <p>
-              원시값의 선형성이 확인되지 않으면 등급 환산을 하지 않습니다.
-              보정값이 0 이하면 임의의 양수로 바꾸지 않습니다.
+              밝기와 센서값이 비례하고 단위가 확인된 경우에만 등급을 계산합니다.
+              주변빛을 뺀 값이 0 이하면 계산에서 뺍니다.
             </p>
           </details>
           {step !== 4 &&
@@ -989,13 +1101,8 @@ export function Measurement({
                 <summary>거리·측정값 수동 입력</summary>
                 <div className="grid-3">
                   {field("manualTime", "경과 시간 (s)", "0", "number")}
-                  {field(
-                    "manualDistance",
-                    "직접 확인한 거리 (cm)",
-                    "",
-                    "number",
-                  )}
-                  {field("manualRaw", "원본 측정값", "", "number")}
+                  {field("manualDistance", "직접 잰 거리 (cm)", "", "number")}
+                  {field("manualRaw", "센서가 읽은 값", "", "number")}
                 </div>
                 <button onClick={sampleAdd}>
                   <Plus size={16} />
@@ -1015,22 +1122,29 @@ export function Measurement({
             ))}
           <details open={step === 4}>
             <summary>
-              원본 데이터와 분석 제외 사유 ({run.samples.length}개)
+              측정 기록과 비교에서 뺄 값 ({run.samples.length}개)
             </summary>
             <p>
-              제외 이유를 입력하면 분석에서만 제외합니다. 원본 행은 그대로
-              남습니다.
+              비교에서 빼고 싶은 값에는 이유를 적으세요. 처음 기록은 남습니다.
             </p>
-            <div className="table-scroll">
-              <table>
+            <p className="muted">
+              표가 화면보다 넓으면 좌우로 스크롤해 모든 열을 확인하세요.
+            </p>
+            <div
+              className="table-scroll"
+              role="region"
+              aria-label="측정 원본 데이터 표"
+              tabIndex={0}
+            >
+              <table className="measurement-table">
                 <thead>
                   <tr>
                     <th>시간(s)</th>
                     <th>거리(cm)</th>
-                    <th>원본</th>
-                    <th>보정값</th>
+                    <th>센서가 읽은 값</th>
+                    <th>주변빛을 뺀 값</th>
                     <th>상태</th>
-                    <th>분석 제외 사유</th>
+                    <th>비교에서 빼는 이유</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1044,12 +1158,12 @@ export function Measurement({
                         {s.raw === null
                           ? "누락"
                           : isSaturated(s, run)
-                            ? "포화"
+                            ? "센서 최댓값에 도달"
                             : (corrected(s, run) ?? 0) <= 0
                               ? "0 이하 · 계산 제외"
                               : s.excluded
-                                ? "분석 제외"
-                                : "유효"}
+                                ? "비교에서 제외"
+                                : "사용"}
                       </td>
                       <td>
                         <input
@@ -1082,7 +1196,7 @@ export function Measurement({
             }
           >
             <Download size={16} />
-            원본·보정 데이터 CSV
+            측정값 파일로 저장 (CSV)
           </button>
           {run.originalCsv !== undefined && (
             <button
@@ -1101,8 +1215,8 @@ export function Measurement({
           {step === 4 && (
             <>
               <div className="notice">
-                {normalize(run, reference).length}개 유효한 점으로 비교합니다.
-                이상적인 모형은 같은 광원·방향·조건을 가정합니다.
+                {normalize(run, reference).length}개 기록으로 비교합니다. 이론
+                그래프는 같은 광원과 방향, 같은 주변 조건에서의 밝기입니다.
               </div>
               {field("explainAuthor", "설명을 기록하는 사람 또는 모둠 별칭")}
               {[
@@ -1116,7 +1230,7 @@ export function Measurement({
                 ],
                 [
                   "explainError",
-                  "주변광·광원 방향·속력·센서 특성은 어떤 영향을 주었나요?",
+                  "주변빛, LED 방향, 자동차 속력은 결과에 어떤 영향을 주었나요?",
                 ],
                 ["explainImprove", "다음 실험에서 무엇을 개선할까요?"],
               ].map(([key, label]) => (
@@ -1137,7 +1251,7 @@ export function Measurement({
                   }
                   onClick={saveExplanation}
                 >
-                  작성자별 설명 보존하기
+                  내 설명 저장
                 </button>
                 <button
                   onClick={() =>
@@ -1155,7 +1269,7 @@ export function Measurement({
               </div>
               {records.length > 0 && (
                 <details>
-                  <summary>보존된 설명 {records.length}개</summary>
+                  <summary>저장한 설명 {records.length}개</summary>
                   {records.map((r) => (
                     <blockquote key={r.id}>
                       <strong>
@@ -1166,8 +1280,7 @@ export function Measurement({
                       </strong>
                       <p>{r.evidence}</p>
                       <small>
-                        {new Date(r.savedAt).toLocaleString("ko-KR")} · 최초
-                        예상과 별도 보존
+                        {new Date(r.savedAt).toLocaleString("ko-KR")}
                       </small>
                     </blockquote>
                   ))}
@@ -1177,7 +1290,7 @@ export function Measurement({
           )}
         </div>
       )}
-      {!run && step !== 2 && (
+      {!run && step === 4 && (
         <div className="card empty-state">
           <h3>아직 측정 기록이 없어요</h3>
           <p>장비 없이 연습 데이터를 불러오거나 새 실험을 만들어 시작하세요.</p>
@@ -1185,7 +1298,6 @@ export function Measurement({
             <button className="primary" onClick={practice}>
               연습 데이터로 체험하기
             </button>
-            <button onClick={() => newRun("manual")}>수동 입력 시작</button>
           </div>
         </div>
       )}
@@ -1199,9 +1311,11 @@ export function Measurement({
 }
 function SpeedResult({
   notes,
+  hasRun,
   onApply,
 }: {
   notes: Record<string, string>;
+  hasRun: boolean;
   onApply: (v: number) => void;
 }) {
   const speeds = [0, 1, 2].flatMap((i) => {
@@ -1223,14 +1337,31 @@ function SpeedResult({
     <div className="notice">
       {speeds.length ? (
         <>
-          평균 {avg.toFixed(2)} cm/s · 표준편차 {deviation.toFixed(2)} cm/s ·{" "}
-          {speeds.length}회
+          {speeds.length}회 측정한 평균 속력: {avg.toFixed(2)} cm/s
           <button
-            disabled={notes.uniform !== "true"}
+            disabled={!hasRun || notes.uniform !== "true"}
             onClick={() => onApply(avg)}
           >
-            확인한 속력을 실험에 적용
+            이 속력으로 거리 계산
           </button>
+          {!hasRun && (
+            <p>위에서 새 실험을 만들면 이 속력을 적용할 수 있어요.</p>
+          )}
+          {hasRun && notes.uniform !== "true" && (
+            <p>
+              세 번의 속력이 비슷하면 아래 ‘속력이 일정한 구간의 기록 사용’을
+              선택하세요.
+            </p>
+          )}
+          <details>
+            <summary>속력 측정값 비교</summary>
+            <p>
+              {speeds
+                .map((speed, i) => `${i + 1}회 ${speed.toFixed(2)} cm/s`)
+                .join(" · ")}
+            </p>
+            <p>속력이 흩어진 정도(표준편차): {deviation.toFixed(2)} cm/s</p>
+          </details>
         </>
       ) : (
         "거리와 시간에 각각 0보다 큰 값을 입력하면 실제 속력을 계산합니다."

@@ -14,7 +14,6 @@ import {
   Orbit,
   Settings2,
   Sparkles,
-  Star,
   Upload,
   Usb,
   Wrench,
@@ -29,6 +28,7 @@ import {
 import { Measurement } from "./Measurement";
 import { EzOnEntry, EzOnGuide } from "./EzOnGuide";
 import { HardwareEntry, HardwareManual } from "./HardwareManual";
+import { SmartImage } from "./SmartImage";
 import { Resources, resources } from "./Resources";
 import { DataChart } from "./DataChart";
 import {
@@ -50,38 +50,38 @@ import {
 const lessons = {
   3: {
     title: "예상하고 설계하기",
-    poe: "PREDICT",
+    poe: "예상",
     description: "나의 생각에서 실험으로",
     steps: [
       "앞선 수업 연결",
       "나의 예상 그래프",
       "거리와 빛의 세기",
       "실험 설계",
-      "설계 점검",
+      "우리 모둠 계획",
     ],
     times: [5, 8, 8, 15, 9],
   },
   4: {
     title: "측정하고 설명하기",
-    poe: "OBSERVE",
+    poe: "관찰",
     description: "움직이는 광원을 따라",
     steps: [
-      "준비와 안전",
-      "자동차 설정",
-      "센서 연결·보정",
-      "속력 확인·실험",
+      "오늘의 실험",
+      "자동차 준비",
+      "센서 연결",
+      "이동하며 측정",
       "예상과 비교",
     ],
     times: [5, 8, 8, 12, 12],
   },
   5: {
     title: "별의 등급으로 읽기",
-    poe: "EXPLAIN",
+    poe: "설명",
     description: "측정에서 별의 밝기까지",
     steps: [
       "실험 다시 보기",
       "등급과 밝기 비",
-      "상대 등급 변화",
+      "밝기를 등급으로",
       "겉보기·절대 등급",
       "확인과 성찰",
     ],
@@ -111,6 +111,14 @@ export default function App() {
     heading = useRef<HTMLHeadingElement>(null);
   const activeRun = state.runs.find((r) => r.id === state.activeRunId) || null;
   const lesson = lessons[state.lesson];
+  useEffect(() => {
+    // Scale rem-based navigation, guides, fields and diagrams together.
+    document.documentElement.style.fontSize = {
+      small: "100%",
+      normal: "112.5%",
+      large: "131.25%",
+    }[state.fontSize];
+  }, [state.fontSize]);
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -331,12 +339,13 @@ export default function App() {
       {state.home ? (
         <main id="activity" className="home-main">
           <section className="hero">
-            <img
+            <SmartImage
               className="hero-art"
               src="/assets/astronomy/hero-star-inquiry.png"
               width="1672"
               height="941"
               alt=""
+              loading="eager"
               fetchPriority="high"
             />
             <div className="hero-overlay" />
@@ -346,18 +355,14 @@ export default function App() {
                 탐구
               </div>
               <h1>
-                별빛의 거리를
-                <br />
-                <span>재다</span>
+                별빛의 거리를 <span>재다</span>
               </h1>
               <p className="hero-description">
-                예상하고, 측정하고, 별의 밝기를 설명하는
-                <br className="desktop-break" /> 3~5차시 탐구
+                예상하고, 측정하고, 별의 밝기를 설명하는 3~5차시 탐구
               </p>
               <p className="hero-question">
-                같은 빛도 멀어지면 어두워질까?
-                <br />
-                우리의 실험에서 별의 비밀을 찾아보세요.
+                같은 빛도 멀어지면 어두워질까? 우리의 실험에서 별의 비밀을
+                찾아보세요.
               </p>
               <div className="button-row">
                 <button
@@ -381,13 +386,13 @@ export default function App() {
               </div>
             </div>
             <span className="hero-caption">
-              별지도는 생성 삽화이며 실제 천상열차분야지도 사료가 아닙니다.
+              별지도를 모티프로 한 설명용 그림
             </span>
           </section>
           <section className="journey">
             <div className="section-heading">
               <div>
-                <div className="eyebrow">OUR INQUIRY JOURNEY</div>
+                <div className="eyebrow">탐구의 흐름</div>
                 <h2>생각에서 시작해, 근거로 설명하기</h2>
               </div>
               <span className="muted">예상 → 관찰 → 설명</span>
@@ -424,14 +429,6 @@ export default function App() {
           <HardwareEntry onOpen={() => openHardware()} />
           <EzOnEntry onOpen={() => setPanel("ezon")} />
           <section className="home-note">
-            <div>
-              <Star size={20} />
-              <p>
-                <strong>처음 생각을 소중하게 기록해요.</strong>
-                <br />
-                예상은 그대로 남겨 두고, 관찰한 뒤 새로운 설명을 더합니다.
-              </p>
-            </div>
             <a
               href="https://nc1395.labbitory.com/"
               target="_blank"
@@ -527,9 +524,7 @@ export default function App() {
               <span className="footer-stage">· {lesson.steps[state.step]}</span>
             </span>
             <button className="primary" onClick={next}>
-              {state.lesson === 5 && state.step === 4
-                ? "탐구 마무리"
-                : "완료하고 다음"}
+              {state.lesson === 5 && state.step === 4 ? "탐구 마무리" : "다음"}
               <ArrowRight size={16} />
             </button>
           </footer>
@@ -540,7 +535,7 @@ export default function App() {
           별빛 탐구실 <span className="footer-dot">✦</span> 별빛의 거리를 재다
         </span>
         <span>
-          기록은 이 브라우저에 저장됩니다. 다른 기기에는 JSON 파일로 옮겨
+          기록은 이 브라우저에 저장됩니다. 다른 기기에는 기록 파일로 옮겨
           주세요.
         </span>
       </footer>
@@ -588,11 +583,11 @@ export default function App() {
           {panel === "help" && (
             <>
               <h3>예상 → 관찰 → 설명</h3>
-              <p>
-                ① 3차시에서 처음 생각과 그래프를 저장해요.
-                <br />② 4차시에서 직접 측정하거나 연습 데이터를 살펴봐요.
-                <br />③ 5차시에서 별의 등급을 탐구하고 보고서를 저장해요.
-              </p>
+              <ol className="help-steps">
+                <li>3차시에서 처음 생각과 그래프를 저장해요.</li>
+                <li>4차시에서 직접 측정하거나 연습 데이터를 살펴봐요.</li>
+                <li>5차시에서 별의 등급을 탐구하고 보고서를 저장해요.</li>
+              </ol>
               <p>
                 처음 예상은 수정하지 않고 보존합니다. 관찰 후 설명에 달라진
                 생각을 기록하세요.
@@ -668,11 +663,11 @@ export default function App() {
               <div className="button-row">
                 <button className="primary" onClick={backup}>
                   <Download size={16} />
-                  JSON 백업
+                  기록 파일 저장 (JSON)
                 </button>
                 <label className="file-button">
                   <Upload size={16} />
-                  JSON 복원
+                  기록 파일 불러오기
                   <input
                     type="file"
                     accept=".json,application/json"
@@ -801,7 +796,13 @@ export default function App() {
             ))}
             <h2>2. 설계·관찰·설명·성찰 기록</h2>
             {Object.entries(state.notes)
-              .filter(([, v]) => v.trim())
+              .filter(
+                ([key, value]) =>
+                  value.trim() &&
+                  !/^(?:safety\d|designCheck\d|car\.check\.|hardware\.check\.|hardware\.codeLoaded$)|^resource\..*\.complete$/.test(
+                    key,
+                  ),
+              )
               .map(([k, v]) => (
                 <p key={k}>
                   <strong>{reportLabel(k)}</strong>: {learningNoteValue(k, v)}
@@ -815,10 +816,9 @@ export default function App() {
                   {r.name}
                 </h3>
                 <p>
-                  주변광 {r.ambient} / 시작 거리 {r.startDistance}cm / 속력{" "}
-                  {r.speed ?? "미확인"}cm/s / 기준시점 {r.startTime ?? "미지정"}
-                  s / 단위 {r.unit} / 선형성{" "}
-                  {r.linear ? "확인 기록됨" : "미확인"}
+                  주변 빛의 값 {r.ambient} / 처음 거리 {r.startDistance}cm /
+                  속력 {r.speed ?? "아직 측정하지 않음"}cm/s / 출발 시각{" "}
+                  {r.startTime ?? "아직 기록하지 않음"}s / 단위 {r.unit}
                 </p>
                 <DataChart run={r} />
                 <DataChart
@@ -836,7 +836,7 @@ export default function App() {
                     )?.id
                   }
                 />
-                <h4>정규화와 계산 결과</h4>
+                <h4>기준 밝기와 비교한 결과</h4>
                 <p>
                   선택 기준점:{" "}
                   {state.notes["reference-" + r.id] || "첫 유효 거리·밝기 점"}
@@ -868,7 +868,8 @@ export default function App() {
                         <td>{p.relative.toFixed(4)}</td>
                         <td>{p.theory.toFixed(4)}</td>
                         <td>
-                          {p.deltaMagnitude?.toFixed(3) ?? "단위·선형성 미검증"}
+                          {p.deltaMagnitude?.toFixed(3) ??
+                            "등급으로 바꿀 수 없는 값"}
                         </td>
                       </tr>
                     ))}
@@ -903,10 +904,7 @@ export default function App() {
                 </table>
               </section>
             ))}
-            <p>
-              실물 기기 연동 검증 전. 생성 삽화는 실제 제품 배선도·사료·실측
-              결과가 아닙니다.
-            </p>
+            <p>연습 데이터와 실제 측정값은 구분해서 사용하세요.</p>
           </article>
         </div>
       )}

@@ -2,203 +2,198 @@ export type HardwareStep = {
   order: number;
   title: string;
   image: string;
-  references: string[];
+  references: number[];
+  primaryPhoto?: number;
+  equipment?: string[];
   instruction: string;
-  check: string;
   alt: string;
-  status: string;
 };
+
+export type HardwareSectionKey = "kit" | "car" | "connection" | "measurement";
+export type HardwareSection = {
+  id: HardwareSectionKey;
+  title: string;
+  summary: string;
+  orders: number[];
+  teacherNotes: string[];
+};
+
+export const hardwareSections: HardwareSection[] = [
+  {
+    id: "kit",
+    title: "준비물",
+    summary: "자동차와 빛을 재는 장비를 준비해요.",
+    orders: [1],
+    teacherNotes: [
+      "자동차와 뒤쪽 LED는 전원이 서로 다릅니다. USB 허브는 컴퓨터에 연결 자리가 부족할 때만 사용합니다.",
+    ],
+  },
+  {
+    id: "car",
+    title: "자동차 준비",
+    summary: "마이크로비트와 LED를 달고, 출발과 정지 방법을 알아봐요.",
+    orders: [2, 3, 4, 5, 6, 7],
+    teacherNotes: [
+      "뒤쪽 원형 LED가 실험용 광원입니다. 자동차의 빨간 LED·파란 지시등과 구분하세요. LED 스위치와 고정 방법은 실제 제품을 보고 정합니다.",
+      "초음파의 5cm는 자동차 앞쪽과 장애물 사이의 비교 기준입니다. 실제 제동 거리를 보장하지 않으며, 탁자 끝의 낭떠러지도 감지하지 못할 수 있습니다.",
+      "A를 누른 시각은 측정 기록에 따로 표시합니다. 자동차와 밝기 센서가 자동으로 같은 시각에 시작되는 것은 아닙니다.",
+    ],
+  },
+  {
+    id: "connection",
+    title: "센서·컴퓨터 연결",
+    summary: "밝기 센서 → A0 → USB → 컴퓨터 순서로 연결해요.",
+    orders: [8, 9, 10],
+    teacherNotes: [
+      "센서에 맞는 전용 연결선을 사용합니다.",
+      "A0는 제공된 실물 사진으로 확인한 물리 연결 자리입니다. 통신 프레임의 채널 번호·값 단위·선형성은 별도로 검증해야 합니다. 확인되지 않은 센서값에 lux를 붙이지 않습니다.",
+      "충전만 가능한 USB 케이블은 데이터가 전달되지 않습니다. 보드 전원 스위치는 실제 제품 안내에 따라 사용합니다.",
+    ],
+  },
+  {
+    id: "measurement",
+    title: "측정 자리",
+    summary: "센서는 고정하고, 자동차가 멀어질 길을 만들어요.",
+    orders: [11, 12],
+    teacherNotes: [
+      "손으로 센서를 든 사진은 방향을 보여 주는 예시입니다. 실제 측정에서는 센서를 고정하고, 자동차가 케이블을 끌고 가지 않게 합니다.",
+      "빛이 나오는 곳부터 센서가 빛을 받는 곳까지 줄자로 잽니다.",
+      "모터 설정 255는 실제 속력이 아닙니다. 같은 시간 동안 간 거리를 반복해서 재어 속력이 거의 일정한 구간을 사용합니다. 출발·정지 구간은 따로 구분합니다.",
+      "LED를 가리거나 비췄을 때 값이 바뀌는지 살펴봅니다. 더 밝게 해도 최댓값에서 멈춰 있다면 센서가 측정할 수 있는 범위를 넘은 것일 수 있습니다. 자동차 지시등·모니터·탁자 반사도 영향을 줄 수 있습니다.",
+    ],
+  },
+];
+
 export const hardwareSteps: HardwareStep[] = [
   {
     order: 1,
-    title: "준비물 확인",
+    title: "이 장비들을 준비해요",
     image: "illustrations/01-sensor-kit.png",
-    references: [
-      "reference-photos/미디어 (37).jpeg",
-      "reference-photos/미디어 (47).jpeg",
-      "reference-photos/미디어 (25).jpeg",
+    references: [37, 47, 25],
+    instruction: "자동차와 빛을 재는 장비를 준비해요.",
+    equipment: [
+      "마퀸 자동차·마이크로비트·건전지",
+      "자동차 뒤에 달 원형 LED",
+      "이지메이커 보드·밝기 센서·전용 연결선",
+      "노트북·USB 데이터 케이블",
+      "거리를 잴 줄자·시간을 잴 시계",
     ],
-    instruction:
-      "마퀸·마이크로비트·독립 LED·이지메이커 보드·밝기 센서·센서 연결선·USB 데이터 케이블·노트북을 준비한다.",
-    check:
-      "자동차 전원과 LED 전원은 별개다. USB 허브는 노트북 단자에 맞춰 준비한다.",
-    alt: "준비물 확인 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+    alt: "자동차, 센서, 연결선과 컴퓨터를 보여 주는 준비물 설명용 그림",
   },
   {
     order: 2,
-    title: "마이크로비트 앞뒤 확인",
+    title: "마이크로비트 앞면을 찾아요",
     image: "illustrations/02-microbit-front-back.png",
-    references: [
-      "reference-photos/미디어 (45).jpeg",
-      "reference-photos/미디어 (46).jpeg",
-    ],
+    references: [45, 46],
+    primaryPhoto: 45,
     instruction:
-      "LED 25개와 A/B 버튼이 있는 면이 앞면이다. 뒤에는 USB·리셋·배터리 단자와 부품이 있다.",
-    check: "뒷면 리셋 버튼은 주행 A버튼과 다르다.",
-    alt: "마이크로비트 앞뒤 확인 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+      "작은 LED 25개와 A·B 버튼이 있는 쪽이 앞면이에요. 뒤쪽의 리셋 버튼은 출발 버튼 A와 달라요.",
+    alt: "마이크로비트의 앞면과 뒷면을 보여 주는 설명용 그림",
   },
   {
     order: 3,
-    title: "마이크로비트 꽂기",
+    title: "전원을 끄고 마이크로비트를 꽂아요",
     image: "illustrations/03-insert-microbit.png",
-    references: [
-      "reference-photos/미디어 (45).jpeg",
-      "reference-photos/미디어 (48).jpeg",
-      "reference-photos/미디어 (25).jpeg",
-    ],
+    references: [45, 48, 25],
+    primaryPhoto: 48,
     instruction:
-      "전원을 끈 상태에서 금색 접점을 아래로 하여 슬롯에 바르게 꽂는다. LED와 A/B 버튼 면은 초음파 센서가 있는 자동차 앞쪽을 향한다.",
-    check: "앞뒤 방향과 슬롯 정렬을 확인하고 억지로 밀지 않는다.",
-    alt: "마이크로비트 꽂기 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+      "금색 부분을 아래로 향하게 꽂아요. LED와 A·B 버튼이 있는 면은 자동차 앞쪽의 둥근 초음파 센서를 향해요. 잘 들어가지 않으면 방향을 살펴보고, 억지로 밀지 않아요.",
+    alt: "마이크로비트를 마퀸에 꽂는 방향을 보여 주는 설명용 그림",
   },
   {
     order: 4,
-    title: "뒤쪽 LED 부착",
+    title: "자동차 뒤에 LED를 달아요",
     image: "illustrations/04-rear-led.png",
-    references: [
-      "reference-photos/미디어 (47).jpeg",
-      "reference-photos/미디어 (31).jpeg",
-      "reference-photos/미디어 (34).jpeg",
-    ],
+    references: [47, 31, 34],
+    primaryPhoto: 31,
     instruction:
-      "원형 독립 LED를 자동차 뒤쪽, 사진처럼 마이크로비트 후면 쪽에 고정한다. 빛은 자동차 뒤쪽의 밝기 센서를 향한다.",
-    check:
-      "차체의 빨간 LED나 파란 지시등과 실험 광원을 구분한다. LED의 정확한 스위치 동작·접착 수단은 사진만으로 확정하지 않는다.",
-    alt: "뒤쪽 LED 부착 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+      "원형 LED를 자동차 뒤에 단단히 고정해요. LED의 빛이 나오는 쪽은 자동차 뒤에 놓을 밝기 센서를 향하게 해요.",
+    alt: "자동차 뒤쪽에 원형 LED를 고정한 설명용 그림",
   },
   {
     order: 5,
-    title: "자동차 전원 켜기",
+    title: "프로그램을 넣은 뒤 전원을 켜요",
     image: "illustrations/05-power-switch.png",
-    references: [
-      "reference-photos/미디어 (26).jpeg",
-      "reference-photos/미디어 (27).jpeg",
-    ],
+    references: [26, 27],
+    primaryPhoto: 26,
     instruction:
-      "뒤쪽 건전지 홀더 아래에 있는 자동차 전원 스위치를 확인하고 켠다.",
-    check:
-      "전면 P0 단자와 전원 스위치를 혼동하지 않는다. 스위치 이동 방향은 실제 표시와 원본 사진으로 확인한다.",
-    alt: "자동차 전원 켜기 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+      "출발·정지 프로그램을 마이크로비트에 먼저 넣어요. 자동차 뒤쪽 건전지 홀더 아래의 전원 스위치를 실제 표시를 보며 켜요.",
+    alt: "자동차 전원 스위치를 찾는 설명용 그림",
   },
   {
     order: 6,
-    title: "A버튼으로 주행 시작",
+    title: "A로 출발하고 B로 멈춰요",
     image: "illustrations/06-press-a.png",
-    references: [
-      "reference-photos/미디어 (29).jpeg",
-      "reference-photos/미디어 (27).jpeg",
-      "reference-photos/미디어 (28).jpeg",
-    ],
+    references: [29, 27, 28],
+    primaryPhoto: 29,
     instruction:
-      "교사가 준비한 주행 프로그램을 먼저 넣은 후, 앞면을 정면에서 보았을 때 왼쪽 A버튼을 눌러 출발한다.",
-    check:
-      "A버튼 주행은 프로그램이 있어야 동작한다. 모터 설정 255는 실제 속력 단위가 아니다.",
-    alt: "A버튼으로 주행 시작 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+      "제공된 프로그램에서는 앞면 왼쪽 A 버튼을 누르면 출발하고, 오른쪽 B 버튼을 누르면 멈춰요. 넓은 바닥에서 먼저 짧게 움직여 보고 멈춰 보세요.",
+    alt: "마이크로비트 앞면의 A 버튼을 누르는 설명용 그림",
   },
   {
     order: 7,
-    title: "초음파 정지 확인",
+    title: "앞의 장애물을 만나면 멈추는지 봐요",
     image: "illustrations/07-obstacle-stop.png",
-    references: [
-      "reference-photos/미디어 (30).jpeg",
-      "reference-photos/미디어 (31).jpeg",
-    ],
+    references: [30, 31],
+    primaryPhoto: 30,
     instruction:
-      "자동차 앞쪽 초음파 센서와 장애물 사이 거리를 확인하며 정지 조건을 사전 시험한다. 제공된 코드는 센서가 읽은 값이 5cm 미만일 때 정지 명령을 보낸다.",
-    check:
-      "5cm는 프로그램의 비교 기준이며 실제 제동 거리 보장이 아니다. 사진에서 길이를 읽지 않는다. LED–밝기 센서 사이 거리와 다르며 탁자 추락 방지 기능도 아니다.",
-    alt: "초음파 정지 확인 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+      "제공된 코드는 자동차 앞쪽 초음파 센서가 장애물까지 5cm 미만으로 읽으면 정지해요. 멈추지 않으면 B 버튼으로 세우세요. 탁자 끝에서는 시험하지 않아요.",
+    alt: "자동차 앞쪽 초음파 센서와 장애물의 관계를 보여 주는 설명용 그림",
   },
   {
     order: 8,
-    title: "밝기 센서에 연결선 꽂기",
+    title: "밝기 센서에 연결선을 꽂아요",
     image: "illustrations/09-sensor-connector.png",
-    references: ["reference-photos/미디어 (41).jpeg"],
+    references: [41],
+    primaryPhoto: 41,
     instruction:
-      "밝기 센서의 흰색 커넥터 모양을 맞춰 전용 다선 연결선을 끝까지 꽂는다.",
-    check:
-      "금속 핀별 배선을 추측하지 않는다. 일반 브레드보드 점퍼선으로 바꿔 그리지 않는다.",
-    alt: "밝기 센서에 연결선 꽂기 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+      "센서의 흰색 연결 자리에 모양을 맞춰 전용 연결선을 꽂아요. 센서 가운데 평평한 면이 빛을 받는 곳이에요.",
+    alt: "밝기 센서의 연결선과 빛을 받는 면을 보여 주는 설명용 그림",
   },
   {
     order: 9,
-    title: "보드 A0 연결",
+    title: "반대쪽은 보드의 A0에 꽂아요",
     image: "illustrations/10-board-a0.png",
-    references: [
-      "reference-photos/미디어 (39).jpeg",
-      "reference-photos/미디어 (38).jpeg",
-      "reference-photos/미디어 (37).jpeg",
-    ],
-    instruction: "연결선 반대쪽을 이지메이커 보드의 아날로그 입력 A0에 꽂는다.",
-    check:
-      "사진에서 확인된 물리 포트는 A0다. 통신 프레임의 채널 번호·값 단위·선형성은 별도 검증 대상이다.",
-    alt: "보드 A0 연결 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+    references: [39, 38, 37],
+    primaryPhoto: 39,
+    instruction:
+      "연결선의 다른 쪽은 이지메이커 보드에서 A0라고 적힌 자리에 꽂아요. 센서 이름이 아니라 보드에 적힌 A0 표시를 찾아요.",
+    alt: "이지메이커 보드의 A0 연결 자리를 보여 주는 설명용 그림",
   },
   {
     order: 10,
-    title: "노트북 USB 연결",
+    title: "USB로 컴퓨터와 연결해요",
     image: "illustrations/11-usb-laptop.png",
-    references: ["reference-photos/미디어 (44).jpeg"],
+    references: [44],
+    primaryPhoto: 44,
     instruction:
-      "보드의 USB 단자에서 데이터 케이블을 연결한다. 사진처럼 필요하면 USB 허브를 거쳐 노트북에 연결한다.",
-    check:
-      "허브는 선택 사항이다. 기기에 맞는 케이블을 사용하고 충전 전용 케이블 문제를 점검한다. 사진만으로 보드 전원 스위치 위치의 필수 상태를 단정하지 않는다.",
-    alt: "노트북 USB 연결 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+      "보드와 노트북을 USB 데이터 케이블로 연결해요. USB 허브는 필요할 때만 사용해요.",
+    alt: "이지메이커 보드에서 USB 케이블을 거쳐 노트북에 연결하는 설명용 그림",
   },
   {
     order: 11,
-    title: "실험 배치와 정렬",
+    title: "센서는 고정하고 LED와 마주 보게 해요",
     image: "illustrations/12-measurement-layout.png",
-    references: [
-      "reference-photos/미디어 (40).jpeg",
-      "reference-photos/미디어 (42).jpeg",
-      "reference-photos/미디어 (43).jpeg",
-      "reference-photos/미디어 (44).jpeg",
-    ],
+    references: [40, 42, 43, 44],
     instruction:
-      "밝기 센서는 움직이지 않게 고정하고 수광부가 뒤쪽 LED를 향하게 한다. LED와 수광부 중심의 높이를 맞춘다. 자동차 앞쪽은 센서에서 멀어지는 방향이다.",
-    check:
-      "거리는 LED 발광면과 센서 수광부 사이로 정한다. 손으로 든 사진은 방향 참고이며 본 측정은 센서를 고정한다. 그림 속 거리는 축척이 아니다.",
-    alt: "실험 배치와 정렬 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+      "센서를 왼쪽에 고정하고 LED와 센서의 높이·방향을 맞춰요. 자동차는 LED가 센서를 향한 채 오른쪽으로 멀어지게 놓아요.",
+    alt: "왼쪽 고정 센서와 오른쪽으로 멀어지는 LED 자동차를 보여 주는 실험 배치 설명용 그림",
   },
   {
     order: 12,
-    title: "소등 후 측정",
+    title: "주변 빛을 일정하게 하고 측정해요",
     image: "illustrations/08-dark-observation.png",
-    references: [
-      "reference-photos/미디어 (32).jpeg",
-      "reference-photos/미디어 (33).jpeg",
-      "reference-photos/미디어 (35).jpeg",
-      "reference-photos/미디어 (36).jpeg",
-    ],
+    references: [32, 33, 35, 36],
+    primaryPhoto: 32,
     instruction:
-      "주변 조명 조건을 일정하게 정한다. 가능하면 주변광을 줄이고 배치를 확인한다. LED를 끈 배경값과 켠 상태를 기록한다.",
-    check:
-      "자동차 지시등·모니터·탁자 반사도 측정에 영향을 줄 수 있다. 사진 밝기는 조도 값이 아니다. 출발·정지 구간과 반복 측정을 구분한다.",
-    alt: "소등 후 측정 단계 설명용 사진 기반 삽화",
-    status:
-      "photo-referenced illustration; compare exact hardware details with reference photos",
+      "LED를 끈 상태에서 주변 빛의 값을 먼저 기록해요. 그다음 LED를 켜고, 실험하는 동안 교실 조명을 같은 상태로 유지해요.",
+    alt: "주변 빛을 줄이고 자동차 뒤쪽 LED를 켠 설명용 그림",
   },
 ];
+
+export function sectionForHardwareStep(step: number) {
+  return (
+    hardwareSections.find((section) => section.orders.includes(step)) ??
+    hardwareSections[0]
+  );
+}

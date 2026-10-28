@@ -73,10 +73,7 @@ export function DataChart({
     const series: SeriesOption[] = analysis
       ? [
           {
-            name:
-              run.mode === "practice"
-                ? "연습 데이터 · 상대 밝기"
-                : "측정 · 상대 밝기",
+            name: run.mode === "practice" ? "연습 밝기" : "측정한 밝기",
             type: "line",
             symbolSize: 7,
             connectNulls: false,
@@ -91,7 +88,7 @@ export function DataChart({
             itemStyle: { color: "#79d8d0" },
           },
           {
-            name: "이상적 역제곱 모형",
+            name: "이론 밝기",
             type: "line",
             showSymbol: false,
             lineStyle: { type: "dashed", width: 2 },
@@ -101,7 +98,7 @@ export function DataChart({
         ]
       : [
           {
-            name: "원본 값",
+            name: "센서가 읽은 값",
             type: "line",
             connectNulls: false,
             data: run.samples.map((s) => [x(s, run), s.raw]),
@@ -109,7 +106,7 @@ export function DataChart({
             showSymbol: false,
           },
           {
-            name: "주변광 보정 값",
+            name: "주변빛을 뺀 값",
             type: "line",
             connectNulls: false,
             data: run.samples.map((s) => [
@@ -157,7 +154,7 @@ export function DataChart({
           : null;
       if (baseY !== null && baseY > 0)
         series.push({
-          name: "최초 예상 · 기준점 보간",
+          name: "처음 예상한 밝기",
           type: "line",
           symbol: "diamond",
           lineStyle: { type: "dotted" },
@@ -170,28 +167,58 @@ export function DataChart({
       animation: false,
       title: {
         text: run.mode === "practice" ? "연습 데이터" : "",
-        left: "center",
-        top: 0,
-        textStyle: { color: "#f8c84d", fontSize: 12 },
+        left: 12,
+        top: 4,
+        textStyle: { color: "#f8c84d", fontSize: 16 },
       },
-      textStyle: { fontFamily: "Arial, sans-serif", color: "#c7d1ea" },
+      textStyle: {
+        fontFamily: '"Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif',
+        fontSize: 16,
+        color: "#dce4f5",
+      },
       tooltip: {
         trigger: "axis",
+        confine: true,
+        backgroundColor: "#0b1229",
+        borderColor: "#516180",
+        textStyle: { color: "#edf2fc", fontSize: 16 },
         valueFormatter: (v: unknown) =>
           typeof v === "number"
             ? Number(v.toPrecision(5)).toString()
             : String(v),
       },
-      legend: { bottom: 0, textStyle: { color: "#c7d1ea" }, type: "scroll" },
+      legend: {
+        bottom: 8,
+        left: 12,
+        right: 12,
+        itemGap: 22,
+        itemWidth: 26,
+        itemHeight: 14,
+        textStyle: { color: "#dce4f5", fontSize: 16 },
+        pageTextStyle: { color: "#dce4f5", fontSize: 15 },
+        pageIconColor: "#f8c84d",
+        pageIconInactiveColor: "#66738e",
+        pageIconSize: 16,
+        type: "scroll",
+      },
       toolbox: {
         right: 8,
+        top: 4,
+        itemSize: 20,
+        itemGap: 16,
         feature: {
           dataZoom: { title: { zoom: "영역 확대", back: "확대 되돌리기" } },
           restore: { title: "원래 크기" },
         },
         iconStyle: { borderColor: "#c7d1ea" },
       },
-      grid: { left: 70, right: 28, top: 48, bottom: 100 },
+      grid: {
+        left: 14,
+        right: 24,
+        top: 76,
+        bottom: 132,
+        containLabel: true,
+      },
       xAxis: {
         type: "value",
         name:
@@ -201,33 +228,79 @@ export function DataChart({
               ? "거리 (cm)"
               : "경과 시간 (s)",
         nameLocation: "middle",
-        nameGap: 28,
-        axisLabel: { color: "#c7d1ea" },
+        nameGap: 36,
+        nameTextStyle: { color: "#dce4f5", fontSize: 17 },
+        axisLabel: {
+          color: "#dce4f5",
+          fontSize: 16,
+          margin: 12,
+          hideOverlap: true,
+        },
         splitLine: { lineStyle: { color: "#26304d" } },
       },
       yAxis: {
         type: "value",
-        name: analysis ? "기준 대비 상대 밝기" : run.unit || "센서 원시값",
+        name: analysis
+          ? "기준 밝기의 몇 배"
+          : run.unit === "센서 원시값"
+            ? "센서가 읽은 값"
+            : run.unit || "센서가 읽은 값",
+        nameGap: 20,
+        nameTextStyle: { color: "#dce4f5", fontSize: 17, align: "left" },
+        splitNumber: 4,
         splitLine: { lineStyle: { color: "#26304d" } },
-        axisLabel: { color: "#c7d1ea" },
+        axisLabel: { color: "#dce4f5", fontSize: 16, margin: 12 },
       },
       dataZoom: [
         { type: "inside", filterMode: "none" },
         {
           type: "slider",
-          bottom: 42,
-          height: 16,
+          bottom: 56,
+          height: 24,
           borderColor: "#35415e",
-          textStyle: { color: "#c7d1ea" },
+          textStyle: { color: "#dce4f5", fontSize: 15 },
         },
       ],
       series,
     });
     chart.current = c;
-    const observer = new ResizeObserver(() => c.resize());
+    const updateReadability = () => {
+      const fontSize = Math.max(
+        15,
+        Math.round(
+          parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.9,
+        ),
+      );
+      c.resize();
+      c.setOption({
+        textStyle: { fontSize },
+        title: { textStyle: { fontSize } },
+        tooltip: {
+          textStyle: { fontSize, lineHeight: Math.round(fontSize * 1.6) },
+        },
+        legend: { textStyle: { fontSize }, pageTextStyle: { fontSize } },
+        xAxis: {
+          splitNumber: c.getWidth() < 520 ? 3 : 5,
+          axisLabel: { fontSize },
+          nameTextStyle: { fontSize: fontSize + 1 },
+        },
+        yAxis: {
+          axisLabel: { fontSize },
+          nameTextStyle: { fontSize: fontSize + 1 },
+        },
+      });
+    };
+    updateReadability();
+    const observer = new ResizeObserver(updateReadability);
     observer.observe(el.current);
+    const fontObserver = new MutationObserver(updateReadability);
+    fontObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["style", "class"],
+    });
     return () => {
       observer.disconnect();
+      fontObserver.disconnect();
       c.dispose();
       chart.current = null;
     };
@@ -241,7 +314,7 @@ export function DataChart({
         aria-label={`${run.mode === "practice" ? "연습 데이터 " : ""}${analysis ? "예상·측정·이론 비교" : "측정값"} 그래프. 아래 데이터 표에서 수치를 확인할 수 있습니다.`}
       />
       <p className="chart-hint">
-        범례로 항목 켜기·끄기 · 아래 막대로 확대 · 점 위에서 값 확인
+        아래 이름을 눌러 그래프를 켜고 끌 수 있어요. 점을 누르면 값이 보입니다.
       </p>
       <button
         className="chart-download"
@@ -266,14 +339,17 @@ export function DataChart({
           setTimeout(() => URL.revokeObjectURL(url), 1000);
         }}
       >
-        그래프 PNG 저장
+        그래프 그림으로 저장
       </button>
       {analysis && prediction && (
-        <p className="muted">
-          예상 거리는 시작 거리의 배수입니다. 선택한 기준 거리의 예상 밝기를 점
-          사이에서 보간해 같은 기준으로 비교합니다. 기준이 예상 범위 밖이거나
-          밝기가 0이면 예상 곡선은 표시하지 않습니다.
-        </p>
+        <details>
+          <summary>그래프는 어떻게 비교하나요?</summary>
+          <p>
+            선택한 거리의 밝기를 1로 맞춰 예상, 측정, 이론을 비교합니다. 처음
+            예상한 점 사이의 값은 직선으로 이어 구합니다. 기준 거리가 예상 범위
+            밖이거나 예상 밝기가 0이면 예상 그래프는 표시하지 않습니다.
+          </p>
+        </details>
       )}
     </div>
   );

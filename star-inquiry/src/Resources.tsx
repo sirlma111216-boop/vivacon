@@ -92,8 +92,7 @@ export const resources: Resource[] = [
     task: "두 번째 문항을 풀고, 등급의 관계를 거리와 연결한 이유를 기록하세요.",
     url: "https://viewer.vivasam.com/VS/MS/SCN/106582/qr/quiz/8-1/index.html",
     login: "이번 확인에서는 로그인 없이 실행",
-    verified:
-      "시작 화면 및 두 번째 문항 주제 확인 · 원문 문항은 앱에 복제하지 않습니다.",
+    verified: "시작 화면 및 두 번째 문항 주제 확인",
   },
   {
     id: "samboard",
@@ -116,7 +115,7 @@ export const resources: Resource[] = [
     task: "직접 확인한 장비 배치와 실험 조건을 적으세요.",
     url: "https://www.youtube.com/watch?v=wmQ-tinG0uU",
     login: "로그인·연령·브라우저 제한 미확인",
-    verified: "재생 내용 미확인 · 영상 내용을 추정하여 설명하지 않습니다.",
+    verified: "재생 내용 미확인",
   },
 ];
 
@@ -146,14 +145,10 @@ export function Resources({
     <section aria-labelledby="resource-title">
       <h2 id="resource-title">탐구 자료실</h2>
       <p className="muted">
-        원본 사이트를 새 탭으로 열어요. 활동을 마치면 이 앱으로 돌아와 관찰을
-        기록해 주세요.
+        필요한 자료를 골라 새 탭에서 열어 보세요. 일부 자료는 비바샘 로그인이
+        필요합니다.
       </p>
-      <div className="notice">
-        로그인이나 새 탭 제한이 있으면 선생님께 알려 주세요. 외부 사이트의 활동
-        완료 여부는 자동으로 확인하지 않습니다.
-      </div>
-      <div className="grid-2">
+      <div className="resource-grid">
         {resources
           .filter(
             (item) => teacher || notes[`resource.${item.id}.hidden`] !== "true",
@@ -182,32 +177,24 @@ export function Resources({
                     올바른 http 또는 https 주소를 입력해 주세요.
                   </p>
                 )}
-                <p>
-                  <strong>돌아와서 할 활동</strong>
-                  <br />
-                  {item.task}
-                </p>
-                <label className="field">
-                  관찰 기록
-                  <textarea
-                    value={notes[`${key}.observation`] ?? ""}
-                    onChange={(event) =>
-                      setNote(`${key}.observation`, event.target.value)
-                    }
-                    placeholder="직접 관찰한 내용을 적어 주세요."
-                    rows={3}
-                  />
-                </label>
-                <label className="check-row">
-                  <input
-                    type="checkbox"
-                    checked={notes[`${key}.complete`] === "true"}
-                    onChange={(event) =>
-                      setNote(`${key}.complete`, String(event.target.checked))
-                    }
-                  />{" "}
-                  자료 활동을 마치고 직접 완료 표시
-                </label>
+                <details>
+                  <summary>살펴볼 질문 · 메모 남기기</summary>
+                  <p>
+                    <strong>돌아와서 할 활동: </strong>
+                    {item.task}
+                  </p>
+                  <label className="field">
+                    관찰 기록
+                    <textarea
+                      value={notes[`${key}.observation`] ?? ""}
+                      onChange={(event) =>
+                        setNote(`${key}.observation`, event.target.value)
+                      }
+                      placeholder="직접 관찰한 내용을 적어 주세요."
+                      rows={3}
+                    />
+                  </label>
+                </details>
                 {teacher && (
                   <details>
                     <summary>교사용 확인 상태와 링크 설정</summary>

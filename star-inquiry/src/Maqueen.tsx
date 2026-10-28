@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MaqueenGuide } from "./MaqueenGuide";
+import { HardwareSectionContent } from "./HardwareManual";
 
 export function buildMaqueenCode(
   speed = 255,
@@ -77,46 +78,74 @@ export function Maqueen({
         Math.round(duration * 1000),
       )
     : "";
-  const checks = [
-    "전원을 켜자마자 양쪽 모터가 멈춘다.",
-    "A 버튼 후 준비 시간을 지나 양쪽 모터가 같은 설정으로 전진한다.",
-    "준비 시간에 B를 누르면 나중에도 출발하지 않는다.",
-    "주행 중 B를 누르면 멈추고 저절로 다시 출발하지 않는다.",
-    "정해진 주행 시간이 지나면 자동으로 멈춘다.",
-    "바닥에서 직진 여부와 이동 거리를 확인했다.",
-  ];
   return (
     <>
       <section className="card">
-        <span className="badge">4차시 · 자동차 설정 · 8분</span>
-        <h2>자동차는 MakeCode에서 준비해요</h2>
+        <h2>자동차를 조립하고, 움직여 봐요</h2>
         <p>
-          센서를 연결하는 일과 자동차를 움직이는 일은 별개의 작업이에요. 이 앱은
-          자동차에 프로그램을 자동 업로드하지 않습니다.
+          마이크로비트와 LED를 달고, A 버튼으로 출발하고 B 버튼으로 멈추도록
+          준비합니다.
         </p>
-        <div className="grid-2">
-          <label className="field">
-            사용하는 마퀸
-            <select
-              value={notes["car.hardware"] ?? "unknown"}
-              onChange={(event) => setNote("car.hardware", event.target.value)}
-            >
-              <option value="unknown">아직 버전을 확인하지 못했어요</option>
-              <option value="lite">Maqueen Lite / ROB0148 계열</option>
-              <option value="other">Plus·Lite V5 등 다른 버전</option>
-            </select>
-          </label>
-          <label className="field">
-            micro:bit 및 확장 버전 기록
-            <input
-              value={notes["car.version"] ?? ""}
-              onChange={(event) => setNote("car.version", event.target.value)}
-              placeholder="보드 V1/V2, 확장 이름·버전"
-            />
-          </label>
-        </div>
+        <details>
+          <summary>교사용 · 자동차와 보드 종류 기록</summary>
+          <div className="grid-2">
+            <label className="field">
+              사용하는 마퀸
+              <select
+                value={notes["car.hardware"] ?? "unknown"}
+                onChange={(event) =>
+                  setNote("car.hardware", event.target.value)
+                }
+              >
+                <option value="unknown">아직 버전을 확인하지 못했어요</option>
+                <option value="lite">Maqueen Lite / ROB0148 계열</option>
+                <option value="other">Plus·Lite V5 등 다른 버전</option>
+              </select>
+            </label>
+            <label className="field">
+              micro:bit 및 확장 버전 기록
+              <input
+                value={notes["car.version"] ?? ""}
+                onChange={(event) => setNote("car.version", event.target.value)}
+                placeholder="보드 V1/V2, 확장 이름·버전"
+              />
+            </label>
+          </div>
+        </details>
       </section>
-      <MaqueenGuide />
+      <HardwareSectionContent
+        section="car"
+        orders={[2, 3, 4]}
+        title="마이크로비트와 LED 달기"
+      />
+      <section className="card car-program">
+        <h3>주행 프로그램 넣기</h3>
+        <p>
+          선생님이 프로그램을 넣어 둔 자동차라면 아래의 전원과 출발·정지로
+          이어가세요. 처음 준비한다면 MakeCode에서 프로그램을 만든 뒤
+          마이크로비트에 넣습니다.
+        </p>
+        <ol className="instructions">
+          <li>새 프로젝트를 만들고 마퀸 확장 기능을 추가해요.</li>
+          <li>
+            A 버튼은 출발, B 버튼은 정지로 만들어요. 앞의 장애물까지 5cm
+            미만이면 멈추는 조건도 넣어요.
+          </li>
+          <li>
+            마이크로비트를 USB로 연결해 프로그램을 넣은 뒤, 아래에서 움직임을
+            시험해요.
+          </li>
+        </ol>
+        <details>
+          <summary>처음 코딩할 때 · 화면을 보며 따라 만들기</summary>
+          <MaqueenGuide />
+        </details>
+      </section>
+      <HardwareSectionContent
+        section="car"
+        orders={[5, 6, 7]}
+        title="전원과 출발·정지"
+      />
       <details className="card maqueen-code-option">
         <summary>추가 선택 · 준비 시간과 자동 정지 코드</summary>
         <p>
@@ -224,7 +253,7 @@ export function Maqueen({
                   padding: "1rem",
                   borderRadius: "12px",
                   background: "#080d24",
-                  fontSize: ".85rem",
+                  fontSize: "1rem",
                 }}
               >
                 <code>{code}</code>
@@ -253,19 +282,10 @@ export function Maqueen({
             않은 HEX 파일은 제공하지 않습니다.
           </p>
         </details>
-        <h3>바퀴를 들고 먼저 점검한 뒤, 안전한 바닥에서 확인하세요</h3>
-        {checks.map((check, index) => (
-          <label className="check-row" key={check}>
-            <input
-              type="checkbox"
-              checked={notes[`car.check.${index}`] === "true"}
-              onChange={(event) =>
-                setNote(`car.check.${index}`, String(event.target.checked))
-              }
-            />{" "}
-            {check}
-          </label>
-        ))}
+        <p>
+          바퀴를 바닥에서 든 채 A 버튼으로 출발하고 B 버튼으로 멈추는지 먼저
+          시험하세요.
+        </p>
         <details>
           <summary>교사용 공식 근거</summary>
           <p>
