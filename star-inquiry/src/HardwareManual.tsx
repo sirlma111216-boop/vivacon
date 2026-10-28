@@ -15,6 +15,7 @@ type HardwareImage = {
   height: number;
   alt: string;
   label: string;
+  rotate?: boolean;
 };
 const photoDescriptions = [
   "마퀸 앞쪽과 마이크로비트를 꽂은 방향",
@@ -52,6 +53,7 @@ function photo(number: number): HardwareImage {
     height: landscape ? 1247 : 1663,
     alt: photoDescriptions[number - 25],
     label: `실물 사진 ${number}`,
+    rotate: number === 32,
   };
 }
 function illustration(order: number): HardwareImage {
@@ -130,7 +132,7 @@ export function HardwareSectionContent({
       key={item.src}
     >
       <button
-        className="hardware-image-button"
+        className={`hardware-image-button${item.rotate ? " hardware-photo-rotated" : ""}`}
         onClick={() => setExpanded(item)}
         aria-label={`${item.alt} 확대 보기`}
       >
@@ -254,14 +256,20 @@ export function HardwareSectionContent({
               </button>
             </div>
             <div className="hardware-viewer-body">
-              <SmartImage
-                key={expanded.src}
-                src={expanded.src}
-                width={expanded.width}
-                height={expanded.height}
-                alt={expanded.alt}
-                loading="eager"
-              />
+              <div
+                className={
+                  expanded.rotate ? "hardware-photo-rotated" : undefined
+                }
+              >
+                <SmartImage
+                  key={expanded.src}
+                  src={expanded.src}
+                  width={expanded.width}
+                  height={expanded.height}
+                  alt={expanded.alt}
+                  loading="eager"
+                />
+              </div>
               <p>{expanded.alt}</p>
               <a href={expanded.src} target="_blank" rel="noopener noreferrer">
                 원본 파일을 새 탭에서 보기 ↗

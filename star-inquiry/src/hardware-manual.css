@@ -323,3 +323,26 @@
     padding: 10px 14px;
   }
 }
+/* Photo 32 was taken sideways. Rotate only its presentation; keep the original. */
+.hardware-photo-rotated,
+.hardware-main-image .hardware-photo-rotated {
+  position: relative;
+  aspect-ratio: 1663 / 1247;
+  max-height: none;
+  overflow: hidden;
+}
+.hardware-viewer-body .hardware-photo-rotated {
+  width: 100%;
+  max-width: calc(70dvh * 1663 / 1247);
+  margin-inline: auto;
+}
+.hardware-photo-rotated img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(100% * 1247 / 1663);
+  height: calc(100% * 1663 / 1247);
+  max-height: none;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  object-fit: contain;
+}
