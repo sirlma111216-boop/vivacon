@@ -16,6 +16,7 @@ import {
   Sparkles,
   Star,
   Upload,
+  Usb,
   X,
 } from "lucide-react";
 import {
@@ -25,6 +26,7 @@ import {
   type Prediction,
 } from "./Learning";
 import { Measurement } from "./Measurement";
+import { EzOnEntry, EzOnGuide } from "./EzOnGuide";
 import { Resources, resources } from "./Resources";
 import { DataChart } from "./DataChart";
 import {
@@ -97,7 +99,7 @@ function readState(): AppState {
 export default function App() {
   const [state, setState] = useState<AppState>(readState),
     [panel, setPanel] = useState<
-      "help" | "teacher" | "resources" | "records" | null
+      "help" | "teacher" | "resources" | "records" | "ezon" | null
     >(null),
     [saveStatus, setSaveStatus] = useState("이 기기에 저장됨"),
     [toast, setToast] = useState(""),
@@ -115,8 +117,10 @@ export default function App() {
     }
   }, [state]);
   useEffect(() => {
-    if (panel) dialog.current?.showModal();
-    else dialog.current?.close();
+    if (panel) {
+      dialog.current?.showModal();
+      if (panel === "ezon") dialog.current?.scrollTo({ top: 0 });
+    } else dialog.current?.close();
   }, [panel]);
   useEffect(() => {
     if (!toast) return;
@@ -293,6 +297,10 @@ export default function App() {
           ))}
         </div>
         <div className="quick-links">
+          <button onClick={() => setPanel("ezon")}>
+            <Usb size={16} />
+            이지온 수집 안내
+          </button>
           <button onClick={() => setPanel("resources")}>
             <BookOpen size={16} />
             학습 자료
@@ -322,7 +330,8 @@ export default function App() {
             <div className="hero-overlay" />
             <div className="hero-content">
               <div className="eyebrow">
-                <span className="mini-star">✦</span> 별빛 탐구실 · 별과 우주 탐구
+                <span className="mini-star">✦</span> 별빛 탐구실 · 별과 우주
+                탐구
               </div>
               <h1>
                 별빛의 거리를
@@ -400,6 +409,7 @@ export default function App() {
               })}
             </div>
           </section>
+          <EzOnEntry onOpen={() => setPanel("ezon")} />
           <section className="home-note">
             <div>
               <Star size={20} />
@@ -458,6 +468,7 @@ export default function App() {
             </div>
             {state.lesson === 4 ? (
               <Measurement
+                onOpenEzOn={() => setPanel("ezon")}
                 step={state.step}
                 state={state}
                 setNote={setNote}
@@ -518,16 +529,23 @@ export default function App() {
           주세요.
         </span>
       </footer>
-      <dialog ref={dialog} className="panel" onCancel={() => setPanel(null)}>
+      <dialog
+        ref={dialog}
+        className="panel"
+        aria-labelledby="panel-title"
+        onCancel={() => setPanel(null)}
+      >
         <div className="panel-header">
-          <h2>
-            {panel === "teacher"
-              ? "교사용 안내"
-              : panel === "resources"
-                ? "학습 자료 모음"
-                : panel === "records"
-                  ? "우리의 탐구 기록"
-                  : "탐구 도움말"}
+          <h2 id="panel-title">
+            {panel === "ezon"
+              ? "이지온으로 직접 수집하기"
+              : panel === "teacher"
+                ? "교사용 안내"
+                : panel === "resources"
+                  ? "학습 자료 모음"
+                  : panel === "records"
+                    ? "우리의 탐구 기록"
+                    : "탐구 도움말"}
           </h2>
           <button
             className="icon-button"
@@ -538,6 +556,7 @@ export default function App() {
           </button>
         </div>
         <div className="panel-body">
+          {panel === "ezon" && <EzOnGuide />}
           {panel === "help" && (
             <>
               <h3>예상 → 관찰 → 설명</h3>

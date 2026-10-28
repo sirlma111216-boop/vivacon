@@ -272,6 +272,7 @@ pre code {
   font-size: 13px;
 }
 .lesson-links button > span:first-child {
+  white-space: nowrap;
   font-size: 11px;
   background: #202a46;
   padding: 2px 7px;
@@ -289,6 +290,7 @@ pre code {
   gap: 12px;
 }
 .quick-links button {
+  white-space: nowrap;
   padding: 0 4px;
   background: transparent;
   border: 0;
@@ -1076,15 +1078,23 @@ details[open] > summary {
   }
   .lesson-nav {
     padding: 0 25px;
+    flex-direction: column;
   }
   .lesson-links {
     gap: 14px;
+    justify-content: space-between;
+    min-height: 54px;
+  }
+  .quick-links {
+    justify-content: flex-end;
+    min-height: 44px;
+    border-top: 1px solid #25314b;
   }
   .lesson-links button {
     font-size: 12px;
   }
   .lesson-links button > span:nth-child(2) {
-    max-width: 88px;
+    max-width: none;
   }
   .quick-links button {
     font-size: 11px;

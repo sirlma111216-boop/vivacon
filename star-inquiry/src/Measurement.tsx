@@ -25,8 +25,10 @@ import { SerialConnection, supportStatus } from "./serial";
 import { DataChart } from "./DataChart";
 import { ExperimentIllustration, type Prediction } from "./Learning";
 import { Maqueen } from "./Maqueen";
+import { EzOnEntry } from "./EzOnGuide";
 import { download, type AppState } from "./state";
 type Props = {
+  onOpenEzOn: () => void;
   step: number;
   state: AppState;
   setNote: (k: string, v: string) => void;
@@ -74,6 +76,7 @@ function explanationRecords(value: string): ExplanationRecord[] {
   }
 }
 export function Measurement({
+  onOpenEzOn,
   step,
   state,
   setNote,
@@ -457,6 +460,7 @@ export function Measurement({
     return (
       <>
         <ExperimentIllustration />
+        <EzOnEntry onOpen={onOpenEzOn} />
         <div className="card">
           <h3>실험 전, 함께 확인해요</h3>
           <p>
@@ -507,6 +511,7 @@ export function Measurement({
           {live !== null && `· 센서 최근 수신 ${live.toFixed(2)}`}
         </span>
       </div>
+      {step === 2 && <EzOnEntry onOpen={onOpenEzOn} />}
       {step === 2 && (
         <div className="card">
           <div className="eyebrow">CONNECT & CALIBRATE</div>
