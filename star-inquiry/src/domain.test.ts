@@ -14,12 +14,6 @@ import {
   canConvertMagnitude,
   type Run,
 } from "./domain";
-import {
-  LineBuffer,
-  parseNumericFrame,
-  SerialConnection,
-  supportStatus,
-} from "./serial";
 
 const baseRun = (): Run => ({
   id: "r",
@@ -250,33 +244,6 @@ test("exported teacher text cannot become a spreadsheet formula", () => {
   assert.equal(parseCsv(exported).samples[0].raw, -5);
 });
 
-test("line buffer handles fragmented CRLF, multiframe chunks, and incomplete tails", () => {
-  const buffer = new LineBuffer();
-  assert.deepEqual(buffer.push("12,3"), []);
-  assert.deepEqual(buffer.push("4\r"), []);
-  assert.deepEqual(buffer.push("\n56,78\n9"), ["12,34", "56,78"]);
-  assert.equal(buffer.pending, "9");
-  assert.deepEqual(buffer.push("0\r\n\n"), ["90"]);
-  const limited = new LineBuffer(5);
-  assert.throws(() => limited.push("123456"), /너무 깁니다/);
-  assert.equal(limited.pending, "");
-});
-
-test("numeric frame parser requires an explicit valid channel and does not accept malformed fields", () => {
-  assert.deepEqual(
-    parseNumericFrame("1, 2.5, -3e2", 1)?.values,
-    [1, 2.5, -300],
-  );
-  assert.equal(parseNumericFrame("1,2", 2), null);
-  assert.equal(parseNumericFrame("1,2", -1), null);
-  assert.equal(parseNumericFrame("1,,2", 1), null);
-  assert.equal(parseNumericFrame("1,NaN", 0), null);
-  assert.equal(parseNumericFrame("1,20abc", 0), null);
-  assert.equal(parseNumericFrame("Infinity", 0), null);
-  assert.equal(parseNumericFrame("1e999", 0), null);
-  assert.equal(parseNumericFrame(" 1;2 ", 1, ";")?.raw, 2);
-});
-
 const backup = () => ({
   version: 1,
   lesson: 3,
@@ -373,95 +340,4 @@ test("JSON backup round trip preserves first prediction independently of observa
     }),
     false,
   );
-});
-
-test("unsupported browser guidance is available without requesting a port", () => {
-  const status = supportStatus();
-  assert.equal(status.supported, false);
-  assert.match(status.message, /CSV/);
-});
-
-test("simulated transport: connect, receive fragmented data, disconnect, and reconnect", async () => {
-  const oldWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
-  const oldNavigator = Object.getOwnPropertyDescriptor(globalThis, "navigator");
-  let controller: ReadableStreamDefaultController<Uint8Array>;
-  let opens = 0,
-    closes = 0,
-    chooser = 0;
-  const frames: number[] = [],
-    states: string[] = [];
-  const port = () => ({
-    readable: new ReadableStream<Uint8Array>({
-      start(c) {
-        controller = c;
-      },
-    }),
-    async open({ baudRate }: { baudRate: number }) {
-      assert.equal(baudRate, 115200);
-      opens++;
-    },
-    async close() {
-      closes++;
-    },
-  });
-  Object.defineProperty(globalThis, "window", {
-    configurable: true,
-    value: { isSecureContext: true },
-  });
-  Object.defineProperty(globalThis, "navigator", {
-    configurable: true,
-    value: {
-      serial: {
-        async requestPort() {
-          chooser++;
-          return port();
-        },
-      },
-    },
-  });
-  try {
-    const connection = new SerialConnection({
-      onFrame: (f) => frames.push(f.raw),
-      onState: (s) => states.push(s),
-    });
-    await assert.rejects(
-      connection.connect({
-        baudRate: 115200,
-        channel: 1,
-        protocolConfirmed: false,
-      }),
-      /확인/,
-    );
-    assert.equal(chooser, 0);
-    await connection.connect({
-      baudRate: 115200,
-      channel: 1,
-      protocolConfirmed: true,
-    });
-    controller!.enqueue(new TextEncoder().encode("1,2\r"));
-    controller!.enqueue(new TextEncoder().encode("\n3,4\n"));
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    assert.deepEqual(frames, [2, 4]);
-    await connection.disconnect();
-    assert.equal(connection.status, "disconnected");
-    await connection.connect({
-      baudRate: 115200,
-      channel: 1,
-      protocolConfirmed: true,
-    });
-    controller!.enqueue(new TextEncoder().encode("5,6\n"));
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    await connection.disconnect();
-    assert.deepEqual(frames, [2, 4, 6]);
-    assert.equal(opens, 2);
-    assert.equal(closes, 2);
-    assert.equal(chooser, 2);
-    assert.ok(states.includes("connected"));
-  } finally {
-    if (oldWindow) Object.defineProperty(globalThis, "window", oldWindow);
-    else Reflect.deleteProperty(globalThis, "window");
-    if (oldNavigator)
-      Object.defineProperty(globalThis, "navigator", oldNavigator);
-    else Reflect.deleteProperty(globalThis, "navigator");
-  }
 });

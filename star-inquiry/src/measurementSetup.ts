@@ -27,6 +27,9 @@ export function measurementSetup(
     interval: Number(
       notes.measureInterval ?? notes["design.interval"] ?? "0.2",
     ),
+    // The EZ-ON block range (0~100 or 0~1023) is the highest value the sensor can report.
+    saturation: { "100": 100, "1023": 1023 }[notes["ezon.range"] ?? ""] as
+      number | undefined,
     speed:
       mode === "practice"
         ? 12

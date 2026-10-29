@@ -12,6 +12,7 @@ export interface Run {
   id: string;
   name: string;
   repeat: number;
+  /** "serial" keeps its stored name for old backups; it now means real sensor readings imported from an EZ-ON file. */
   mode: "practice" | "manual" | "serial";
   samples: Sample[];
   ambient: number;
@@ -39,7 +40,7 @@ const finite = (value: unknown): value is number =>
   typeof value === "number" && Number.isFinite(value);
 const positive = (value: unknown): value is number =>
   finite(value) && value > 0;
-const uid = () =>
+export const uid = () =>
   typeof crypto !== "undefined" && crypto.randomUUID
     ? crypto.randomUUID()
     : `s-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -219,7 +220,7 @@ export function exportCsv(run: Run): string {
         run.mode === "practice"
           ? "연습 데이터"
           : run.mode === "serial"
-            ? "실물 센서"
+            ? "이지온 센서 측정"
             : "CSV·수동 입력",
       ),
       csvCell(run.name, true),
@@ -235,7 +236,7 @@ export function exportCsv(run: Run): string {
   return "\uFEFF" + [header.join(","), ...rows].join("\r\n");
 }
 
-function readCsvRows(text: string): string[][] {
+export function readCsvRows(text: string): string[][] {
   const rows: string[][] = [];
   let row: string[] = [],
     cell = "",
@@ -311,6 +312,9 @@ export function parseCsv(text: string): CsvResult {
   const practice = rows.some((row) =>
     /연습|practice/i.test(get(row, "data_source")),
   );
+  const sensor =
+    !practice &&
+    rows.some((row) => /이지온|실물 센서/.test(get(row, "data_source")));
   const metadata: CsvResult["metadata"] = {};
   const numericMetadata: [keyof Run, string][] = [
     ["ambient", "ambient"],
@@ -381,7 +385,12 @@ export function parseCsv(text: string): CsvResult {
         : {}),
     });
   }
-  return { samples, errors, mode: practice ? "practice" : "manual", metadata };
+  return {
+    samples,
+    errors,
+    mode: practice ? "practice" : sensor ? "serial" : "manual",
+    metadata,
+  };
 }
 
 function record(value: unknown): value is Record<string, unknown> {

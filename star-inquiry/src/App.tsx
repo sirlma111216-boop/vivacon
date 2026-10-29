@@ -68,11 +68,11 @@ const lessons = {
     steps: [
       "오늘의 실험",
       "자동차 준비",
-      "센서 연결",
-      "이동하며 측정",
-      "예상과 비교",
+      "이지온 연결",
+      "측정하고 저장",
+      "가져와 비교",
     ],
-    times: [5, 8, 8, 12, 12],
+    times: [5, 10, 8, 10, 12],
   },
   5: {
     title: "별의 등급으로 읽기",
@@ -201,7 +201,7 @@ export default function App() {
       mode: "practice",
       home: false,
       lesson: 4,
-      step: 3,
+      step: 4,
     });
     setToast("연습 데이터입니다. 나의 최초 예상은 3차시에서 따로 기록하세요.");
   };
@@ -319,7 +319,7 @@ export default function App() {
           </button>
           <button onClick={() => setPanel("ezon")}>
             <Usb size={16} />
-            이지온 수집 안내
+            이지온 측정 안내
           </button>
           <button onClick={() => setPanel("resources")}>
             <BookOpen size={16} />
@@ -550,7 +550,7 @@ export default function App() {
             {panel === "hardware"
               ? "실험 장비 사용 설명서"
               : panel === "ezon"
-                ? "이지온으로 직접 수집하기"
+                ? "이지온으로 측정하기"
                 : panel === "teacher"
                   ? "교사용 안내"
                   : panel === "resources"
@@ -585,7 +585,10 @@ export default function App() {
               <h3>예상 → 관찰 → 설명</h3>
               <ol className="help-steps">
                 <li>3차시에서 처음 생각과 그래프를 저장해요.</li>
-                <li>4차시에서 직접 측정하거나 연습 데이터를 살펴봐요.</li>
+                <li>
+                  4차시에서 이지온으로 측정하고, 내려받은 파일을 가져와
+                  비교해요.
+                </li>
                 <li>5차시에서 별의 등급을 탐구하고 보고서를 저장해요.</li>
               </ol>
               <p>
@@ -954,11 +957,8 @@ function reportLabel(key: string) {
         explainAuthor: "설명 작성자",
         explanationRecords: "작성자별 보존 설명",
         uniform: "등속 조건 확인",
-        baud: "통신 속도",
-        channel: "밝기 채널",
-        board: "보드·펌웨어",
-        physicalPort: "실제 포트",
-        protocolConfirmed: "프레임 확인",
+        "ezon.range": "이지온 측정 범위",
+        "ezon.ledOnValue": "LED를 켠 시작 자리의 값",
         reflectionAuthor: "성찰 작성자",
       } as Record<string, string>
     )[key] ||

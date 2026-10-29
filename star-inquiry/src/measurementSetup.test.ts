@@ -9,8 +9,13 @@ test("new measurement defaults carry the plan while explicit setup takes precede
     ambient: 0,
     startDistance: 30,
     interval: 0.1,
+    saturation: undefined,
     speed: undefined,
   });
+  assert.equal(
+    measurementSetup({ "ezon.range": "1023" }, "serial").saturation,
+    1023,
+  );
   assert.equal(
     measurementSetup({ ...notes, startDistance: "40" }, "manual").startDistance,
     40,

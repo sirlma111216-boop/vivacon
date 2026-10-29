@@ -946,7 +946,7 @@ export function Learning({
               <span className="badge">연습 데이터</span>
             )}
             <p className="muted">
-              기록한 값과 비교에 쓰지 않은 이유는 4차시 ‘예상과 비교’에서 볼 수
+              기록한 값과 비교에 쓰지 않은 이유는 4차시 ‘가져와 비교’에서 볼 수
               있어요.
             </p>
           </article>
