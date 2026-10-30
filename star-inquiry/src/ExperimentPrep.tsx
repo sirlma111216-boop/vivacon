@@ -14,6 +14,16 @@ export function ExperimentPrep(_props: {
           오늘은 실제 밝기 값을 모아 우리의 예상과 비교해 볼 거예요.
         </p>
       </div>
+      <section className="card" aria-labelledby="ezmaker-introduction">
+        <h3 id="ezmaker-introduction">오늘 빛을 재는 도구, 이지메이커</h3>
+        <p>이지메이커는 센서로 주변의 변화를 측정하고, 그 값을 컴퓨터로 보내는 도구예요. 오늘은 밝기 센서를 연결해 자동차의 LED 빛을 재요.</p>
+        <ul className="instructions">
+          <li><strong>밝기 센서</strong>는 빛을 받아 밝기에 따라 달라지는 값을 만들어요.</li>
+          <li><strong>이지메이커 보드</strong>는 센서와 컴퓨터를 연결하고, 센서가 읽은 값을 전달해요.</li>
+          <li><strong>이지온</strong>은 컴퓨터에서 그 값을 모아 표와 그래프로 보여 주는 웹사이트예요.</li>
+        </ul>
+        <p>마이크로비트는 자동차를 움직이고, 이지메이커는 빛을 재요. 센서는 한곳에 고정하고 자동차만 움직일 거예요.</p>
+      </section>
       <section className="card" aria-labelledby="lesson4-opening">
         <span className="eyebrow">먼저 눈으로 살펴보기 · 3분</span>
         <h3 id="lesson4-opening">같은 LED인데, 밝기가 달라 보일까요?</h3>

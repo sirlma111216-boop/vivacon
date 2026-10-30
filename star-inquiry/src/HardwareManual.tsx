@@ -206,7 +206,7 @@ export function HardwareSectionContent({
                           ...item.references,
                         ]),
                       ]
-                ).filter((number) => ![27, 28, 30].includes(number)).map((number) => (
+                ).filter((number) => ![27, 28, 30].includes(number) && !(section.id === "kit" && [47, 25].includes(number))).map((number) => (
                   <div className="hardware-step-detail" key={number}>
                     <p>
                       {number === 45
