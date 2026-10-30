@@ -274,31 +274,15 @@ function PredictionGraph({ points }: { points: { x: number; y: number }[] }) {
 }
 
 const designFields: [string, string, string][] = [
-  ["question", "탐구 질문", "거리가 달라지면 같은 LED의 밝기는 어떻게 변할까?"],
   [
     "hypothesis",
-    "우리 모둠의 예상과 까닭",
-    "거리가 멀어지면 밝기는 어떻게 될까요?",
+    "멀어지면 밝기는 어떻게 달라질까요?",
+    "우리 모둠의 예상을 한 문장으로 적어요.",
   ],
   [
     "control",
-    "비교할 때 같게 유지할 것",
-    "LED, 밝기 설정, 방향, 센서 높이, 주변 조명 등",
-  ],
-  [
-    "ambientPlan",
-    "교실의 빛을 따로 재는 방법",
-    "LED를 끄고 센서값을 언제, 몇 번 기록할까요?",
-  ],
-  [
-    "speedPlan",
-    "자동차의 실제 속력을 재는 방법",
-    "이동 거리와 걸린 시간을 어떻게 잴까요?",
-  ],
-  [
-    "errors",
-    "결과에 영향을 줄 수 있는 것과 줄이는 방법",
-    "빛의 방향, 벽에서 반사된 빛, 출발할 때의 속력 변화를 생각해 보세요.",
+    "공정하게 비교하려면 무엇을 같게 할까요?",
+    "같게 유지할 조건을 1~2개만 적어요.",
   ],
 ];
 
@@ -458,7 +442,6 @@ export function learningNoteValue(key: string, value: string): string {
 }
 
 export function Learning({
-  onOpenHardware,
   lesson,
   step,
   notes,
@@ -886,89 +869,41 @@ export function Learning({
             <div key={key}>{text(`design.${key}`, label, placeholder)}</div>
           ))}
         </div>
-        <div className="grid-4">
-          {input("design.startDistance", "처음 거리 (cm)", "20", "number", 0.1)}
-          {input(
-            "design.travelDistance",
-            "자동차가 이동할 거리 (cm)",
-            "180",
-            "number",
-            0.1,
-          )}
-          {input(
-            "design.interval",
-            "몇 초마다 기록할까?",
-            "0.2",
-            "number",
-            0.01,
-          )}
-          {input("design.repeats", "몇 번 반복할까?", "3", "number", 1)}
-        </div>
-        {notes["design.startDistance"] &&
-          Number(notes["design.startDistance"]) <= 0 && (
-            <p className="notice" role="alert">
-              LED와 센서 사이를 띄워 두고, 그 거리를 재어 적으세요. 처음 거리는
-              0cm보다 커야 합니다.
-            </p>
-          )}
-        <div className="plan-next-step">
-          <button onClick={() => onOpenHardware(11)}>배치 사진 참고하기</button>
-        </div>
+        <p className="notice">
+          실험할 때 센서는 고정하고 자동차만 멀어지게 해요. LED는 계속 센서를
+          향하게 합니다. 거리와 측정 설정은 다음 시간에 장비를 놓으며 정해요.
+        </p>
       </div>
     );
 
   if (lesson === 3 && step === 4) {
-    const missingPlan = [
-      ["design.question", "알아볼 질문"],
-      ["design.control", "같게 유지할 조건"],
-      ["design.ambientPlan", "교실의 빛을 따로 재는 방법"],
-      ["design.speedPlan", "실제 속력을 재는 방법"],
-      ["design.startDistance", "처음 거리"],
-      ["design.travelDistance", "자동차가 이동할 거리"],
-      ["design.interval", "기록 간격"],
-      ["design.repeats", "반복 횟수"],
-    ].filter(([key]) => !notes[key]?.trim());
     return (
       <div className="learning-section">
         <Header eyebrow="계획 정리하기 · 9분" title="우리 계획을 한눈에 보기">
           거리와 밝기를 어떻게 비교할지 모둠의 계획을 읽어 보세요.
         </Header>
-        {missingPlan.length > 0 && (
-          <p className="notice">
-            아직 정하지 않은 항목:{" "}
-            {missingPlan.map(([, label]) => label).join(", ")}. 앞의 ‘실험
-            설계’에서 적을 수 있습니다.
-          </p>
-        )}
         <article className="design-summary">
           <dl>
-            <dt>탐구 질문</dt>
-            <dd>{notes["design.question"] || "아직 작성하지 않았어요."}</dd>
-            <dt>예상과 까닭</dt>
-            <dd>{notes["design.hypothesis"] || "아직 작성하지 않았어요."}</dd>
-            <dt>처음 거리 / 자동차가 이동할 거리</dt>
+            <dt>알아볼 것</dt>
+            <dd>같은 LED가 멀어질 때 밝기가 어떻게 달라지는지 살펴봅니다.</dd>
+            <dt>우리 모둠의 예상</dt>
             <dd>
-              {notes["design.startDistance"] || "—"}cm /{" "}
-              {notes["design.travelDistance"] || "—"}cm
+              {notes["design.hypothesis"] ||
+                "멀어질 때 밝기가 어떻게 달라질지 이야기해 보세요."}
             </dd>
-            <dt>측정 간격 / 반복</dt>
+            <dt>같게 유지할 조건</dt>
             <dd>
-              {notes["design.interval"] || "—"}초 /{" "}
-              {notes["design.repeats"] || "—"}회
+              {notes["design.control"] ||
+                "LED의 밝기와 방향, 센서 위치, 교실 조명을 같게 유지해요."}
             </dd>
-            <dt>같게 유지할 것</dt>
-            <dd>{notes["design.control"] || "아직 작성하지 않았어요."}</dd>
-            <dt>교실의 빛을 따로 재는 방법</dt>
-            <dd>{notes["design.ambientPlan"] || "아직 작성하지 않았어요."}</dd>
-            <dt>자동차의 실제 속력을 재는 방법</dt>
-            <dd>{notes["design.speedPlan"] || "아직 작성하지 않았어요."}</dd>
           </dl>
         </article>
-        {text(
-          "designReflection",
-          "계획에서 더 정할 점이 있나요?",
-          "아직 정하지 못한 조건이나 바꾸고 싶은 방법이 있다면 적으세요.",
-        )}
+        <h3>다음 시간에는 이렇게 살펴봐요</h3>
+        <ol className="instructions">
+          <li>LED와 센서를 마주 보게 놓아요.</li>
+          <li>자동차가 멀어질 때 밝기 값을 모아요.</li>
+          <li>그래프가 어떻게 변하는지 보고 우리 예상과 비교해요.</li>
+        </ol>
       </div>
     );
   }

@@ -18,33 +18,20 @@ export function ExperimentPrep({
       </div>
       <div className="card prep-plan">
         <h3>지난 시간에 정한 우리 모둠의 계획</h3>
-        <p>
-          {notes["design.question"] ||
-            "자동차가 멀어지면 LED의 밝기는 어떻게 달라질까요?"}
-        </p>
+        <p>같은 LED가 멀어질 때 밝기가 어떻게 달라지는지 살펴봐요.</p>
         <dl>
           <div>
-            <dt>처음 거리</dt>
+            <dt>우리 모둠의 예상</dt>
             <dd>
-              {notes["design.startDistance"]
-                ? `${notes["design.startDistance"]} cm`
-                : "줄자로 재어 정해요"}
+              {notes["design.hypothesis"] ||
+                "지난 시간에 이야기한 예상을 떠올려요."}
             </dd>
           </div>
           <div>
-            <dt>움직일 거리</dt>
+            <dt>같게 유지할 조건</dt>
             <dd>
-              {notes["design.travelDistance"]
-                ? `${notes["design.travelDistance"]} cm`
-                : "바닥에 표시해요"}
-            </dd>
-          </div>
-          <div>
-            <dt>반복할 횟수</dt>
-            <dd>
-              {notes["design.repeats"]
-                ? `${notes["design.repeats"]}회`
-                : "모둠에서 정해요"}
+              {notes["design.control"] ||
+                "LED의 밝기와 방향, 센서 위치, 교실 조명"}
             </dd>
           </div>
         </dl>

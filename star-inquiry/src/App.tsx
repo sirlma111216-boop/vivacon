@@ -802,7 +802,7 @@ export default function App() {
               .filter(
                 ([key, value]) =>
                   value.trim() &&
-                  !/^(?:safety\d|designCheck\d|car\.check\.|hardware\.check\.|hardware\.codeLoaded$)|^resource\..*\.complete$/.test(
+                  !/^(?:design\.(?:question|ambientPlan|speedPlan|errors|startDistance|travelDistance|interval|repeats)$|designReflection$|safety\d|designCheck\d|car\.check\.|hardware\.check\.|hardware\.codeLoaded$)|^resource\..*\.complete$/.test(
                     key,
                   ),
               )
