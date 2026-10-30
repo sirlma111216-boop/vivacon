@@ -158,9 +158,16 @@ export function MaqueenGuide() {
           caption="프로젝트 이름을 입력하고 생성"
         >
           <p>
-            이름을 <strong>등속운동</strong>으로 입력하고 <strong>생성</strong>
-            을 눌러요.
+            어떤 프로그램인지 알아보기 쉬운 이름을 입력하고{" "}
+            <strong>생성</strong>을 눌러요.
           </p>
+          <p>
+            예: <strong>등속운동</strong>, <strong>앞으로 가는 자동차</strong>,{" "}
+            <strong>출발하고 멈추는 마퀸</strong>,{" "}
+            <strong>별빛 실험 자동차</strong>,{" "}
+            <strong>빛을 싣고 가는 자동차</strong>
+          </p>
+          <p>마음에 드는 이름을 고르거나 직접 지어도 좋아요.</p>
         </Scene>
         <Scene
           number={3}
