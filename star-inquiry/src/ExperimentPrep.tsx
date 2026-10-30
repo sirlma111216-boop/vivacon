@@ -56,6 +56,13 @@ export function ExperimentPrep(_props: {
         <p><strong>같은 LED가 멀어질 때, 센서가 기록한 밝기는 어떻게 달라질까요?</strong></p>
         <p>지난 시간에 그린 예상 그래프를 떠올려 보세요. 오늘 얻은 그래프와 어떤 점이 같고 다른지 살펴볼 거예요.</p>
       </section>
+    </section>
+  );
+}
+
+export function ExperimentPreparation() {
+  return (
+    <>
       <HardwareSectionContent section="kit" />
       <div className="card">
         <h3>오늘은 이렇게 진행해요</h3>
@@ -82,6 +89,6 @@ export function ExperimentPrep(_props: {
           멈추는지 시험합니다.
         </p>
       </div>
-    </section>
+    </>
   );
 }

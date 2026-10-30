@@ -14,7 +14,7 @@ import {
 import { parseMeasurementCsv } from "./ezonCsv";
 import { DataChart } from "./DataChart";
 import type { Prediction } from "./Learning";
-import { ExperimentPrep } from "./ExperimentPrep";
+import { ExperimentPrep, ExperimentPreparation } from "./ExperimentPrep";
 import { HardwareSectionContent } from "./HardwareManual";
 import { measurementSetup } from "./measurementSetup";
 import { EzOnLinks, EzOnSteps, EzOnTroubleshooting } from "./EzOnGuide";
@@ -314,6 +314,7 @@ export function Measurement({
   if (step === 1)
     return (
       <>
+        <ExperimentPreparation />
         <div className="notice">
           3차시에서 만든 자동차를 준비하세요. LED 고정 상태를 보고, 바닥에서 A로
           출발하고 B로 멈추는지 짧게 시험해요.
