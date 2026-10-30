@@ -893,7 +893,7 @@ export function Learning({
         </Header>
         <Maqueen notes={notes} setNote={setNote} lessonMode />
         <div className="notice">
-          다음 시간에는 만든 자동차의 속력을 확인하고, 자동차가 멀어질 때 밝기를
+          다음 시간에는 이지메이커를 연결하고, 자동차가 멀어질 때 밝기를
           측정해요.
         </div>
       </div>
@@ -914,7 +914,7 @@ export function Learning({
         <section className="card">
           <h3>블록으로 자동차의 움직임을 정했어요</h3>
           <p>MakeCode에서 만든 프로그램을 마이크로비트에 넣어 마퀸을 움직였어요. 오늘 만든 코드에서는 A 버튼으로 출발하고, B 버튼으로 멈춰요. 앞에 장애물이 가까이 있으면 멈추도록 했어요.</p>
-          <p>모터 설정값을 같게 해도 실제 속력이 늘 같지는 않아요. 다음 시간에는 이동 거리와 걸린 시간으로 속력을 확인해요.</p>
+          <p>모터 설정값을 같게 해도 실제 속력이 늘 같지는 않아요. 자동차가 부드럽게 움직이도록 준비해요.</p>
         </section>
         <section className="card">
           <h3>다음 시간에는 직접 측정해요</h3>

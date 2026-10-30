@@ -191,7 +191,7 @@ export function HardwareSectionContent({
                 </ul>
               )}
               <div className="hardware-step-photos">
-                {(!item.primaryPhoto || item.order === 2) && imageButton(illustration(item.order))}
+                {((!item.primaryPhoto && item.order !== 1) || item.order === 2) && imageButton(illustration(item.order))}
                 {(item.order === 2
                   ? [45]
                   : item.order === 3

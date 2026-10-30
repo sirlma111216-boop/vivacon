@@ -27,16 +27,6 @@ export function ExperimentPrep(_props: {
         <div className="question-callout"><strong>유난히 눈에 띄는 별은 왜 밝게 보일까요?</strong> 지난 시간에 떠올린 까닭을 짝과 이야기해요.</div>
         <p>별을 직접 가까이 옮겨 볼 수는 없어요. 오늘은 별 대신 같은 LED를 사용해, 거리가 달라질 때 밝기가 어떻게 변하는지 알아봐요.</p>
       </section>
-      <section className="card" aria-labelledby="ezmaker-introduction">
-        <h3 id="ezmaker-introduction">오늘 빛을 재는 도구, 이지메이커</h3>
-        <p>이지메이커는 센서로 주변의 변화를 측정하고, 그 값을 컴퓨터로 보내는 도구예요. 오늘은 밝기 센서를 연결해 자동차의 LED 빛을 재요.</p>
-        <ul className="instructions">
-          <li><strong>밝기 센서</strong>는 빛을 받아 밝기에 따라 달라지는 값을 만들어요.</li>
-          <li><strong>이지메이커 보드</strong>는 센서와 컴퓨터를 연결하고, 센서가 읽은 값을 전달해요.</li>
-          <li><strong>이지온</strong>은 컴퓨터에서 그 값을 모아 표와 그래프로 보여 주는 웹사이트예요.</li>
-        </ul>
-        <p>마이크로비트는 자동차를 움직이고, 이지메이커는 빛을 재요. 센서는 한곳에 고정하고 자동차만 움직일 거예요.</p>
-      </section>
       <section className="card">
         <h3>오늘 알아볼 것</h3>
         <p><strong>같은 LED가 멀어질 때, 센서가 기록한 밝기는 어떻게 달라질까요?</strong></p>
@@ -49,13 +39,27 @@ export function ExperimentPrep(_props: {
 export function ExperimentPreparation() {
   return (
     <>
+      <section className="card">
+        <h2>이지메이커로 빛을 어떻게 잴까요?</h2>
+        <p>이지메이커는 센서로 주변의 변화를 읽어 컴퓨터에 전달하는 실험 도구예요. 이번에는 밝기 센서로 LED 빛의 변화를 살펴봐요.</p>
+        <h3>① 밝기 센서 · 빛을 받는 부분</h3>
+        <p>작은 센서판 가운데 빛을 받는 면이 있어요. 이 면을 자동차의 LED와 마주 보게 놓아요. 빛이 달라지면 센서가 읽는 값도 달라져요.</p>
+        <h3>② 이지메이커 보드 · 센서와 컴퓨터 사이의 연결 장치</h3>
+        <p>밝기 센서의 값을 받아 USB 케이블로 컴퓨터에 전달해요. 이번 수업에서는 보드의 A0라고 적힌 자리에 센서를 연결해요.</p>
+        <h3>③ 전용 연결선과 USB 케이블</h3>
+        <p>양쪽에 작은 흰색 연결 부분이 있는 전용 선은 센서와 보드를 이어 줘요. USB 데이터 케이블은 보드와 컴퓨터를 이어 줘요.</p>
+        <h3>④ 이지온 · 측정값을 보는 웹사이트</h3>
+        <p>이지온에서 밝기 센서 예제 코드를 열어 보드에 넣으면 측정을 준비할 수 있어요. ‘수집 시작’을 누르면 측정값이 표와 그래프에 쌓이고, 파일로 저장할 수 있어요.</p>
+        <p className="notice">밝기 센서 → 전용 연결선 → 이지메이커 보드 → USB 케이블 → 컴퓨터의 이지온</p>
+        <p>마이크로비트는 자동차를 움직이고, 이지메이커는 빛을 재요. 서로 다른 역할을 맡아요.</p>
+      </section>
       <HardwareSectionContent section="kit" />
       <div className="card">
         <h3>오늘은 이렇게 진행해요</h3>
         <ol className="instructions">
           <li>
             <strong>자동차 준비</strong> · 3차시에서 만든 자동차의 출발·정지를
-            시험하고 실제 속력을 재요.
+            짧게 시험해요.
           </li>
           <li>
             <strong>이지온 연결</strong> · 밝기 센서를 보드에 꽂고, 이지온에서

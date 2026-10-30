@@ -313,43 +313,7 @@ export function Measurement({
         onOpenEzOn={onOpenEzOn}
       />
     );
-  if (step === 1)
-    return (
-      <>
-        <ExperimentPreparation />
-        <div className="notice">
-          3차시에서 만든 자동차를 준비하세요. LED 고정 상태를 보고, 바닥에서 A로
-          출발하고 B로 멈추는지 짧게 시험해요.
-        </div>
-        <div className="card">
-          <div className="eyebrow">자동차 준비 마무리</div>
-          <h2>자동차는 1초에 몇 cm 움직일까요?</h2>
-          <p>
-            모터 설정값 255는 cm/s가 아닙니다. 줄자로 정한 거리를 자동차가
-            지나가는 시간을 3번 재어 실제 속력을 구해요. 이 속력으로 4차시
-            뒤에서 시간을 거리로 바꿉니다.
-          </p>
-          <div className="speed-grid">
-            {[0, 1, 2].map((i) => (
-              <div key={i}>
-                <strong>{i + 1}회</strong>
-                {field(`speedDistance${i}`, "이동 거리 (cm)", "", "number")}
-                {field(`speedTime${i}`, "걸린 시간 (s)", "", "number")}
-              </div>
-            ))}
-          </div>
-          <SpeedResult notes={state.notes} />
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={note("uniform") === "true"}
-              onChange={(e) => setNote("uniform", String(e.target.checked))}
-            />
-            세 번의 속력이 비슷해요. 이 평균 속력을 측정에 사용할게요.
-          </label>
-        </div>
-      </>
-    );
+  if (step === 1) return <ExperimentPreparation />;
   if (step === 2)
     return (
       <>
@@ -431,15 +395,7 @@ export function Measurement({
             />
           </label>
         </div>
-        <p className="muted">
-          가져올 때 함께 기록하는 값: 처음 거리{" "}
-          {Number.isFinite(setup.startDistance) ? setup.startDistance : "?"}cm ·
-          실제 속력{" "}
-          {setup.speed !== undefined
-            ? `${setup.speed.toFixed(2)}cm/s`
-            : "미확인 (2단계)"}
-          . 가져온 뒤 아래에서 고칠 수 있어요.
-        </p>
+
         <details>
           <summary>파일이 없거나 장비가 없을 때</summary>
           <div className="button-row">
@@ -471,7 +427,7 @@ export function Measurement({
       {run ? (
         <>
           <RunComparison run={run} notes={state.notes} setNote={setNote} />
-          <details><summary>측정값 표·거리 환산·추가 분석 펼치기</summary>
+          <details><summary>교사용 선택 분석 · 측정값 표와 거리 환산</summary>
           <div className="card experiment-card">
             <div className="section-heading">
               <div>
@@ -875,42 +831,5 @@ export function Measurement({
         </div>
       )}
     </>
-  );
-}
-function SpeedResult({ notes }: { notes: Record<string, string> }) {
-  const speeds = [0, 1, 2].flatMap((i) => {
-    const distance = Number(notes[`speedDistance${i}`]),
-      time = Number(notes[`speedTime${i}`]);
-    return Number.isFinite(distance) &&
-      Number.isFinite(time) &&
-      distance > 0 &&
-      time > 0 &&
-      Number.isFinite(distance / time)
-      ? [distance / time]
-      : [];
-  });
-  const avg = speeds.reduce((a, b) => a + b, 0) / speeds.length;
-  const deviation = Math.sqrt(
-    speeds.reduce((s, v) => s + (v - avg) ** 2, 0) / speeds.length,
-  );
-  return (
-    <div className="notice">
-      {speeds.length ? (
-        <>
-          {speeds.length}회 측정한 평균 속력: {avg.toFixed(2)} cm/s
-          <details>
-            <summary>속력 측정값 비교</summary>
-            <p>
-              {speeds
-                .map((speed, i) => `${i + 1}회 ${speed.toFixed(2)} cm/s`)
-                .join(" · ")}
-            </p>
-            <p>속력이 흩어진 정도(표준편차): {deviation.toFixed(2)} cm/s</p>
-          </details>
-        </>
-      ) : (
-        "거리와 시간에 각각 0보다 큰 값을 입력하면 실제 속력을 계산합니다."
-      )}
-    </div>
   );
 }
