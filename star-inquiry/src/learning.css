@@ -810,3 +810,35 @@
     background: white !important;
   }
 }
+.light-explanation {
+  margin-top: 24px;
+}
+.light-formula {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  padding: 24px 12px;
+  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+  color: #f8c84d;
+}
+.light-fraction {
+  display: inline-flex;
+  flex-direction: column;
+  text-align: center;
+}
+.light-fraction > span:first-child {
+  border-bottom: 2px solid currentColor;
+}
+.light-fraction > span {
+  padding: 2px 12px;
+}
+.light-rule-scroll {
+  overflow-x: auto;
+}
+.light-rule-scroll svg {
+  display: block;
+  width: 100%;
+  min-width: 680px;
+}

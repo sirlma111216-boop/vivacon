@@ -9,6 +9,7 @@ import {
 } from "./domain";
 import { DataChart } from "./DataChart";
 import { SmartImage } from "./SmartImage";
+import { LightExplanation } from "./LightExplanation";
 import { resources, safeExternalUrl } from "./Resources";
 import "./learning.css";
 
@@ -744,7 +745,10 @@ export function Learning({
                 max="10"
                 step="1"
                 value={distance}
-                onChange={(e) => setNote("theoryDistance", e.target.value)}
+                onChange={(e) => {
+                  setNote("theoryDistance", e.target.value);
+                  setNote("theoryExplored", "true");
+                }}
               />
             </label>
             <div className="metric-pair">
@@ -785,18 +789,37 @@ export function Learning({
             <button
               key={d}
               className={distance === d ? "selected" : ""}
-              onClick={() => setNote("theoryDistance", String(d))}
+              onClick={() => {
+                setNote("theoryDistance", String(d));
+                setNote("theoryExplored", "true");
+              }}
             >
               <span>거리 {d}배</span>
               <strong>{d === 1 ? "밝기 1" : `밝기 1/${d * d}`}</strong>
             </button>
           ))}
         </div>
-        <p className="notice">
-          이 모형에서 거리가 2배이면 밝기는 1/4, 3배이면 1/9입니다. 거리를 몇
-          배로 늘렸는지 두 번 곱한 수로 밝기를 나누는 관계를 ‘거리의 제곱에
-          반비례한다’고 해요.
+        <p className="muted">
+          거리 1배·2배·3배를 눌러 한 칸의 밝기를 비교한 뒤, 아래에서 이유를
+          알아보세요.
         </p>
+        <button
+          className="primary"
+          disabled={notes.theoryExplored !== "true"}
+          onClick={() =>
+            setNote(
+              "theoryExplanationOpen",
+              notes.theoryExplanationOpen === "true" ? "false" : "true",
+            )
+          }
+          aria-expanded={notes.theoryExplanationOpen === "true"}
+        >
+          {notes.theoryExplanationOpen === "true"
+            ? "설명 접기"
+            : "왜 이렇게 될까? · 공식과 그림으로 정리"}
+        </button>
+        {notes.theoryExplored === "true" &&
+          notes.theoryExplanationOpen === "true" && <LightExplanation />}
         {text(
           "theoryObservation",
           "처음 예상과 비교해 새로 알게 된 점",
