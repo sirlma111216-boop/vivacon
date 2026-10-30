@@ -1,3 +1,4 @@
+import { LightDriveIntro } from "./LightDriveIntro";
 import { HardwareSectionContent } from "./HardwareManual";
 
 export function ExperimentPrep(_props: {
@@ -14,6 +15,7 @@ export function ExperimentPrep(_props: {
           오늘은 실제 밝기 값을 모아 우리의 예상과 비교해 볼 거예요.
         </p>
       </div>
+      <LightDriveIntro />
       <section className="card" aria-labelledby="ezmaker-introduction">
         <h3 id="ezmaker-introduction">오늘 빛을 재는 도구, 이지메이커</h3>
         <p>이지메이커는 센서로 주변의 변화를 측정하고, 그 값을 컴퓨터로 보내는 도구예요. 오늘은 밝기 센서를 연결해 자동차의 LED 빛을 재요.</p>
@@ -23,33 +25,6 @@ export function ExperimentPrep(_props: {
           <li><strong>이지온</strong>은 컴퓨터에서 그 값을 모아 표와 그래프로 보여 주는 웹사이트예요.</li>
         </ul>
         <p>마이크로비트는 자동차를 움직이고, 이지메이커는 빛을 재요. 센서는 한곳에 고정하고 자동차만 움직일 거예요.</p>
-      </section>
-      <section className="card" aria-labelledby="lesson4-opening">
-        <h3>NASA는 별의 밝기를 어떻게 설명할까요?</h3>
-        <p>NASA는 별이 밝게 보이는 까닭을 손전등에 비유해 설명해요. 빛을 많이 내는 손전등과 가까이 있는 손전등 중 어느 쪽이 더 밝게 보일지 생각하며 자료를 살펴보세요.</p>
-        <p>
-          <a className="primary" href="https://imagine.gsfc.nasa.gov/ask_astro/stars.html" target="_blank" rel="noopener noreferrer">NASA 손전등·별의 밝기 자료 보기 ↗</a>
-        </p>
-        <p className="muted">영문 설명 자료 · 새 탭에서 열립니다. 영상이나 조작하는 실험 화면은 아닙니다.</p>
-        <p>원문 위쪽의 <strong>How Stars Shine</strong>에서 첫 질문의 답변을 보세요. 브라우저의 한국어 번역 기능을 이용해도 좋아요.</p>
-        <blockquote>빛을 적게 내는 손전등도 가까이 있으면, 멀리 있는 강한 손전등보다 밝게 보일 수 있어요.</blockquote>
-        <p className="muted">NASA 「Ask an Astrophysicist」의 설명을 쉽게 풀어 쓴 내용입니다.</p>
-        <p>자료를 본 뒤 이 수업 탭으로 돌아와, 같은 LED의 거리만 바꾸어 봐요.</p>
-        <span className="eyebrow">눈으로 살펴보기 · 2분</span>
-        <h3 id="lesson4-opening">같은 LED인데, 밝기가 달라 보일까요?</h3>
-        <p>자동차의 모터 전원은 끄고 LED만 켜요. 흰 종이를 한곳에 세우고 LED의 빛을 비춰 보세요. LED를 눈에 직접 비추지 않아요.</p>
-        <ol className="instructions">
-          <li>종이 가까이에 LED를 놓고, 종이에 비친 빛을 봐요.</li>
-          <li>LED의 밝기 설정과 방향은 그대로 두고, 종이에서 조금 멀리 옮겨요.</li>
-          <li>종이에 비친 빛의 밝기가 어떻게 달라 보이는지 짝과 이야기해요.</li>
-        </ol>
-        <div className="question-callout">
-          어두워졌다는 것은 보여도, <strong>얼마나 달라졌는지 눈만으로 알 수 있을까요?</strong>
-        </div>
-        <details>
-          <summary>이야기한 뒤, 오늘의 실험과 연결하기</summary>
-          <p>눈으로 밝기의 차이를 느낄 수 있지만, 얼마나 달라졌는지 정확히 비교하기는 어려워요. 오늘은 종이 대신 밝기 센서를 고정하고 LED 자동차를 멀어지게 해요. 센서가 기록한 값을 그래프로 나타내면 변화하는 모습을 비교할 수 있어요.</p>
-        </details>
       </section>
       <section className="card">
         <h3>오늘 알아볼 것</h3>
