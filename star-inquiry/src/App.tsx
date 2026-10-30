@@ -57,8 +57,9 @@ const lessons = {
       "거리와 빛의 세기",
       "실험 과정 알아보기",
       "자동차 만들기·코딩",
+      "오늘 배운 내용 정리",
     ],
-    times: [3, 5, 7, 5, 25],
+    times: [3, 5, 7, 5, 25, 3],
   },
   4: {
     title: "측정하고 설명하기",
@@ -179,7 +180,7 @@ export default function App() {
       new Set([...state.completed, `${state.lesson}-${state.step}`]),
     );
     patch({ completed });
-    if (state.step < 4) go(state.lesson, state.step + 1);
+    if (state.step < lessons[state.lesson].steps.length - 1) go(state.lesson, state.step + 1);
     else if (state.lesson < 5) go((state.lesson + 1) as 4 | 5, 0);
     else {
       setPanel("records");
@@ -307,7 +308,7 @@ export default function App() {
               <span>{l}차시</span>
               <span>{lessons[l].title}</span>
               {state.completed.filter((v) => v.startsWith(`${l}-`)).length ===
-                5 && <Check size={16} />}
+                lessons[l].steps.length && <Check size={16} />}
             </button>
           ))}
         </div>
@@ -502,14 +503,14 @@ export default function App() {
               onClick={() =>
                 state.step > 0
                   ? go(state.lesson, state.step - 1)
-                  : go((state.lesson - 1) as 3 | 4, 4)
+                  : go((state.lesson - 1) as 3 | 4, lessons[(state.lesson - 1) as 3 | 4].steps.length - 1)
               }
             >
               <ArrowLeft size={16} />
               이전
             </button>
             <span>
-              <strong>{state.step + 1}</strong> / 5{" "}
+              <strong>{state.step + 1}</strong> / {lesson.steps.length}{" "}
               <span className="footer-stage">· {lesson.steps[state.step]}</span>
             </span>
             <button className="primary" onClick={next}>

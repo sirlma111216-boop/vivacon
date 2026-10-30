@@ -904,6 +904,31 @@ export function Learning({
     );
   }
 
+  if (lesson === 3 && step === 5)
+    return (
+      <div className="learning-section">
+        <Header eyebrow="3차시 마무리 · 3분" title="오늘 배운 내용을 정리해요">
+          빛의 밝기를 예상하고, 다음 실험에 쓸 자동차를 만들었어요.
+        </Header>
+        <section className="card">
+          <h3>거리가 멀어지면 빛은 더 넓게 퍼져요</h3>
+          <p>같은 별이라도 멀리 있을수록 어둡게 보여요. 같은 양의 빛이 더 넓은 곳으로 퍼지기 때문이에요.</p>
+          <p><strong>거리가 1배 → 2배 → 3배가 되면, 밝기는 1배 → 1/4배 → 1/9배가 돼요.</strong></p>
+        </section>
+        <section className="card">
+          <h3>블록으로 자동차의 움직임을 정했어요</h3>
+          <p>MakeCode에서 만든 프로그램을 마이크로비트에 넣어 마퀸을 움직였어요. 오늘 만든 코드에서는 A 버튼으로 출발하고, B 버튼으로 멈춰요. 앞에 장애물이 가까이 있으면 멈추도록 했어요.</p>
+          <p>모터 설정값을 같게 해도 실제 속력이 늘 같지는 않아요. 다음 시간에는 이동 거리와 걸린 시간으로 속력을 확인해요.</p>
+        </section>
+        <section className="card">
+          <h3>다음 시간에는 직접 측정해요</h3>
+          <p>센서는 한곳에 고정하고, 자동차 뒤쪽 LED가 센서를 향한 채 멀어지게 해요. LED 밝기와 교실 조명은 그대로 유지해요.</p>
+          <p>이지온으로 밝기 값을 모은 뒤, 그래프를 보고 처음 예상과 비교할 거예요.</p>
+        </section>
+        <p className="notice">‘다음’을 누르면 4차시 실험을 시작해요.</p>
+      </div>
+    );
+
   if (lesson === 5 && step === 0)
     return (
       <div className="learning-section">
