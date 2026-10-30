@@ -197,9 +197,9 @@ export function HardwareSectionContent({
                   : item.order === 3
                   ? [48]
                   : item.order === 4
-                    ? [47, 34]
+                    ? [47]
                     : item.order === 7
-                      ? []
+                      ? [34]
                     : [
                         ...new Set([
                           ...(item.primaryPhoto ? [item.primaryPhoto] : []),
@@ -216,7 +216,7 @@ export function HardwareSectionContent({
                         : number === 31
                           ? "LED를 자동차 뒤쪽에 고정하고, 빛이 센서를 향하도록 놓아요."
                           : number === 34
-                            ? "뒤쪽에서 LED와 건전지가 단단히 고정되었는지 살펴봐요."
+                            ? "자동차 앞에 장애물을 놓고, 가까이 가면 멈추는지 살펴봐요."
                             : photoDescriptions[number - 25]}
                     </p>
                     {imageButton(photo(number))}
