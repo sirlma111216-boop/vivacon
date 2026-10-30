@@ -1,0 +1,3 @@
+.run-comparison-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr); gap:16px; align-items:center; }
+.run-comparison-grid > * { min-width:0; margin:0; }
+@media(max-width:1000px) { .run-comparison-grid { grid-template-columns:1fr; } .run-comparison-grid figure { max-width:500px; margin:auto; } }

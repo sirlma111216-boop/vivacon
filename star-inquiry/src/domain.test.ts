@@ -265,8 +265,8 @@ test("backup rejects nonfinite values, duplicate IDs and malformed state; preser
   assert.equal(validateBackup({ ...original, notes: { a: 2 } }), false);
   assert.equal(validateBackup({ ...original, step: 20 }), false);
   assert.equal(validateBackup({ ...original, lesson: 3, step: 5, completed: ["3-5"] }), true);
-  assert.equal(validateBackup({ ...original, lesson: 4, step: 5 }), false);
-  assert.equal(validateBackup({ ...original, completed: ["4-5"] }), false);
+  assert.equal(validateBackup({ ...original, lesson: 4, step: 5 }), true);
+  assert.equal(validateBackup({ ...original, completed: ["4-5"] }), true);
   assert.equal(
     validateBackup({ ...original, runs: [{ ...baseRun(), ambient: NaN }] }),
     false,

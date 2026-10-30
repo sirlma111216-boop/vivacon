@@ -1,3 +1,4 @@
+import { RunComparison } from "./RunComparison";
 import { MeasurementProcedure } from "./MeasurementProcedure";
 import { useState } from "react";
 import { Upload, Plus, Download, FileSpreadsheet } from "lucide-react";
@@ -84,7 +85,7 @@ export function Measurement({
   setMode,
   prediction,
 }: Props) {
-  const run = state.runs.find((r) => r.id === state.activeRunId) || null;
+  const run = state.runs.find((r) => r.id === state.activeRunId) || state.runs[state.runs.length - 1] || null;
   const unitLabel = run?.unit === "센서 원시값" ? "센서가 읽은 값" : run?.unit;
   const [message, setMessage] = useState(""),
     [axis, setAxis] = useState<"time" | "distance" | "inverse">("time");
@@ -401,6 +402,12 @@ export function Measurement({
         {status}
       </>
     );
+  if (step === 5) return <section className="card">
+    <h2>오늘의 측정을 정리해요</h2>
+    <h3>밝기의 변화를 직접 기록했어요</h3><p>센서를 고정하고 LED 자동차를 멀어지게 하며, 이지온에서 밝기 값을 모았어요.</p>
+    <h3>그래프를 근거로 실험을 돌아봤어요</h3><p>밝기가 줄어드는 경향과 흔들리는 구간을 살펴봤어요. 예상과 다르면 빛의 방향, 주변 조명, 자동차의 움직임을 점검하고 다시 측정할 수 있어요.</p>
+    <h3>다음 시간에는 별의 밝기로 연결해요</h3><p>별의 밝기를 나타내는 ‘등급’을 알아보고, 같은 거리에서 별을 비교하는 까닭을 살펴봐요.</p>
+  </section>;
   return (
     <>
       <div className="card">
@@ -463,6 +470,8 @@ export function Measurement({
       {status}
       {run ? (
         <>
+          <RunComparison run={run} notes={state.notes} setNote={setNote} />
+          <details><summary>측정값 표·거리 환산·추가 분석 펼치기</summary>
           <div className="card experiment-card">
             <div className="section-heading">
               <div>
@@ -851,6 +860,7 @@ export function Measurement({
               </details>
             )}
           </div>
+          </details>
         </>
       ) : (
         <div className="card empty-state">

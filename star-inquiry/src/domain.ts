@@ -485,7 +485,7 @@ export function validateBackup(data: unknown): boolean {
     ![3, 4, 5].includes(data.lesson as number) ||
     !Number.isInteger(data.step) ||
     (data.step as number) < 0 ||
-    (data.step as number) > (data.lesson === 3 ? 5 : 4) ||
+    (data.step as number) > (data.lesson === 5 ? 4 : 5) ||
     typeof data.home !== "boolean" ||
     !record(data.notes) ||
     !Object.values(data.notes).every((v) => typeof v === "string") ||
@@ -495,7 +495,7 @@ export function validateBackup(data: unknown): boolean {
     typeof data.activeRunId !== "string" ||
     !Array.isArray(data.completed) ||
     !data.completed.every(
-      (v) => typeof v === "string" && /^(3-[0-5]|[45]-[0-4])$/.test(v),
+      (v) => typeof v === "string" && /^([34]-[0-5]|5-[0-4])$/.test(v),
     ) ||
     !["small", "normal", "large"].includes(data.fontSize as string) ||
     !["practice", "manual", "serial"].includes(data.mode as string) ||
