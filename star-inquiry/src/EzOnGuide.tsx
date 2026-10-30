@@ -1,3 +1,4 @@
+import { ExampleLightGraph } from "./ExampleLightGraph";
 import type { ReactNode } from "react";
 import { ArrowRight, ExternalLink, Usb } from "lucide-react";
 import { SmartImage } from "./SmartImage";
@@ -296,10 +297,7 @@ export function EzOnSteps({ part }: { part: "setup" | "collect" | "all" }) {
               number={7}
               title="그래프 확인하고 데이터 저장"
               image={
-                <Screenshot
-                  number={10}
-                  caption="그래프 설정: X축 수집시간, Y축 센서 1"
-                />
+                <ExampleLightGraph />
               }
             >
               <p>
