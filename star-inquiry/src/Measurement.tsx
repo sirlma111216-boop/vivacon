@@ -1,3 +1,4 @@
+import { MeasurementProcedure } from "./MeasurementProcedure";
 import { useState } from "react";
 import { Upload, Plus, Download, FileSpreadsheet } from "lucide-react";
 import {
@@ -387,61 +388,10 @@ export function Measurement({
   if (step === 3)
     return (
       <>
-        <HardwareSectionContent section="measurement" />
+        <MeasurementProcedure />
         <div className="card">
-          <div className="eyebrow">한 번 측정하기</div>
-          <h2>이지온으로 수집하고 파일로 저장해요</h2>
-          <ol className="instructions">
-            <li>
-              LED가 센서를 향하게 자동차를 시작 자리에 두고, 처음 거리를 줄자로
-              잽니다.
-            </li>
-            <li>
-              이지온에서 <strong>수집 시작</strong>을 누르고 2~3초 기다려요.
-            </li>
-            <li>
-              자동차 <strong>A 버튼</strong>을 눌러 출발시켜요. 기록 담당은
-              출발한 순간 이지온 표의 수집시간을 적어 둡니다.
-            </li>
-            <li>
-              정한 거리까지 가면 <strong>B 버튼</strong>으로 멈추고 이지온{" "}
-              <strong>수집 중지</strong>를 눌러요.
-            </li>
-            <li>
-              그래프를 <strong>X축 수집시간, Y축 센서 1</strong>로 보고, 빛이
-              어떻게 바뀌었는지 확인해요.
-            </li>
-            <li>
-              <strong>데이터 다운로드</strong>로 CSV 파일을 저장해요. 반복할
-              때마다 <strong>데이터 초기화</strong> 후 처음부터 다시 합니다.
-            </li>
-          </ol>
-          <div className="grid-2">
-            {field(
-              "startDistance",
-              "LED와 센서 사이 처음 거리 (cm)",
-              note("design.startDistance", "20"),
-              "number",
-            )}
-            {field(
-              "design.repeats",
-              "반복할 횟수",
-              note("design.repeats", "3"),
-              "number",
-            )}
-          </div>
-          <label className="field">
-            회차별 메모 (출발한 수집시간, 멈춘 위치, 특이한 점)
-            <textarea
-              value={note("motionEvidence")}
-              onChange={(e) => setNote("motionEvidence", e.target.value)}
-              placeholder="예: 1회 – 23:03:36.1에 출발, 80cm에서 멈춤. 2회 – 출발이 늦어 다시 함."
-            />
-          </label>
-          <p className="muted">
-            내려받은 파일 이름은 바꾸지 않아도 돼요. 몇 번째 측정인지 메모와
-            함께 기억해 두세요.
-          </p>
+          <h2>그래프를 보고 파일로 저장해요</h2>
+          <p>이지온 그래프의 X축은 <strong>수집시간</strong>, Y축은 <strong>센서 1</strong>로 두고 밝기의 변화를 살펴봐요. <strong>데이터 다운로드</strong>를 눌러 CSV 파일을 저장한 뒤 ‘다음’으로 넘어가요.</p>
         </div>
         <div className="card">
           <div className="eyebrow">이지온 화면 안내</div>
