@@ -4,7 +4,7 @@
 
 대상 저장소: [sirlma111216-boop/vivacon](https://github.com/sirlma111216-boop/vivacon). Cloudflare Pages 프로젝트 `vivacon`에 GitHub 저장소를 연결했으며, 운영 브랜치는 `main`이다. 대시보드에서 **Automatic deployments enabled**를 확인했다.
 
-실행 주소: **[https://vivacon.pages.dev/](https://vivacon.pages.dev/)**
+실행 주소: **[https://starlight35.labbitory.com/](https://starlight35.labbitory.com/)**
 
 ## 배포 확인 기록
 

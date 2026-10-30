@@ -2,7 +2,7 @@
 
 별빛 탐구실은 중학교 과학 3~5차시 POE 웹앱입니다. 앞선 NC1395의 1~2차시 탐구와 디자인을 참고했으며, 독립된 이름으로 구성했습니다. React·TypeScript·Vite·Apache ECharts로 만들었으며 별도 서버 없이 브라우저에 학습 기록을 저장합니다.
 
-**실행 사이트: [별빛 탐구실](https://vivacon.pages.dev/)**
+**실행 사이트: [별빛 탐구실](https://starlight35.labbitory.com/)**
 
 ## 실행
 
