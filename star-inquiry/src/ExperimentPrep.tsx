@@ -1,8 +1,6 @@
 import { HardwareSectionContent } from "./HardwareManual";
 
-export function ExperimentPrep({
-  notes,
-}: {
+export function ExperimentPrep(_props: {
   notes: Record<string, string>;
   onOpenHardware: (step?: number) => void;
   onOpenEzOn: () => void;
@@ -10,31 +8,11 @@ export function ExperimentPrep({
   return (
     <section className="experiment-prep">
       <div className="learning-heading">
-        <h2>세운 계획대로, 이제 빛을 재어 봐요</h2>
+        <h2>만든 자동차로 이제 빛을 재어 봐요</h2>
         <p>
           LED 자동차가 멀어질 때 밝기 센서의 값을 이지온으로 모으고, 그 파일을
           가져와 처음 예상과 비교합니다.
         </p>
-      </div>
-      <div className="card prep-plan">
-        <h3>지난 시간에 정한 우리 모둠의 계획</h3>
-        <p>같은 LED가 멀어질 때 밝기가 어떻게 달라지는지 살펴봐요.</p>
-        <dl>
-          <div>
-            <dt>우리 모둠의 예상</dt>
-            <dd>
-              {notes["design.hypothesis"] ||
-                "지난 시간에 이야기한 예상을 떠올려요."}
-            </dd>
-          </div>
-          <div>
-            <dt>같게 유지할 조건</dt>
-            <dd>
-              {notes["design.control"] ||
-                "LED의 밝기와 방향, 센서 위치, 교실 조명"}
-            </dd>
-          </div>
-        </dl>
       </div>
       <HardwareSectionContent section="kit" />
       <div className="card">

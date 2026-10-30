@@ -844,11 +844,11 @@ export function Learning({
     return (
       <div className="learning-section">
         <Header
-          eyebrow="실험 계획하기 · 5분"
-          title="어떻게 공정하게 비교할까?"
+          eyebrow="실험 과정 알아보기 · 5분"
+          title="이 실험에 쓸 자동차를 만들어 봅시다!"
         >
-          거리 때문에 밝기가 달라지는지 알아보려면, 다른 조건은 같게 두어야
-          합니다. 무엇을 바꾸고 무엇을 기록할지 정해 보세요.
+          LED 자동차가 센서에서 멀어질 때 밝기가 어떻게 달라지는지 살펴볼
+          거예요. 먼저 실험 순서를 알아보고, 다음 화면에서 자동차를 만듭니다.
         </Header>
         <ExperimentPlanDiagram />
         <div className="plan-conditions">
@@ -865,14 +865,22 @@ export function Learning({
             <p>LED의 밝기와 방향, 센서의 위치, 교실 조명</p>
           </div>
         </div>
-        <div className="grid-2">
-          {designFields.map(([key, label, placeholder]) => (
-            <div key={key}>{text(`design.${key}`, label, placeholder)}</div>
-          ))}
-        </div>
+        <h3>실험은 이렇게 진행해요</h3>
+        <ol className="instructions">
+          <li>마이크로비트를 마퀸에 꽂고 뒤쪽에 LED를 달아요.</li>
+          <li>
+            MakeCode에서 A 버튼으로 출발하고 B 버튼으로 멈추는 프로그램을 만들어
+            넣어요.
+          </li>
+          <li>
+            다음 시간에 센서를 고정하고, 자동차의 LED가 센서를 향하게 놓아요.
+          </li>
+          <li>이지온에서 밝기 값을 모으며 자동차를 멀어지게 해요.</li>
+          <li>저장한 파일을 가져와 그래프를 보고 처음 예상과 비교해요.</li>
+        </ol>
         <p className="notice">
-          실험할 때 센서는 고정하고 자동차만 멀어지게 해요. LED는 계속 센서를
-          향하게 합니다. 거리와 측정 설정은 다음 시간에 장비를 놓으며 정해요.
+          실험하는 동안 LED의 밝기와 방향, 센서 위치와 교실 조명을 같게
+          유지해요. 이제 ‘다음’을 눌러 실험에 쓸 자동차를 만들어 봅시다!
         </p>
       </div>
     );
@@ -887,22 +895,6 @@ export function Learning({
           자동차를 조립하고, 블록으로 출발·정지 프로그램을 만든 뒤
           마이크로비트에 넣어 봐요.
         </Header>
-        <article className="design-summary">
-          <dl>
-            <dt>알아볼 것</dt>
-            <dd>같은 LED가 멀어질 때 밝기가 어떻게 달라지는지 살펴봅니다.</dd>
-            <dt>우리 모둠의 예상</dt>
-            <dd>
-              {notes["design.hypothesis"] ||
-                "멀어질 때 밝기가 어떻게 달라질지 이야기해 보세요."}
-            </dd>
-            <dt>같게 유지할 조건</dt>
-            <dd>
-              {notes["design.control"] ||
-                "LED의 밝기와 방향, 센서 위치, 교실 조명을 같게 유지해요."}
-            </dd>
-          </dl>
-        </article>
         <Maqueen notes={notes} setNote={setNote} lessonMode />
         <div className="notice">
           다음 시간에는 만든 자동차의 속력을 확인하고, 자동차가 멀어질 때 밝기를

@@ -15,8 +15,6 @@ import {
   Settings2,
   Sparkles,
   Upload,
-  Usb,
-  Wrench,
   X,
 } from "lucide-react";
 import {
@@ -25,9 +23,10 @@ import {
   learningNoteValue,
   type Prediction,
 } from "./Learning";
+import { TeacherEquipment } from "./TeacherEquipment";
 import { Measurement } from "./Measurement";
-import { EzOnEntry, EzOnGuide } from "./EzOnGuide";
-import { HardwareEntry, HardwareManual } from "./HardwareManual";
+import { EzOnGuide } from "./EzOnGuide";
+import { HardwareManual } from "./HardwareManual";
 import { SmartImage } from "./SmartImage";
 import { Resources, resources } from "./Resources";
 import { DataChart } from "./DataChart";
@@ -49,14 +48,14 @@ import {
 } from "./state";
 const lessons = {
   3: {
-    title: "예상하고 설계하기",
+    title: "예상하고 자동차 만들기",
     poe: "예상",
     description: "나의 생각에서 실험으로",
     steps: [
       "앞선 수업 연결",
       "나의 예상 그래프",
       "거리와 빛의 세기",
-      "실험 설계",
+      "실험 과정 알아보기",
       "자동차 만들기·코딩",
     ],
     times: [3, 5, 7, 5, 25],
@@ -313,14 +312,6 @@ export default function App() {
           ))}
         </div>
         <div className="quick-links">
-          <button onClick={() => openHardware()}>
-            <Wrench size={16} />
-            장비 사용 설명서
-          </button>
-          <button onClick={() => setPanel("ezon")}>
-            <Usb size={16} />
-            이지온 측정 안내
-          </button>
           <button onClick={() => setPanel("resources")}>
             <BookOpen size={16} />
             학습 자료
@@ -426,8 +417,6 @@ export default function App() {
               })}
             </div>
           </section>
-          <HardwareEntry onOpen={() => openHardware()} />
-          <EzOnEntry onOpen={() => setPanel("ezon")} />
           <section className="home-note">
             <a
               href="https://nc1395.labbitory.com/"
@@ -711,6 +700,7 @@ export default function App() {
           )}
           {panel === "teacher" && (
             <>
+              <TeacherEquipment />
               <p className="notice">
                 교사용 패널은 인증·보안 기능이 아닙니다. 학생도 열 수 있습니다.
               </p>
@@ -797,12 +787,12 @@ export default function App() {
                 </p>
               </section>
             ))}
-            <h2>2. 설계·관찰·설명·성찰 기록</h2>
+            <h2>2. 관찰·설명·성찰 기록</h2>
             {Object.entries(state.notes)
               .filter(
                 ([key, value]) =>
                   value.trim() &&
-                  !/^(?:design\.(?:question|ambientPlan|speedPlan|errors|startDistance|travelDistance|interval|repeats)$|designReflection$|safety\d|designCheck\d|car\.check\.|hardware\.check\.|hardware\.codeLoaded$)|^resource\..*\.complete$/.test(
+                  !/^(?:design\.(?:question|hypothesis|control|ambientPlan|speedPlan|errors|startDistance|travelDistance|interval|repeats)$|designReflection$|safety\d|designCheck\d|car\.check\.|hardware\.check\.|hardware\.codeLoaded$)|^resource\..*\.complete$/.test(
                     key,
                   ),
               )
