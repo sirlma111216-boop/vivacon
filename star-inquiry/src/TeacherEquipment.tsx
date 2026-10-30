@@ -43,6 +43,71 @@ export function TeacherEquipment() {
         센서는 고정하고 자동차만 움직입니다. 이지온에서 저장한 측정 파일을 이
         앱에 가져와 그래프를 비교합니다.
       </p>
+      <h3>국내 구입처 두 곳</h3>
+      <p>
+        수업 사진과 같은 Maqueen Lite 계열과 마이크로비트 보드를 따로 찾아볼 수
+        있는 판매처입니다. 아래 마퀸 상품은 모두 마이크로비트 별매입니다.
+      </p>
+      <article className="card">
+        <h4>디바이스마트</h4>
+        <p>
+          모델 번호 ROB0148과 부품 구성을 확인하며 구매하기 좋습니다. 마퀸
+          상품에는 마이크로비트와 USB 케이블이 포함되지 않으며, 아래 보드 단품도
+          케이블·배터리는 별매입니다.
+        </p>
+        <p>
+          <a
+            href="https://www.devicemart.co.kr/goods/view?no=10824340"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            마퀸 ROB0148 상품 보기 ↗
+          </a>{" "}
+          ·{" "}
+          <a
+            href="https://www.devicemart.co.kr/goods/view?no=13068128"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            마이크로비트 V2 보드 보기 ↗
+          </a>
+        </p>
+      </article>
+      <article className="card">
+        <h4>로봇사이언스몰</h4>
+        <p>
+          교육용 로봇과 코딩 교구를 다루는 판매처입니다. Maqueen Lite
+          ROB0148-EN과 마이크로비트 V2.21 보드 단품을 구분해 볼 수 있습니다.
+          마퀸 상품의 마이크로비트와 교재는 별매입니다.
+        </p>
+        <p>
+          <a
+            href="https://www.robotscience.kr/goods/view?no=14460"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            마퀸 Lite 상품 보기 ↗
+          </a>{" "}
+          ·{" "}
+          <a
+            href="https://robotscience.kr/goods/view?no=16161"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            마이크로비트 V2.21 보드 보기 ↗
+          </a>
+        </p>
+      </article>
+      <p>
+        모둠당 자동차 1대와 마이크로비트 1개를 기준으로, USB 데이터 케이블·맞는
+        건전지·실험용 LED를 함께 준비하세요. 학교에 마이크로비트가 있으면 중복
+        구입하지 않아도 됩니다. 주문 전 Lite/Plus 버전, 포함 구성품,
+        부가세·배송비, 필요한 수량의 재고와 납기를 판매처에 확인하세요.
+      </p>
+      <p className="muted">
+        상품 페이지 확인: 2026년 10월 30일. 가격과 재고는 바뀔 수 있어
+        판매처에서 확인합니다.
+      </p>
       <h3>수업 전에 준비할 것</h3>
       <ul>
         <li>
