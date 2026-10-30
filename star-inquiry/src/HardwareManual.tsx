@@ -95,6 +95,7 @@ export function HardwareSectionContent({
   hideTitle = false,
   onOpenCarCode,
   includeAllPhotos = false,
+  showExtraPhotos = false,
 }: {
   section: HardwareSectionKey;
   orders?: number[];
@@ -102,6 +103,7 @@ export function HardwareSectionContent({
   hideTitle?: boolean;
   onOpenCarCode?: () => void;
   includeAllPhotos?: boolean;
+  showExtraPhotos?: boolean;
 }) {
   const [expanded, setExpanded] = useState<HardwareImage | null>(null);
   const photoDialog = useRef<HTMLDialogElement>(null);
@@ -204,7 +206,7 @@ export function HardwareSectionContent({
           ))}
         </div>
 
-        <details className="hardware-extra">
+        <details className="hardware-extra" open={showExtraPhotos}>
           <summary>보충 사진과 설명용 그림</summary>
           <div className="hardware-photo-grid">
             {additionalPhotos.map((number) => imageButton(photo(number), true))}

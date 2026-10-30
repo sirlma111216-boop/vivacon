@@ -17,7 +17,6 @@ import type { Prediction } from "./Learning";
 import { ExperimentPrep } from "./ExperimentPrep";
 import { HardwareSectionContent } from "./HardwareManual";
 import { measurementSetup } from "./measurementSetup";
-import { Maqueen } from "./Maqueen";
 import { EzOnLinks, EzOnSteps, EzOnTroubleshooting } from "./EzOnGuide";
 import { download, type AppState } from "./state";
 type Props = {
@@ -315,7 +314,10 @@ export function Measurement({
   if (step === 1)
     return (
       <>
-        <Maqueen notes={state.notes} setNote={setNote} />
+        <div className="notice">
+          3차시에서 만든 자동차를 준비하세요. LED 고정 상태를 보고, 바닥에서 A로
+          출발하고 B로 멈추는지 짧게 시험해요.
+        </div>
         <div className="card">
           <div className="eyebrow">자동차 준비 마무리</div>
           <h2>자동차는 1초에 몇 cm 움직일까요?</h2>

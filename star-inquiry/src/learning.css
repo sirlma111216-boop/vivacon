@@ -858,5 +858,14 @@
   height: auto;
   object-fit: contain;
 }
-.light-original-diagram { margin: 24px 0; }
-.light-original-diagram img { display: block; width: 100%; height: auto; object-fit: contain; background: #fff; border-radius: 8px; }
+.light-original-diagram {
+  margin: 24px 0;
+}
+.light-original-diagram img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 8px;
+}

@@ -41,8 +41,8 @@ export function ExperimentPrep({
         <h3>오늘은 이렇게 진행해요</h3>
         <ol className="instructions">
           <li>
-            <strong>자동차 준비</strong> · 마이크로비트와 LED를 붙이고 주행
-            프로그램을 넣은 뒤, 실제 속력을 재요.
+            <strong>자동차 준비</strong> · 3차시에서 만든 자동차의 출발·정지를
+            시험하고 실제 속력을 재요.
           </li>
           <li>
             <strong>이지온 연결</strong> · 밝기 센서를 보드에 꽂고, 이지온에서

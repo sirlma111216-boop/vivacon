@@ -8,6 +8,7 @@ import {
   type Run,
 } from "./domain";
 import { DataChart } from "./DataChart";
+import { Maqueen } from "./Maqueen";
 import { SmartImage } from "./SmartImage";
 import { LightExplanation } from "./LightExplanation";
 import { resources, safeExternalUrl } from "./Resources";
@@ -511,7 +512,7 @@ export function Learning({
     return (
       <div className="learning-section">
         <Header
-          eyebrow="앞선 수업 떠올리기 · 5분"
+          eyebrow="앞선 수업 떠올리기 · 3분"
           title="밝게 보인다는 건, 무엇일까?"
         >
           천상열차분야지도의 별 표현과 밝기 등급을 떠올려 봅시다.
@@ -699,7 +700,7 @@ export function Learning({
     return (
       <div className="learning-section">
         <Header
-          eyebrow="모형 관찰하기 · 8분"
+          eyebrow="모형 관찰하기 · 7분"
           title="멀어질수록, 더 넓게 퍼지는 빛"
         >
           같은 양의 빛이 고르게 퍼진다고 생각해 봅시다. 거리를 바꾸며 한 칸이
@@ -843,7 +844,7 @@ export function Learning({
     return (
       <div className="learning-section">
         <Header
-          eyebrow="실험 계획하기 · 15분"
+          eyebrow="실험 계획하기 · 5분"
           title="어떻게 공정하게 비교할까?"
         >
           거리 때문에 밝기가 달라지는지 알아보려면, 다른 조건은 같게 두어야
@@ -879,8 +880,12 @@ export function Learning({
   if (lesson === 3 && step === 4) {
     return (
       <div className="learning-section">
-        <Header eyebrow="계획 정리하기 · 9분" title="우리 계획을 한눈에 보기">
-          거리와 밝기를 어떻게 비교할지 모둠의 계획을 읽어 보세요.
+        <Header
+          eyebrow="제작하고 코딩하기 · 25분"
+          title="빛을 싣고 움직이는 마퀸 만들기"
+        >
+          자동차를 조립하고, 블록으로 출발·정지 프로그램을 만든 뒤
+          마이크로비트에 넣어 봐요.
         </Header>
         <article className="design-summary">
           <dl>
@@ -898,12 +903,11 @@ export function Learning({
             </dd>
           </dl>
         </article>
-        <h3>다음 시간에는 이렇게 살펴봐요</h3>
-        <ol className="instructions">
-          <li>LED와 센서를 마주 보게 놓아요.</li>
-          <li>자동차가 멀어질 때 밝기 값을 모아요.</li>
-          <li>그래프가 어떻게 변하는지 보고 우리 예상과 비교해요.</li>
-        </ol>
+        <Maqueen notes={notes} setNote={setNote} lessonMode />
+        <div className="notice">
+          다음 시간에는 만든 자동차의 속력을 확인하고, 자동차가 멀어질 때 밝기를
+          측정해요.
+        </div>
       </div>
     );
   }
