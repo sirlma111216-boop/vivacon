@@ -515,7 +515,7 @@ export function Learning({
           eyebrow="앞선 수업 떠올리기 · 3분"
           title="밝게 보인다는 건, 무엇일까?"
         >
-          천상열차분야지도의 별 표현과 밝기 등급을 떠올려 봅시다.
+          앞선 수업에서 살펴본 별의 밝기를 떠올려 봐요.
         </Header>
         <div className="question-callout">
           별이 밝게 보이는 까닭은{" "}
@@ -533,11 +533,7 @@ export function Learning({
             <p>같은 광원도 관찰하는 위치가 달라지면 밝기가 달라져요.</p>
           </article>
         </div>
-        {text(
-          "connection",
-          "두 까닭을 어떻게 구분해서 확인할 수 있을까요?",
-          "앞선 수업에서 떠올린 생각을 자유롭게 적으세요.",
-        )}
+
         <p className="notice">
           밝게 보인다는 사실 하나만으로 그 별이 가까운지 단정할 수는 없어요.
         </p>
@@ -582,7 +578,7 @@ export function Learning({
       ys.forEach((y, i) => setNote(`predictionPoint${i}`, String(y)));
     return (
       <div className="learning-section">
-        <Header eyebrow="예상하기 · 8분" title="나의 예상 그래프">
+        <Header eyebrow="예상하기 · 5분" title="나의 예상 그래프">
           같은 LED가 일정한 속력으로 멀어지면 센서가 측정하는 밝기는 어떻게
           달라질까요?
         </Header>
@@ -655,8 +651,8 @@ export function Learning({
                 </div>
                 {input(
                   "predictionAuthor",
-                  "기록한 사람 또는 모둠 별칭",
-                  "예: 분석 담당 / 은하 모둠",
+                  "이름 또는 모둠 이름",
+                  "예: 김별 / 은하 모둠",
                 )}
                 {text(
                   "predictionReason",
@@ -712,7 +708,7 @@ export function Learning({
               <svg
                 viewBox="0 0 540 290"
                 role="img"
-                aria-label={`거리 ${distance}배에서 빛을 받는 면적은 ${area}배, 단위 면적당 밝기는 ${area}분의 1입니다.`}
+                aria-label={`거리 ${distance}배에서 빛을 받는 면적은 ${area}배, 같은 크기 한 칸의 밝기는 ${area}분의 1입니다.`}
               >
                 <circle cx="50" cy="145" r="15" fill="#f8c84d" />
                 <path
@@ -889,7 +885,7 @@ export function Learning({
     return (
       <div className="learning-section">
         <Header
-          eyebrow="제작하고 코딩하기 · 25분"
+          eyebrow="코딩하고 만들기 · 22분"
           title="빛을 싣고 움직이는 마퀸 만들기"
         >
           먼저 블록으로 출발·정지 프로그램을 만들어 마이크로비트에 넣어요.
@@ -1585,7 +1581,7 @@ export function Learning({
           {input(
             "reflectionAuthor",
             "설명을 기록하는 사람 또는 모둠 별칭",
-            prediction?.author || "예: 분석 담당 / 은하 모둠",
+            prediction?.author || "예: 김별 / 은하 모둠",
           )}
           {text(
             "reflectionBefore",

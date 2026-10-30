@@ -56,10 +56,10 @@ const lessons = {
       "나의 예상 그래프",
       "거리와 빛의 세기",
       "실험 과정 알아보기",
-      "자동차 만들기·코딩",
+      "코딩하고 자동차 만들기",
       "오늘 배운 내용 정리",
     ],
-    times: [3, 5, 7, 5, 25, 3],
+    times: [3, 5, 7, 5, 22, 3],
   },
   4: {
     title: "측정하고 설명하기",
@@ -702,9 +702,6 @@ export default function App() {
           {panel === "teacher" && (
             <>
               <TeacherEquipment />
-              <p className="notice">
-                교사용 패널은 인증·보안 기능이 아닙니다. 학생도 열 수 있습니다.
-              </p>
               <h3>학습 흐름 조절</h3>
               <label className="check">
                 <input
@@ -732,7 +729,7 @@ export default function App() {
                 ))}
                 <button onClick={practice}>연습 데이터 생성</button>
               </div>
-              <h3>45분 수업 운영</h3>
+              <h3>차시별 시간 배분 예시</h3>
               {([3, 4, 5] as const).map((l) => (
                 <p key={l}>
                   <strong>

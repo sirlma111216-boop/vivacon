@@ -119,7 +119,7 @@ export function MaqueenGuide() {
         <span className="badge">등속운동 실험을 위한 자동차 준비</span>
         <h2 id="maqueen-guide-title">마퀸 자동차 코딩, 화면으로 따라 하기</h2>
         <p>
-          A 버튼으로 출발하고 B 버튼이나 앞의 장애물로 멈추는 프로그램을
+          A 버튼으로 출발하고 B 버튼을 누르거나 앞에 장애물이 가까이 있으면 멈추는 프로그램을
           만들어요.
         </p>
         <a
@@ -192,12 +192,12 @@ export function MaqueenGuide() {
         </Scene>
         <Scene
           number={5}
-          title="추가된 블록 분류 확인"
+          title="마퀸 블록 찾기"
           caption="Maqueen v4·v5 분류가 추가된 화면"
         >
           <p>
             왼쪽에 <strong>Maqueen v4</strong>와 <strong>Maqueen v5</strong>가
-            보여요. 내 장비에 맞는 버전의 모터·초음파 블록을 사용해요.
+            보여요. 선생님이 알려 준 버전의 모터·초음파 블록을 사용해요.
           </p>
         </Scene>
         <li id="maqueen-scene-6" className="maqueen-scene maqueen-code-scene">
@@ -205,8 +205,8 @@ export function MaqueenGuide() {
             <span className="maqueen-scene-number" aria-hidden="true">
               06
             </span>
-            <h3>출발과 정지 코드 읽기</h3>
-            <p>아래 네 블록을 화면처럼 배치해요.</p>
+            <h3>출발과 정지 코드 만들기</h3>
+            <p>아래 네 묶음의 블록을 화면처럼 만들어요.</p>
           </div>
           <SceneImage
             number={6}
@@ -217,7 +217,7 @@ export function MaqueenGuide() {
               <span className="maqueen-code-label">시작하면</span>
               <h4>하트 표시</h4>
               <p>
-                프로그램이 시작되면 하트가 떠요. 실험용 코드에는 여기에도
+                프로그램이 시작되면 하트가 떠요. 그림의 하트 블록 아래에
                 <strong> 전체 모터 정지</strong>를 넣어 처음에 바퀴가 멈춰
                 있도록 해요.
               </p>
@@ -248,11 +248,8 @@ export function MaqueenGuide() {
             </article>
           </div>
           <div className="maqueen-code-notes">
-            <p>LED가 고정된 밝기 센서를 향한 채 자동차가 멀어지도록 놓아요.</p>
             <p>
-              처음에는 모터 설정값을 낮춰 넓은 바닥에서 출발·정지를 시험해요.
-              탁자 끝에서는 시험하지 않아요. 초음파 센서가 재는 앞쪽 장애물
-              거리는 실험에서 재는 LED–밝기 센서 거리와 달라요.
+              255는 모터를 움직이는 설정값이며 실제 속력은 아니에요.
             </p>
           </div>
         </li>
@@ -327,49 +324,6 @@ export function MaqueenGuide() {
           </a>
         </Scene>
       </ol>
-      <section
-        className="maqueen-speed-check"
-        aria-labelledby="maqueen-speed-check-title"
-      >
-        <h3 id="maqueen-speed-check-title">실제 속력은 거리와 시간으로 재요</h3>
-        <ol>
-          <li>
-            바닥에 같은 간격의 표시를 하고 각 구간을 지나는 데 걸린 시간을 재요.
-          </li>
-          <li>
-            <strong>속력 = 이동 거리 ÷ 걸린 시간</strong>으로 계산해요. 출발
-            직후와 멈출 때를 빼고 속력이 비슷한 구간을 실험에 사용해요.
-          </li>
-          <li>
-            <strong>255는 모터 설정값</strong>이에요. 속력 칸에는 실제로 잰 값을
-            넣어요.
-          </li>
-        </ol>
-      </section>
-      <details className="maqueen-guide-details">
-        <summary>교사용 코드 참고</summary>
-        <ul>
-          <li>
-            첨부 화면의 시작 블록에는 하트만 있고 모터 정지 명령은 없습니다.
-            실험용 코드에는 시작 시 전체 모터 정지를 추가합니다. 화면의 아이콘은
-            실제 주행 검증 결과가 아닙니다.
-          </li>
-          <li>
-            조건은 5cm 미만이므로 정확히 5cm일 때는 A 버튼의 ‘아니면’으로
-            진행합니다. 이 값은 실제 제동 거리를 보장하지 않습니다.
-          </li>
-          <li>
-            무한반복에는 전진시키는 ‘아니면’이 없습니다. B 정지는 잠금 기능이
-            아니므로 A를 다시 누르면 출발할 수 있습니다. 첨부 코드에는 준비
-            시간과 일정 시간 뒤 정지 기능이 없습니다.
-          </li>
-          <li>
-            모터 설정이 같아도 바닥·배터리·LED 무게에 따라 실제 속력이
-            달라집니다. 이 코드는 속력을 측정해 일정하게 유지하는 제어를 하지
-            않습니다. 실물 주행은 수업 전에 별도로 시험합니다.
-          </li>
-        </ul>
-      </details>
     </section>
   );
 }

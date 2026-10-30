@@ -239,14 +239,14 @@ export function HardwareSectionContent({
           ))}
         </div>
 
-        <details className="hardware-extra">
+        {section.id !== "car" && <details className="hardware-extra">
           <summary>교사용 참고</summary>
           <ul>
             {section.teacherNotes.map((note) => (
               <li key={note}>{note}</li>
             ))}
           </ul>
-        </details>
+        </details>}
       </section>
 
       {includeAllPhotos && (

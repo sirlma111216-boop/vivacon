@@ -85,35 +85,10 @@ export function Maqueen({
       <section className="card">
         <h2>자동차를 조립하고, 움직여 봐요</h2>
         <p>
-          먼저 블록 코딩으로 프로그램을 넣고, 마이크로비트와 LED를 달아
-          준비합니다.
+          블록으로 프로그램을 만들고 마이크로비트에 넣어요. 그다음 자동차에
+          마이크로비트와 LED를 달아요.
         </p>
-        <details>
-          <summary>교사용 · 자동차와 보드 종류 기록</summary>
-          <div className="grid-2">
-            <label className="field">
-              사용하는 마퀸
-              <select
-                value={notes["car.hardware"] ?? "unknown"}
-                onChange={(event) =>
-                  setNote("car.hardware", event.target.value)
-                }
-              >
-                <option value="unknown">아직 버전을 확인하지 못했어요</option>
-                <option value="lite">Maqueen Lite / ROB0148 계열</option>
-                <option value="other">Plus·Lite V5 등 다른 버전</option>
-              </select>
-            </label>
-            <label className="field">
-              micro:bit 및 확장 버전 기록
-              <input
-                value={notes["car.version"] ?? ""}
-                onChange={(event) => setNote("car.version", event.target.value)}
-                placeholder="보드 V1/V2, 확장 이름·버전"
-              />
-            </label>
-          </div>
-        </details>
+
       </section>
 
       <section className="card car-program">
