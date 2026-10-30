@@ -346,3 +346,16 @@
   transform: translate(-50%, -50%) rotate(-90deg);
   object-fit: contain;
 }
+.hardware-step-photos {
+  display: grid;
+  gap: 24px;
+}
+.hardware-step-detail {
+  padding-top: 20px;
+  border-top: 1px solid #34415e;
+}
+.hardware-step-detail > p {
+  margin: 0 0 14px;
+  font-size: 1rem;
+  color: #d0d9eb;
+}

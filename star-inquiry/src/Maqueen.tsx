@@ -119,7 +119,6 @@ export function Maqueen({
         section="car"
         orders={[2, 3, 4]}
         title="1. 마이크로비트와 LED 달기"
-        showExtraPhotos={lessonMode}
       />
       <section className="card car-program">
         <h3>2. MakeCode에서 블록 코딩하기</h3>
@@ -152,7 +151,6 @@ export function Maqueen({
         section="car"
         orders={[5, 6, 7]}
         title="3. 자동차에 전원을 켜고 움직여 보기"
-        showExtraPhotos={lessonMode}
       />
       {lessonMode && (
         <section className="card">

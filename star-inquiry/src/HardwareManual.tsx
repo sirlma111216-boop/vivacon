@@ -95,7 +95,6 @@ export function HardwareSectionContent({
   hideTitle = false,
   onOpenCarCode,
   includeAllPhotos = false,
-  showExtraPhotos = false,
 }: {
   section: HardwareSectionKey;
   orders?: number[];
@@ -103,7 +102,6 @@ export function HardwareSectionContent({
   hideTitle?: boolean;
   onOpenCarCode?: () => void;
   includeAllPhotos?: boolean;
-  showExtraPhotos?: boolean;
 }) {
   const [expanded, setExpanded] = useState<HardwareImage | null>(null);
   const photoDialog = useRef<HTMLDialogElement>(null);
@@ -115,12 +113,6 @@ export function HardwareSectionContent({
   const items = section.orders
     .filter((order) => !orders || orders.includes(order))
     .map((order) => hardwareSteps.find((item) => item.order === order)!);
-  const mainPhotos = new Set(
-    items.flatMap((item) => (item.primaryPhoto ? [item.primaryPhoto] : [])),
-  );
-  const additionalPhotos = [
-    ...new Set(items.flatMap((item) => item.references)),
-  ].filter((number) => !mainPhotos.has(number));
 
   useEffect(() => {
     if (expanded && !photoDialog.current?.open)
@@ -197,24 +189,43 @@ export function HardwareSectionContent({
                   ))}
                 </ul>
               )}
-              {imageButton(
-                item.primaryPhoto
-                  ? photo(item.primaryPhoto)
-                  : illustration(item.order),
-              )}
+              <div className="hardware-step-photos">
+                {!item.primaryPhoto && imageButton(illustration(item.order))}
+                {(item.order === 3
+                  ? [48, 25]
+                  : item.order === 4
+                    ? [47, 31, 34]
+                    : [
+                        ...new Set([
+                          ...(item.primaryPhoto ? [item.primaryPhoto] : []),
+                          ...item.references,
+                        ]),
+                      ]
+                ).map((number) => (
+                  <div className="hardware-step-detail" key={number}>
+                    <p>
+                      {number === 47
+                        ? "먼저 원형 LED를 켜서 빛이 나오는 쪽을 찾아요."
+                        : number === 31
+                          ? "LED를 자동차 뒤쪽에 고정하고, 빛이 센서를 향하도록 놓아요."
+                          : number === 34
+                            ? "뒤쪽에서 LED와 건전지가 단단히 고정되었는지 살펴봐요."
+                            : photoDescriptions[number - 25]}
+                    </p>
+                    {imageButton(photo(number))}
+                  </div>
+                ))}
+                {item.primaryPhoto && (
+                  <div className="hardware-step-detail">
+                    <p>{item.alt.replace("설명용 그림", "설명 그림")}</p>
+                    {imageButton(illustration(item.order))}
+                  </div>
+                )}
+              </div>
             </article>
           ))}
         </div>
 
-        <details className="hardware-extra" open={showExtraPhotos}>
-          <summary>보충 사진과 설명용 그림</summary>
-          <div className="hardware-photo-grid">
-            {additionalPhotos.map((number) => imageButton(photo(number), true))}
-            {items
-              .filter((item) => item.primaryPhoto)
-              .map((item) => imageButton(illustration(item.order), true))}
-          </div>
-        </details>
         <details className="hardware-extra">
           <summary>교사용 참고</summary>
           <ul>
