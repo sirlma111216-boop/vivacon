@@ -14,26 +14,18 @@ export function ExperimentPrep(_props: {
           오늘은 실제 밝기 값을 모아 우리의 예상과 비교해 볼 거예요.
         </p>
       </div>
-      <section className="card lesson-video" aria-labelledby="real-light-experiment">
-        <span className="eyebrow">실제 실험 영상으로 시작하기</span>
-        <h3 id="real-light-experiment">멀어지는 빛을 센서로 재면?</h3>
-        <p>아래 재생 버튼을 눌러 광원과 밝기 센서로 측정하는 실제 실험을 보세요.</p>
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/_KHNZTxwA6Q?rel=0&playsinline=1"
-          title="PASCO 실제 실험 영상: 거리에 따른 빛의 세기 측정"
-          loading="eager"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        />
-        <p className="muted">PASCO scientific · Inverse Square Law · 영어 영상</p>
-        <h4>이 장면에 주목해요</h4>
-        <ul>
-          <li>빛을 내는 곳과 센서 사이의 거리를 어떻게 바꾸나요?</li>
-          <li>거리가 달라질 때 측정값과 그래프는 어떻게 달라지나요?</li>
-        </ul>
-        <p>영상에서는 PASCO 장비로 빛을 재요. 우리는 이지메이커의 밝기 센서를 고정하고 LED 자동차를 움직여, 같은 질문을 실험해 볼 거예요.</p>
-        <p className="muted"><a href="https://www.pasco.com/resources/video/_KHNZTxwA6Q" target="_blank" rel="noopener noreferrer">영상 출처 · PASCO 공식 자료 ↗</a></p>
+      <section className="card lesson-video" aria-labelledby="night-sky-opening">
+        <span className="eyebrow">실제 밤하늘 영상으로 시작하기</span>
+        <h3 id="night-sky-opening">이 많은 별 중, 어떤 별이 눈에 띄나요?</h3>
+        <p>칠레 라 실라 천문대의 밤하늘이에요. 재생한 뒤 마음에 드는 장면에서 멈춰 보세요.</p>
+        <video controls playsInline loop preload="metadata" aria-label="ESO Through the night: 라 실라 천문대에서 촬영한 별과 은하수 영상">
+          <source src="/assets/videos/eso-through-the-night.mp4" type="video/mp4" />
+          이 브라우저에서는 영상을 재생할 수 없습니다.
+        </video>
+        <p className="muted">Through the night · 7초 반복 재생 · 밤하늘의 움직임을 빠르게 보여 주는 실제 촬영 영상</p>
+        <p className="muted">Credit: <a href="https://www.hq.eso.org/public/videos/la_silla_horalek_1/" target="_blank" rel="noopener noreferrer">ESO/P. Horálek</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> · 원본 영상</p>
+        <div className="question-callout"><strong>유난히 눈에 띄는 별은 왜 밝게 보일까요?</strong> 지난 시간에 떠올린 까닭을 짝과 이야기해요.</div>
+        <p>별을 직접 가까이 옮겨 볼 수는 없어요. 오늘은 별 대신 같은 LED를 사용해, 거리가 달라질 때 밝기가 어떻게 변하는지 알아봐요.</p>
       </section>
       <section className="card" aria-labelledby="ezmaker-introduction">
         <h3 id="ezmaker-introduction">오늘 빛을 재는 도구, 이지메이커</h3>
