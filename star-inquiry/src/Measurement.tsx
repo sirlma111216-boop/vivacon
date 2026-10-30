@@ -372,37 +372,13 @@ export function Measurement({
             </li>
             <li>센서를 손으로 가렸다 떼며 센서 1 값이 바뀌는지 봐요.</li>
             <li>
-              LED를 끄고 값을 적은 뒤, LED를 켜서 시작 자리에 두었을 때 값을
-              적어요.
+              LED를 비췄다가 멀리 옮겨 값이 달라지는지 봐요. 값이 최댓값에 계속 머물면 LED를 더 멀리 놓아요.
             </li>
             <li>
               <strong>수집 중지</strong>와 <strong>데이터 초기화</strong>로 시험
               기록을 지워요.
             </li>
           </ol>
-          <label className="field">
-            블록에서 고른 측정 범위
-            <select
-              value={note("ezon.range", "100")}
-              onChange={(e) => setNote("ezon.range", e.target.value)}
-            >
-              <option value="100">0~100</option>
-              <option value="1023">0~1023</option>
-            </select>
-          </label>
-          <div className="grid-2">
-            {field("ambient", "LED를 껐을 때 센서 1 값", "0", "number")}
-            {field(
-              "ezon.ledOnValue",
-              "LED를 켠 시작 자리의 센서 1 값",
-              "",
-              "number",
-            )}
-          </div>
-          <SaturationHint
-            range={Number(note("ezon.range", "100"))}
-            value={note("ezon.ledOnValue")}
-          />
           <EzOnTroubleshooting />
         </div>
         {status}
@@ -501,8 +477,7 @@ export function Measurement({
         <p className="muted">
           가져올 때 함께 기록하는 값: 처음 거리{" "}
           {Number.isFinite(setup.startDistance) ? setup.startDistance : "?"}cm ·
-          LED를 껐을 때 값{" "}
-          {Number.isFinite(setup.ambient) ? setup.ambient : "?"} · 실제 속력{" "}
+          실제 속력{" "}
           {setup.speed !== undefined
             ? `${setup.speed.toFixed(2)}cm/s`
             : "미확인 (2단계)"}
@@ -940,20 +915,6 @@ export function Measurement({
         </div>
       )}
     </>
-  );
-}
-function SaturationHint({ range, value }: { range: number; value: string }) {
-  const reading = Number(value);
-  if (value.trim() === "" || !Number.isFinite(reading)) return null;
-  return reading >= range ? (
-    <p className="notice">
-      시작 자리의 값이 최댓값 {range}에 닿았어요. 센서가 더 밝은 빛을 구분하지
-      못하므로 처음 거리를 늘리거나 LED 밝기를 낮춰 다시 확인하세요.
-    </p>
-  ) : (
-    <p className="muted">
-      시작 자리의 값이 최댓값 {range}보다 작아 밝기 변화를 기록할 수 있어요.
-    </p>
   );
 }
 function SpeedResult({ notes }: { notes: Record<string, string> }) {
