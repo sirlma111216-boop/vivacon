@@ -25,7 +25,17 @@ export function ExperimentPrep(_props: {
         <p>마이크로비트는 자동차를 움직이고, 이지메이커는 빛을 재요. 센서는 한곳에 고정하고 자동차만 움직일 거예요.</p>
       </section>
       <section className="card" aria-labelledby="lesson4-opening">
-        <span className="eyebrow">먼저 눈으로 살펴보기 · 3분</span>
+        <h3>NASA는 별의 밝기를 어떻게 설명할까요?</h3>
+        <p>NASA는 별이 밝게 보이는 까닭을 손전등에 비유해 설명해요. 빛을 많이 내는 손전등과 가까이 있는 손전등 중 어느 쪽이 더 밝게 보일지 생각하며 자료를 살펴보세요.</p>
+        <p>
+          <a className="primary" href="https://imagine.gsfc.nasa.gov/ask_astro/stars.html" target="_blank" rel="noopener noreferrer">NASA 손전등·별의 밝기 자료 보기 ↗</a>
+        </p>
+        <p className="muted">영문 설명 자료 · 새 탭에서 열립니다. 영상이나 조작하는 실험 화면은 아닙니다.</p>
+        <p>원문 위쪽의 <strong>How Stars Shine</strong>에서 첫 질문의 답변을 보세요. 브라우저의 한국어 번역 기능을 이용해도 좋아요.</p>
+        <blockquote>빛을 적게 내는 손전등도 가까이 있으면, 멀리 있는 강한 손전등보다 밝게 보일 수 있어요.</blockquote>
+        <p className="muted">NASA 「Ask an Astrophysicist」의 설명을 쉽게 풀어 쓴 내용입니다.</p>
+        <p>자료를 본 뒤 이 수업 탭으로 돌아와, 같은 LED의 거리만 바꾸어 봐요.</p>
+        <span className="eyebrow">눈으로 살펴보기 · 2분</span>
         <h3 id="lesson4-opening">같은 LED인데, 밝기가 달라 보일까요?</h3>
         <p>자동차의 모터 전원은 끄고 LED만 켜요. 흰 종이를 한곳에 세우고 LED의 빛을 비춰 보세요. LED를 눈에 직접 비추지 않아요.</p>
         <ol className="instructions">
