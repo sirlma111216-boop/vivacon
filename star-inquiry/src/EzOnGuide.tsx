@@ -184,23 +184,25 @@ export function EzOnSteps({ part }: { part: "setup" | "collect" | "all" }) {
               <p>
                 상단 <strong>블록 코딩</strong> 탭을 열고{" "}
                 <strong>EZMAKER 설정</strong>,{" "}
-                <strong>EZMAKER 반복 실행</strong> 블록을 찾아요. 밝기를 읽고
-                보내는 블록은 ‘EZMAKER 반복 실행’ 안에 넣어요.
+                <strong>EZMAKER 반복 실행</strong> 블록이 보이는 화면으로 이동해요.
               </p>
             </GuideStep>
             <GuideStep
               number={3}
-              title="밝기 센서와 연결 자리 선택"
+              title="예제 코드 버튼으로 한 번에 완성하기"
               image={
                 <Screenshot
                   number={3}
-                  caption="입력 → 밝기 센서에서 측정값 블록 선택"
+                  caption="입력 → 밝기 센서 → 밝기 센서 예제 코드 열기"
                 />
               }
             >
               <p>
-                왼쪽 <strong>입력 → 밝기 센서</strong>에서{" "}
-                <strong>0~100</strong> 측정값 블록을 골라요.
+                왼쪽 <strong>입력 → 밝기 센서</strong>를 열고, 위쪽의{" "}
+                <strong>밝기 센서 예제 코드 열기</strong> 버튼을 눌러요.
+              </p>
+              <p className="notice">
+                <strong>이 버튼을 누르면 밝기 측정·데이터 전송·기다리기 블록이 자동으로 완성돼요!</strong> 블록을 하나씩 끌어다 조립할 필요가 없어요.
               </p>
               <p>
                 센서를 보드의 <strong>A0</strong>에 꽂았다면 블록에서도 A0를
@@ -209,7 +211,7 @@ export function EzOnSteps({ part }: { part: "setup" | "collect" | "all" }) {
             </GuideStep>
             <GuideStep
               number={4}
-              title="밝기 전송과 기다리기 블록 조립"
+              title="자동으로 만들어진 블록 확인"
               image={
                 <>
                   <Screenshot
@@ -227,13 +229,11 @@ export function EzOnSteps({ part }: { part: "setup" | "collect" | "all" }) {
               }
             >
               <p>
-                <strong>데이터 전송</strong> 안에{" "}
-                <strong>센서 데이터 추가하기</strong>를 넣고, 그 안에 밝기 센서
-                측정값 블록을 넣습니다.
+                예제 코드가 열리면 아래 그림처럼 밝기 센서의 값을 보내는 블록과
+                <strong>0.1초 동안 기다리기</strong>가 함께 들어 있어요.
               </p>
               <p>
-                바로 아래에 <strong>0.1초 동안 기다리기</strong>를 연결합니다.
-                이 두 동작이 반복 실행 안에 있도록 맞춰 주세요.
+                센서를 꽂은 자리와 블록의 <strong>A0</strong> 표시가 같은지 확인한 뒤, 다음 단계에서 보드에 업로드해요.
               </p>
             </GuideStep>
             <GuideStep
