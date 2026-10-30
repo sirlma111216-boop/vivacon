@@ -279,6 +279,38 @@ export function MaqueenGuide() {
             <code>.hex</code> 파일을 컴퓨터의 <strong>MICROBIT 드라이브</strong>
             에 복사하고 전송이 끝날 때까지 기다려요.
           </p>
+          <aside
+            className="maqueen-transfer-important"
+            aria-label="중요: 프로그램 전송 후 HEX 파일이 보이지 않는 이유"
+          >
+            <strong>중요 · HEX 파일이 안 보여도 걱정하지 마세요!</strong>
+            <p>
+              파일이 복사되는 듯하다가 마이크로비트가 깜빡이고, MICROBIT
+              드라이브나 열린 창이 잠깐 사라졌다 다시 나타날 수 있어요.
+              프로그램을 넣고 다시 시작하는 정상적인 과정입니다. 전송이 끝날
+              때까지 USB를 빼지 마세요.
+            </p>
+            <p>
+              다시 드라이브를 열었을 때 <code>.hex</code> 파일이 보이지 않는
+              것도 정상이에요. USB 메모리처럼 파일을 보관하는 것이 아니라,{" "}
+              <strong>
+                파일 속 프로그램을 마이크로비트 내부에 설치하기 때문
+              </strong>
+              입니다. 파일이 안 보인다고 다시 복사할 필요는 없어요.
+            </p>
+            <p>
+              하트 표시 등 만든 프로그램이 실행되는지 확인한 뒤 다음 과정으로
+              가세요. <code>FAIL.TXT</code>가 생기거나 오류 표시가 나타나면
+              선생님과 확인해요.
+            </p>
+            <a
+              href="https://support.microbit.org/support/solutions/articles/19000067847-why-does-the-hex-file-disappear-when-i-transfer-it-to-the-micro-bit-"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              micro:bit 공식 안내 · HEX 파일이 보이지 않는 이유 ↗
+            </a>
+          </aside>
           <a
             href="https://makecode.microbit.org/device/usb"
             target="_blank"

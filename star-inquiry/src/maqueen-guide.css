@@ -215,3 +215,19 @@
     gap: 6px 16px;
   }
 }
+.maqueen-transfer-important {
+  margin: 20px 0;
+  padding: 22px;
+  border: 2px solid #f8c84d;
+  border-left-width: 6px;
+  border-radius: 10px;
+  background: #1b223e;
+}
+.maqueen-transfer-important > strong {
+  display: block;
+  color: #f8c84d;
+  font-size: 1.15rem;
+}
+.maqueen-transfer-important p {
+  line-height: 1.8;
+}
