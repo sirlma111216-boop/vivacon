@@ -121,7 +121,7 @@ export function HardwareSectionContent({
   }, [expanded]);
 
   const imageButton = (item: HardwareImage, compact = false) =>
-    /(?:미디어 \((?:27|28|30)\)\.jpeg|05-power-switch\.png|06-press-a\.png)$/.test(item.src) ? null : (
+    /(?:미디어 \((?:27|28|30|38)\)\.jpeg|05-power-switch\.png|06-press-a\.png|09-sensor-connector\.png|11-usb-laptop\.png)$/.test(item.src) ? null : (
     <figure
       className={compact ? "hardware-photo-card" : "hardware-main-image"}
       key={item.src}
@@ -206,7 +206,7 @@ export function HardwareSectionContent({
                           ...item.references,
                         ]),
                       ]
-                ).filter((number) => ![27, 28, 30].includes(number) && !(section.id === "kit" && [47, 25].includes(number))).map((number) => (
+                ).filter((number) => ![27, 28, 30, 38].includes(number) && !(section.id === "kit" && [47, 25].includes(number))).map((number) => (
                   <div className="hardware-step-detail" key={number}>
                     <p>
                       {number === 45
@@ -228,7 +228,7 @@ export function HardwareSectionContent({
                     )}
                   </div>
                 ))}
-                {item.primaryPhoto && ![2, 3, 4, 5, 6, 7].includes(item.order) && (
+                {item.primaryPhoto && ![2, 3, 4, 5, 6, 7, 8, 10].includes(item.order) && (
                   <div className="hardware-step-detail">
                     <p>{item.alt.replace("설명용 그림", "설명 그림")}</p>
                     {imageButton(illustration(item.order))}
