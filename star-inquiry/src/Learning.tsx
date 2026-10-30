@@ -557,6 +557,33 @@ export function Learning({
         <p className="notice">
           밝게 보인다는 사실 하나만으로 그 별이 가까운지 단정할 수는 없어요.
         </p>
+        <section
+          className="card lesson-video"
+          aria-labelledby="flashlight-video-title"
+        >
+          <h3 id="flashlight-video-title">
+            영상으로 살펴보기 · 손전등의 밝기 비교하기
+          </h3>
+          <video
+            controls
+            controlsList="nodownload noremoteplayback"
+            disablePictureInPicture
+            disableRemotePlayback
+            playsInline
+            preload="metadata"
+            aria-label="비상교육 손전등의 밝기 비교하기 실험 영상"
+            onContextMenu={(event) => event.preventDefault()}
+          >
+            <source
+              src="/assets/videos/visang-flashlight-comparison.mp4"
+              type="video/mp4"
+            />
+            이 브라우저에서는 영상을 재생할 수 없습니다.
+          </video>
+          <p className="muted">
+            비상교육 · 중등 과학 3 · 손전등의 밝기 비교하기
+          </p>
+        </section>
       </div>
     );
 

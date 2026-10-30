@@ -117,6 +117,31 @@ export function LightExplanation() {
         이 관계를 <strong>‘밝기는 거리의 제곱에 반비례한다’</strong>고 말합니다.
         같은 별을 서로 다른 거리에서 비교할 때의 관계예요.
       </p>
+      <div className="lesson-video">
+        <h3>영상으로 이어서 살펴봐요</h3>
+        <p>
+          영상에서 광원과 거리를 어떻게 바꾸는지 살펴보고, 위 그림과 연결해
+          설명해 보세요.
+        </p>
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/wmQ-tinG0uU"
+          title="거리와 밝기 이해를 돕는 교사 제공 영상"
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allow="encrypted-media; picture-in-picture; fullscreen"
+          allowFullScreen
+        />
+        <p className="muted">
+          재생되지 않으면{" "}
+          <a
+            href="https://www.youtube.com/watch?v=wmQ-tinG0uU"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            YouTube에서 보기 ↗
+          </a>
+        </p>
+      </div>
     </section>
   );
 }

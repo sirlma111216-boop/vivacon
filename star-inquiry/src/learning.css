@@ -842,3 +842,19 @@
   width: 100%;
   min-width: 680px;
 }
+.lesson-video {
+  margin-top: 28px;
+}
+.lesson-video video,
+.lesson-video iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 10px;
+  background: #000;
+}
+.lesson-video video {
+  height: auto;
+  object-fit: contain;
+}
