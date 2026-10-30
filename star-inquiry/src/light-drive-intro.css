@@ -1,7 +1,0 @@
-.light-drive-intro svg { display: block; width: 100%; height: auto; margin: 24px 0; }
-.light-drive-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
-.light-drive-controls label { flex: 1 1 260px; }
-.light-drive-controls input { display: block; width: 100%; min-height: 44px; accent-color: #f8c84d; }
-.light-drive-reading { margin-top: 20px; padding: 20px; background: #080d24; border-radius: 12px; }
-.light-drive-reading meter { display: block; width: 100%; height: 32px; }
-@media (max-width: 600px) { .light-drive-intro svg { min-height: 180px; } }

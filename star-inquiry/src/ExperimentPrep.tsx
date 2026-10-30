@@ -1,4 +1,3 @@
-import { LightDriveIntro } from "./LightDriveIntro";
 import { HardwareSectionContent } from "./HardwareManual";
 
 export function ExperimentPrep(_props: {
@@ -15,7 +14,27 @@ export function ExperimentPrep(_props: {
           오늘은 실제 밝기 값을 모아 우리의 예상과 비교해 볼 거예요.
         </p>
       </div>
-      <LightDriveIntro />
+      <section className="card lesson-video" aria-labelledby="real-light-experiment">
+        <span className="eyebrow">실제 실험 영상으로 시작하기</span>
+        <h3 id="real-light-experiment">멀어지는 빛을 센서로 재면?</h3>
+        <p>아래 재생 버튼을 눌러 광원과 밝기 센서로 측정하는 실제 실험을 보세요.</p>
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/_KHNZTxwA6Q?rel=0&playsinline=1"
+          title="PASCO 실제 실험 영상: 거리에 따른 빛의 세기 측정"
+          loading="eager"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+        <p className="muted">PASCO scientific · Inverse Square Law · 영어 영상</p>
+        <h4>이 장면에 주목해요</h4>
+        <ul>
+          <li>빛을 내는 곳과 센서 사이의 거리를 어떻게 바꾸나요?</li>
+          <li>거리가 달라질 때 측정값과 그래프는 어떻게 달라지나요?</li>
+        </ul>
+        <p>영상에서는 PASCO 장비로 빛을 재요. 우리는 이지메이커의 밝기 센서를 고정하고 LED 자동차를 움직여, 같은 질문을 실험해 볼 거예요.</p>
+        <p className="muted"><a href="https://www.pasco.com/resources/video/_KHNZTxwA6Q" target="_blank" rel="noopener noreferrer">영상 출처 · PASCO 공식 자료 ↗</a></p>
+      </section>
       <section className="card" aria-labelledby="ezmaker-introduction">
         <h3 id="ezmaker-introduction">오늘 빛을 재는 도구, 이지메이커</h3>
         <p>이지메이커는 센서로 주변의 변화를 측정하고, 그 값을 컴퓨터로 보내는 도구예요. 오늘은 밝기 센서를 연결해 자동차의 LED 빛을 재요.</p>
