@@ -190,11 +190,15 @@ export function HardwareSectionContent({
                 </ul>
               )}
               <div className="hardware-step-photos">
-                {!item.primaryPhoto && imageButton(illustration(item.order))}
-                {(item.order === 3
-                  ? [48, 25]
+                {(!item.primaryPhoto || item.order === 2) && imageButton(illustration(item.order))}
+                {(item.order === 2
+                  ? [45]
+                  : item.order === 3
+                  ? [48]
                   : item.order === 4
-                    ? [47, 31, 34]
+                    ? [47, 34]
+                    : item.order === 7
+                      ? [30]
                     : [
                         ...new Set([
                           ...(item.primaryPhoto ? [item.primaryPhoto] : []),
@@ -204,7 +208,9 @@ export function HardwareSectionContent({
                 ).map((number) => (
                   <div className="hardware-step-detail" key={number}>
                     <p>
-                      {number === 47
+                      {number === 45
+                        ? "마이크로비트 아래쪽 금색 부분을 마퀸의 연결 자리에 꽂아요. 자동차 전원은 꺼 두세요."
+                        : number === 47
                         ? "먼저 원형 LED를 켜서 빛이 나오는 쪽을 찾아요."
                         : number === 31
                           ? "LED를 자동차 뒤쪽에 고정하고, 빛이 센서를 향하도록 놓아요."
@@ -213,9 +219,15 @@ export function HardwareSectionContent({
                             : photoDescriptions[number - 25]}
                     </p>
                     {imageButton(photo(number))}
+                    {item.order === 4 && number === 47 && (
+                      <>
+                        <p>이 LED를 자동차 뒤쪽에 아래 그림처럼 고정해요. 빛이 자동차 뒤를 향하게 해요.</p>
+                        {imageButton(illustration(4))}
+                      </>
+                    )}
                   </div>
                 ))}
-                {item.primaryPhoto && (
+                {item.primaryPhoto && ![2, 3, 4, 7].includes(item.order) && (
                   <div className="hardware-step-detail">
                     <p>{item.alt.replace("설명용 그림", "설명 그림")}</p>
                     {imageButton(illustration(item.order))}

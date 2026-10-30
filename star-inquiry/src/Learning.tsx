@@ -867,11 +867,11 @@ export function Learning({
         </div>
         <h3>실험은 이렇게 진행해요</h3>
         <ol className="instructions">
-          <li>마이크로비트를 마퀸에 꽂고 뒤쪽에 LED를 달아요.</li>
           <li>
             MakeCode에서 A 버튼으로 출발하고 B 버튼으로 멈추는 프로그램을 만들어
             넣어요.
           </li>
+          <li>프로그램을 넣은 마이크로비트를 마퀸에 꽂고 뒤쪽에 LED를 달아요.</li>
           <li>
             다음 시간에 센서를 고정하고, 자동차의 LED가 센서를 향하게 놓아요.
           </li>
@@ -892,8 +892,8 @@ export function Learning({
           eyebrow="제작하고 코딩하기 · 25분"
           title="빛을 싣고 움직이는 마퀸 만들기"
         >
-          자동차를 조립하고, 블록으로 출발·정지 프로그램을 만든 뒤
-          마이크로비트에 넣어 봐요.
+          먼저 블록으로 출발·정지 프로그램을 만들어 마이크로비트에 넣어요.
+          그다음 자동차에 마이크로비트와 LED를 달고 움직여 봐요.
         </Header>
         <Maqueen notes={notes} setNote={setNote} lessonMode />
         <div className="notice">

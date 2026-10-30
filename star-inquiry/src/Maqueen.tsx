@@ -85,7 +85,7 @@ export function Maqueen({
       <section className="card">
         <h2>자동차를 조립하고, 움직여 봐요</h2>
         <p>
-          마이크로비트와 LED를 달고, A 버튼으로 출발하고 B 버튼으로 멈추도록
+          먼저 블록 코딩으로 프로그램을 넣고, 마이크로비트와 LED를 달아
           준비합니다.
         </p>
         <details>
@@ -115,17 +115,12 @@ export function Maqueen({
           </div>
         </details>
       </section>
-      <HardwareSectionContent
-        section="car"
-        orders={[2, 3, 4]}
-        title="1. 마이크로비트와 LED 달기"
-      />
+
       <section className="card car-program">
-        <h3>2. MakeCode에서 블록 코딩하기</h3>
+        <h3>1. MakeCode에서 블록 코딩하기</h3>
         <p>
-          선생님이 프로그램을 넣어 둔 자동차라면 아래의 전원과 출발·정지로
-          이어가세요. 처음 준비한다면 MakeCode에서 프로그램을 만든 뒤
-          마이크로비트에 넣습니다.
+          MakeCode에서 출발·정지 프로그램을 만든 뒤 마이크로비트에 넣어요.
+          프로그램 전송이 끝나면 USB 케이블을 빼고, 아래 순서대로 자동차를 준비해요.
         </p>
         <ol className="instructions">
           <li>새 프로젝트를 만들고 마퀸 확장 기능을 추가해요.</li>
@@ -147,6 +142,11 @@ export function Maqueen({
           </details>
         )}
       </section>
+      <HardwareSectionContent
+        section="car"
+        orders={[2, 3, 4]}
+        title="2. 마이크로비트와 LED 달기"
+      />
       <HardwareSectionContent
         section="car"
         orders={[5, 6, 7]}
