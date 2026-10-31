@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import {
   canConvertMagnitude,
   corrected,
-  distanceFor,
   magnitudeDelta,
   validSamples,
   type Run,
@@ -485,28 +484,27 @@ export function Learning({
   const simulationUrl =
     notes["resource.simulation.url"] ??
     resources.find((r) => r.id === "simulation")!.url;
-  const externalActivity =
-    notes["resource.simulation.hidden"] === "true" ? (
-      <p className="notice">이 수업에서는 아래의 모형으로 활동합니다.</p>
-    ) : (
-      <div className="external-activity">
-        {safeExternalUrl(simulationUrl) ? (
-          <a
-            className="secondary"
-            href={simulationUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            비바샘에서 더 살펴보기 ↗
-          </a>
-        ) : (
-          <span className="notice">
-            외부 자료 주소를 교사에게 확인해 주세요.
-          </span>
-        )}
-        <p className="muted">선택 자료 · 새 탭에서 열립니다.</p>
-      </div>
-    );
+  const externalActivity = (
+    <section className="card textbook-activity">
+      <span className="eyebrow">비상교과서 연계 활동 · 비상교육 원본 가상실험</span>
+      <h3>{step === 3 ? "같은 거리에 놓고 별의 밝기 비교하기" : "별의 밝기와 등급 · 전구로 비교하기"}</h3>
+      <ol className="instructions">
+        {step === 3 ? <>
+          <li>아래 활동에서 ‘겉보기 등급과 절대 등급’을 선택해요.</li>
+          <li>지금 보이는 밝기를 비교한 뒤, 별을 10pc에 놓았을 때와 비교해요.</li>
+          <li>밝기 순서가 달라지는지 짝과 이야기해요.</li>
+        </> : <>
+          <li>아래 활동에서 두 별의 등급을 골라 배치해요.</li>
+          <li>전구로 비교하며 1등급 차이와 5등급 차이를 차례로 살펴봐요.</li>
+          <li>활동 뒤 아래 비교 모형에서 알게 된 내용을 확인해요.</li>
+        </>}
+      </ol>
+      {safeExternalUrl(simulationUrl) && <>
+        <iframe src={simulationUrl} title="비상교육 · 별의 밝기와 등급 가상실험" className="textbook-frame" loading="lazy" allowFullScreen />
+        <p className="muted">화면이 작거나 열리지 않을 때만 <a href={simulationUrl} target="_blank" rel="noopener noreferrer">원본 활동 크게 열기 ↗</a></p>
+      </>}
+    </section>
+  );
 
   if (lesson === 3 && step === 0)
     return (
@@ -928,52 +926,21 @@ export function Learning({
   if (lesson === 5 && step === 0)
     return (
       <div className="learning-section">
-        <StellarIntro />
-        <Header
-          eyebrow="실험 돌아보기 · 5분"
-          title="우리 실험에서 무엇을 발견했나요?"
-        >
-          거리와 밝기를 함께 살펴봤어요. 밝기가 얼마나 달라졌는지 숫자로 표현해
-          봅시다.
+        <Header eyebrow="영상으로 시작하기 · 5분" title="밤하늘의 작은 점을 확대하면?">
+          오리온자리에서 별 하나를 찾아 점점 가까이 들여다봐요.
         </Header>
-        <div className="grid-2">
-          <article className="concept-tile">
-            <h3>4차시 실험 기록</h3>
-            <p>
-              {run
-                ? `${run.name} · ${run.samples.length}개 기록`
-                : "4차시에서 실험 데이터를 먼저 남겨 주세요."}
-            </p>
-            {run?.mode === "practice" && (
-              <span className="badge">연습 데이터</span>
-            )}
-            <p className="muted">
-              기록한 값과 비교에 쓰지 않은 이유는 4차시 ‘가져와 비교’에서 볼 수
-              있어요.
-            </p>
-          </article>
-          <article className="concept-tile">
-            <h3>관찰 뒤의 설명</h3>
-            <blockquote>
-              {notes.explainEvidence ||
-                notes.explainCompare ||
-                "4차시에서 적은 설명을 떠올리고 아래에 정리해 보세요."}
-            </blockquote>
-          </article>
-        </div>
-        {run && (
-          <DataChart
-            run={run}
-            prediction={prediction}
-            analysis={validSamples(run).some((s) => distanceFor(s, run)! > 0)}
-            referenceId={notes[`reference-${run.id}`]}
-          />
-        )}
-        {text(
-          "magnitudeIntro",
-          "밝기 차이를 숫자로 나타내려면 어떤 약속이 필요할까요?",
-          "등급 숫자가 커질 때 밝기는 어떻게 달라졌나요?",
-        )}
+        <video controls playsInline preload="metadata" style={{ width: "100%", aspectRatio: "16 / 9", background: "#000" }} aria-label="ESO · 오리온자리에서 베텔게우스로 확대하는 39초 영상">
+          <source src="https://cdn.eso.org/videos/medium_podcast/eso2109d.mp4" type="video/mp4" />
+        </video>
+        <p className="muted">39초 · 관측 자료를 이어 확대하는 영상입니다. 우주선이 별까지 날아가며 찍은 영상은 아니에요.</p>
+        <small><a href="https://www.eso.org/public/videos/eso2109d/" target="_blank" rel="noopener noreferrer">ESO · Zooming in on Betelgeuse</a> · ESO/P. Kervella/M. Montargès et al., Digitized Sky Survey 2. Acknowledgement: E. Pantin, N. Risinger (skysurvey.org). Music: J. B. Monell (www.johanmonell.com).</small>
+        <section className="card">
+          <h3>‘밝다’는 말만으로 서로 비교할 수 있을까요?</h3>
+          <p>영상 첫 장면에서 눈에 띄는 별을 하나씩 골라 짝에게 알려 주세요. 같은 별을 골랐나요?</p>
+          <p className="question-callout">별의 밝기를 누구나 같은 기준으로 말하려면 어떤 약속이 필요할까요?</p>
+          <p>지난 시간에는 센서의 숫자로 빛의 밝기를 비교했어요. 오늘은 별의 밝기를 나타내는 ‘등급’을 알아보고, 비상교과서 활동으로 비교해 봐요.</p>
+        </section>
+        {run && <details><summary>지난 시간 우리 모둠 그래프 다시 보기</summary><DataChart run={run} axis="time" /></details>}
       </div>
     );
 
@@ -986,24 +953,25 @@ export function Learning({
     return (
       <div className="learning-section">
         <Header
-          eyebrow="예상 → 관찰 → 설명 · 12분"
-          title="한 등급 차이는 얼마나 다를까?"
+          eyebrow="활동하고 비교하기 · 12분"
+          title="비상교과서 활동 · 별의 밝기와 등급"
         >
           등급은 별의 밝기를 나타내는 숫자이며, 숫자가 작을수록 밝습니다. 두
-          별의 밝기가 몇 배 차이 나는지 예상해 보세요.
+          별의 밝기 차이를 아래 비상교과서 활동에서 비교해 보세요.
         </Header>
+        {externalActivity}
         {!sealed ? (
           <div className="prediction-box">
             {input(
               "magnitudeGuess",
-              "1등급 별은 6등급 별보다 몇 배 밝을까요?",
-              "나의 예상",
+              "활동에서 1등급 별은 6등급 별보다 몇 배 밝았나요?",
+              "활동에서 비교한 밝기 차이",
               "number",
               0,
             )}
             {text(
               "magnitudeReason",
-              "그렇게 예상한 까닭",
+              "전구를 비교하며 알게 된 점",
               "등급 숫자와 밝기 차이를 연결해 생각해 보세요.",
             )}
             <button
@@ -1024,16 +992,15 @@ export function Learning({
                 )
               }
             >
-              예상 저장
+              활동 기록 저장
             </button>
           </div>
         ) : (
           <>
             <div className="notice">
-              <strong>✓ 처음 예상: {sealed.guess}배</strong>
+              <strong>활동 기록: {sealed.guess}배</strong>
               <p>{sealed.reason}</p>
             </div>
-            {externalActivity}
             <p>
               아래에서 두 별의 등급을 바꾸며 전구 개수를 비교하세요. 등급 차이가
               커질수록 밝기 차이는 어떻게 달라지나요?
@@ -1125,7 +1092,7 @@ export function Learning({
             )}
             {text(
               "magnitudeExplanation",
-              "처음 예상과 비교해서 설명해요",
+              "등급과 밝기의 관계를 한 문장으로 정리해요",
               "등급 차이와 밝기 비는 어떤 관계인가요?",
             )}
           </>
@@ -1293,7 +1260,7 @@ export function Learning({
     return (
       <div className="learning-section">
         <Header
-          eyebrow="예상 → 관찰 → 설명 · 12분"
+          eyebrow="활동하고 비교하기 · 12분"
           title="모든 별을 같은 거리에 놓는다면?"
         >
           가까워서 밝아 보이는 것과 별 자체가 밝은 것을 어떻게 구분할까요?
@@ -1302,6 +1269,7 @@ export function Learning({
           pc(파섹)는 별까지의 먼 거리를 나타내는 단위입니다. 1pc는 약
           3.26광년이며, 10pc는 약 32.6광년입니다.
         </p>
+        {externalActivity}
         {!sealed ? (
           <div className="prediction-box">
             {text(
@@ -1322,7 +1290,7 @@ export function Learning({
                 )
               }
             >
-              예상 저장
+              활동 기록 저장
             </button>
           </div>
         ) : (
@@ -1331,7 +1299,6 @@ export function Learning({
               <strong>저장한 예상</strong>
               <p>{sealed.guess}</p>
             </div>
-            {externalActivity}
             <p>
               아래 모형에서 같은 별을 가까이 또는 멀리 옮겨 보세요. 지금
               거리에서의 등급과 10pc에서의 등급을 비교합니다.
@@ -1526,9 +1493,13 @@ export function Learning({
     };
     return (
       <div className="learning-section">
-        <Header eyebrow="정리하기 · 8분" title="내 생각은 어떻게 달라졌을까?">
-          네 가지 질문으로 확인하고, 증거를 담아 내 설명을 완성해 보세요.
+        <Header eyebrow="정리하기 · 8분" title="오늘 배운 내용 정리">
+          핵심 내용을 정리하고, 아래 질문으로 확인해 봐요.
         </Header>
+        <div className="grid-2">
+          <article className="concept-tile"><h3>숫자가 작을수록 밝아요</h3><p>별의 밝기를 등급으로 나타내요. 1등급 차이는 약 2.5배, 5등급 차이는 100배의 밝기 차이예요.</p></article>
+          <article className="concept-tile"><h3>보이는 밝기와 별 자체의 밝기</h3><p>겉보기 등급은 지구에서 보이는 밝기예요. 절대 등급은 모든 별을 10pc에 놓았다고 할 때의 밝기예요. 같은 거리에서 별 자체의 밝기를 비교할 수 있어요.</p></article>
+        </div>
         <div className="quiz-list">
           {quiz.map((q, i) => (
             <fieldset className="quiz-question" key={q.question}>
@@ -1577,28 +1548,7 @@ export function Learning({
             답을 저장했습니다. 선생님이 해설을 공개하면 설명을 볼 수 있어요.
           </p>
         )}
-        <div className="reflection-fields">
-          {input(
-            "reflectionAuthor",
-            "설명을 기록하는 사람 또는 모둠 별칭",
-            prediction?.author || "예: 김별 / 은하 모둠",
-          )}
-          {text(
-            "reflectionBefore",
-            "처음에는 ___라고 생각했다.",
-            "최초 예상의 생각을 돌아보세요.",
-          )}
-          {text(
-            "reflectionObserved",
-            "실험과 모형에서 ___를 관찰했다.",
-            "수치나 비교 결과를 근거로 적으세요.",
-          )}
-          {text(
-            "reflectionAfter",
-            "이제는 ___라는 근거로 ___라고 설명한다.",
-            "거리, 밝기, 등급을 연결하여 설명해 보세요.",
-          )}
-        </div>
+        {text("reflectionAfter", "오늘 알게 된 점 한 가지", "별의 밝기를 비교할 때 무엇을 생각해야 할까요?")}
         <div className="share-actions">
           <button className="secondary" onClick={exportReflection}>
             샘보드 공유용 글 저장 ↓
