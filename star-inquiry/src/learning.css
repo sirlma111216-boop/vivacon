@@ -872,3 +872,5 @@
 
 .textbook-frame { display:block; width:100%; height: min(72vw, 720px); min-height:440px; border:1px solid #64748b; border-radius:12px; background:white; }
 .textbook-activity { border-top:4px solid #f8c84d; }
+
+.review-return { position:sticky; bottom:95px; z-index:10; display:flex; justify-content:center; padding:12px; }

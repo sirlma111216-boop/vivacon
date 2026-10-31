@@ -1,3 +1,4 @@
+import { CourseReview } from "./CourseReview";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -85,8 +86,9 @@ const lessons = {
       "밝기를 등급으로",
       "겉보기·절대 등급",
       "오늘 배운 내용 정리",
+      "1~5차시 전체 복습",
     ],
-    times: [5, 12, 8, 12, 8],
+    times: [5, 12, 8, 12, 8, 5],
   },
 };
 function readState(): AppState {
@@ -110,6 +112,7 @@ export default function App() {
     [report, setReport] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null),
     heading = useRef<HTMLHeadingElement>(null);
+  const [reviewVisit, setReviewVisit] = useState(false);
   const activeRun = state.runs.find((r) => r.id === state.activeRunId) || null;
   const lesson = lessons[state.lesson];
   useEffect(() => {
@@ -148,15 +151,15 @@ export default function App() {
   const setNote = (k: string, v: string) =>
     setState((s) => ({ ...s, notes: { ...s.notes, [k]: v } }));
   const go = (l: 3 | 4 | 5, step = 0) => {
-    if (l === 3 && step > 1 && !state.prediction) {
+    if (!reviewVisit && l === 3 && step > 1 && !state.prediction) {
       step = 1;
       setToast("이론을 보기 전에 나의 예상과 이유를 먼저 저장하세요.");
     }
-    if (l === 5 && step > 1 && !state.notes.magnitudePrediction) {
+    if (!reviewVisit && l === 5 && step > 1 && step < 5 && !state.notes.magnitudePrediction) {
       step = 1;
       setToast("밝기 비 예상과 이유를 먼저 저장하세요.");
     }
-    if (l === 5 && step > 3 && !state.notes.absolutePrediction) {
+    if (!reviewVisit && l === 5 && step > 3 && step < 5 && !state.notes.absolutePrediction) {
       step = 3;
       setToast("같은 거리에서 비교할 때의 예상을 먼저 저장하세요.");
     }
@@ -484,6 +487,8 @@ export default function App() {
                 setMode={(mode) => patch({ mode })}
                 prediction={state.prediction}
               />
+            ) : state.lesson === 5 && state.step === 5 ? (
+              <CourseReview onVisit={(lesson, step) => { setReviewVisit(true); patch({ home: false, lesson, step }); window.scrollTo({ top: 0 }); }} />
             ) : (
               <Learning
                 onOpenHardware={openHardware}
@@ -498,6 +503,7 @@ export default function App() {
               />
             )}
           </main>
+          {reviewVisit && !(state.lesson === 5 && state.step === 5) && <div className="review-return"><button className="primary" onClick={() => { setReviewVisit(false); go(5, 5); }}>← 1~5차시 전체 복습으로 돌아오기</button></div>}
           <footer className="step-footer">
             <button
               disabled={state.lesson === 3 && state.step === 0}
@@ -515,7 +521,7 @@ export default function App() {
               <span className="footer-stage">· {lesson.steps[state.step]}</span>
             </span>
             <button className="primary" onClick={next}>
-              {state.lesson === 5 && state.step === 4 ? "탐구 마무리" : "다음"}
+              {state.lesson === 5 && state.step === 5 ? "탐구 마무리" : "다음"}
               <ArrowRight size={16} />
             </button>
           </footer>
